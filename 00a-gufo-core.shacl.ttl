@@ -1,0 +1,223 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+###############################################################################
+# VALOR-O — SHACL Shapes: gUFO Core (Module 00a)
+#
+# Validates structural constraints on gUFO primitives as used in VALOR-O.
+# gUFO itself is an external ontology; these shapes guard how VALOR-O
+# domain classes may extend it.
+###############################################################################
+
+<https://valor-ecosystem.nl/shacl/gufo-core>
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — gUFO Core"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+# G1 — Every IntrinsicMode must inhere in exactly one Endurant
+###############################################################################
+
+gufo:IntrinsicModeShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:IntrinsicMode ;
+    sh:name "IntrinsicModeShape" ;
+    sh:description
+        "G1: Elke IntrinsicMode moet via gufo:inheresIn inheren aan
+         precies één Endurant (gUFO axioma: modes zijn existentieel
+         afhankelijk van hun drager)." ;
+
+    sh:property [
+        sh:path     gufo:inheresIn ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    gufo:Endurant ;
+        sh:name     "inheresIn" ;
+        sh:message  "G1: IntrinsicMode.inheresIn vereist precies één gufo:Endurant."
+    ] .
+
+
+###############################################################################
+# G2 — Every Relator must mediate at least two distinct Endurants
+###############################################################################
+
+gufo:RelatorShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:Relator ;
+    sh:name "RelatorShape" ;
+    sh:description
+        "G2: Elke Relator moet via gufo:mediates ten minste twee
+         verschillende Endurants mediëren (gUFO: Relators zijn
+         existentieel afhankelijk van meerdere individuen)." ;
+
+    sh:property [
+        sh:path     gufo:mediates ;
+        sh:minCount 2 ;
+        sh:class    gufo:Endurant ;
+        sh:name     "mediates" ;
+        sh:message  "G2: Relator.mediates vereist ten minste 2 gufo:Endurant instances."
+    ] ;
+
+    sh:sparql [
+        sh:name    "G2b-distinct-mediated" ;
+        sh:message "G2b: Een Relator mag niet tweemaal dezelfde Endurant mediëren." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/gufo-core> ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this gufo:mediates ?e1 .
+                $this gufo:mediates ?e2 .
+                FILTER (?e1 = ?e2)
+                FILTER NOT EXISTS {
+                    $this gufo:mediates ?other .
+                    FILTER (?other != ?e1)
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# G3 — Quality must have at most one hasQualityValue
+###############################################################################
+
+gufo:QualityShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:Quality ;
+    sh:name "QualityShape" ;
+    sh:description
+        "G3: Een Quality mag maximaal één hasQualityValue hebben
+         (een kwaliteitsdimensie heeft één actuele waarde)." ;
+
+    sh:property [
+        sh:path     gufo:hasQualityValue ;
+        sh:maxCount 1 ;
+        sh:name     "hasQualityValue" ;
+        sh:message  "G3: Quality.hasQualityValue mag maximaal één waarde hebben."
+    ] .
+
+
+###############################################################################
+# G4 — Event must have hasBeginPoint ≤ hasEndPoint when both present
+###############################################################################
+
+gufo:EventTemporalShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:Event ;
+    sh:name "EventTemporalShape" ;
+    sh:description
+        "G4: Als een Event zowel hasBeginPoint als hasEndPoint heeft,
+         moet het beginpunt voor of gelijk zijn aan het eindpunt." ;
+
+    sh:sparql [
+        sh:name    "G4-begin-before-end" ;
+        sh:message "G4: gufo:hasBeginPoint moet ≤ gufo:hasEndPoint zijn." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/gufo-core> ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this gufo:hasBeginPoint ?begin .
+                $this gufo:hasEndPoint   ?end .
+                FILTER (?begin > ?end)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# G5 — Situation must have at least one participanting Endurant
+#       (via gufo:manifestedIn inverse or direct participation)
+###############################################################################
+
+gufo:SituationShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:Situation ;
+    sh:name "SituationShape" ;
+    sh:description
+        "G5: Een Situation die als NormativeSituation of DesignSituation
+         wordt gebruikt, moet via gufo:manifestedIn ten minste één
+         Endurant betrekken. (Waarschuwing, geen hard error.)" ;
+
+    sh:severity sh:Warning ;
+    sh:property [
+        sh:path     [ sh:inversePath gufo:manifestedIn ] ;
+        sh:minCount 1 ;
+        sh:name     "manifestedBy" ;
+        sh:message  "G5 (waarschuwing): Situation heeft geen Endurant via gufo:manifestedIn."
+    ] .
+
+
+###############################################################################
+# G6 — IntentionalMode.hasPropositionalContent → Situation
+#       (defined here at gUFO level; specialisations in UFO-C extend this)
+###############################################################################
+
+gufo:IntentionalModeContentShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:IntentionalMode ;
+    sh:name "IntentionalModeContentShape" ;
+    sh:description
+        "G6: Een IntentionalMode moet precies één hasPropositionalContent
+         hebben van type gufo:Situation." ;
+
+    sh:property [
+        sh:path     gufo:hasPropositionalContent ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    gufo:Situation ;
+        sh:name     "hasPropositionalContent" ;
+        sh:message  "G6: IntentionalMode.hasPropositionalContent vereist precies één gufo:Situation."
+    ] .
+
+
+###############################################################################
+# G7 — OWL Punning: VALOR-O domain Kinds must also be rdf:type gufo:Kind
+#       (ensures the type-hierarchy is consistently populated)
+###############################################################################
+
+gufo:KindPunningShape
+    a sh:NodeShape ;
+    sh:targetSubjectsOf gufo:ontoumlStereotype ;
+    sh:name "KindPunningShape" ;
+    sh:description
+        "G7: Elke resource die gufo:ontoumlStereotype 'kind' heeft,
+         moet ook rdf:type gufo:Kind zijn (OWL2 punning-conventie)." ;
+
+    sh:sparql [
+        sh:name    "G7-kind-punning" ;
+        sh:message "G7: Resource met ontoumlStereotype 'kind' mist rdf:type gufo:Kind." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/gufo-core> ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this gufo:ontoumlStereotype "kind" .
+                FILTER NOT EXISTS { $this rdf:type gufo:Kind }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# Prefix declarations for SPARQL constraints
+###############################################################################
+
+<https://valor-ecosystem.nl/shacl/gufo-core>
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "https://nemo-ufes.github.io/gufo/"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdf" ;
+        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+# END OF SHACL — gUFO Core
+###############################################################################

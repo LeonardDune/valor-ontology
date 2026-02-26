@@ -1,0 +1,375 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+###############################################################################
+# VALOR-O — SHACL Shapes: UFO-L Legal Relations (Module 00c)
+#
+# Constraints L1–L12 covering:
+#   LegalRelator structure, Hohfeld subclasses, DerivationRule,
+#   DelegationAuthority, Policy/PolicyDocument, TemporalCondition,
+#   DomainVariable, SourceDefinition.
+###############################################################################
+
+<https://valor-ecosystem.nl/shacl/ufo-l>
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — UFO-L Legal Relations"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+# L1 — LegalRelator mediates exactly 2 distinct LegalSubjects
+###############################################################################
+
+ufol:LegalRelatorShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:LegalRelator ;
+    sh:name "LegalRelatorShape" ;
+    sh:description
+        "L1: Elke LegalRelator vereist precies één hasRightHolder en
+         precies één hasDutyBearer, en beide moeten van elkaar verschillen." ;
+
+    sh:property [
+        sh:path ufol:hasRightHolder ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufol:LegalSubject ;
+        sh:message "L1a: LegalRelator vereist precies één hasRightHolder (ufol:LegalSubject)."
+    ] ;
+
+    sh:property [
+        sh:path ufol:hasDutyBearer ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufol:LegalSubject ;
+        sh:message "L1b: LegalRelator vereist precies één hasDutyBearer (ufol:LegalSubject)."
+    ] ;
+
+    sh:sparql [
+        sh:name    "L1c-subjects-distinct" ;
+        sh:message "L1c: hasRightHolder en hasDutyBearer mogen niet naar hetzelfde LegalSubject verwijzen." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this ufol:hasRightHolder ?r .
+                $this ufol:hasDutyBearer  ?d .
+                FILTER (?r = ?d)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# L2 — LegalRelator has exactly one LegalObject
+###############################################################################
+
+ufol:LegalRelatorObjectShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:LegalRelator ;
+    sh:name "LegalRelatorObjectShape" ;
+    sh:description
+        "L2: Elke LegalRelator vereist precies één hasLegalObject." ;
+
+    sh:property [
+        sh:path ufol:hasLegalObject ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufol:LegalObject ;
+        sh:message "L2: LegalRelator vereist precies één hasLegalObject (ufol:LegalObject)."
+    ] .
+
+
+###############################################################################
+# L3 — LegalRelator has a legal basis (NormativeSituation or LegalNorm)
+###############################################################################
+
+ufol:LegalRelatorBasisShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:LegalRelator ;
+    sh:name "LegalRelatorBasisShape" ;
+    sh:description
+        "L3: Elke LegalRelator moet via hasLegalBasis terug te herleiden
+         zijn naar een LegalNorm (traceerbaarheid Wetsanalyse)." ;
+
+    sh:property [
+        sh:path ufol:hasLegalBasis ;
+        sh:minCount 1 ;
+        sh:class ufol:LegalNorm ;
+        sh:message "L3: LegalRelator vereist ten minste één hasLegalBasis (ufol:LegalNorm)."
+    ] .
+
+
+###############################################################################
+# L4 — DerivationRule: input + (output variable XOR derives relator)
+###############################################################################
+
+ufol:DerivationRuleShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:DerivationRule ;
+    sh:name "DerivationRuleShape" ;
+    sh:description
+        "L4: Een DerivationRule vereist:
+         (a) ten minste één hasInputVariable;
+         (b) ofwel een hasOutputVariable ofwel een derivesRelator
+             (maar niet beide tegelijk)." ;
+
+    sh:property [
+        sh:path ufol:hasInputVariable ;
+        sh:minCount 1 ;
+        sh:class ufol:DomainVariable ;
+        sh:message "L4a: DerivationRule vereist ten minste één hasInputVariable."
+    ] ;
+
+    # L4b: output XOR relator — exactly one of the two must be present
+    sh:sparql [
+        sh:name    "L4b-output-xor-relator" ;
+        sh:message "L4b: DerivationRule vereist ofwel hasOutputVariable ofwel derivesRelator (niet beide, niet geen van beide)." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:select  """
+            SELECT $this WHERE {
+                BIND(
+                    EXISTS { $this ufol:hasOutputVariable ?v } AS ?hasOut
+                )
+                BIND(
+                    EXISTS { $this ufol:derivesRelator ?r } AS ?hasRel
+                )
+                FILTER ( ?hasOut = ?hasRel )
+            }
+        """
+    ] .
+
+
+###############################################################################
+# L5 — DelegationFulfillment must reference a DelegationAuthority
+###############################################################################
+
+ufol:DelegationFulfillmentShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:DelegationFulfillment ;
+    sh:name "DelegationFulfillmentShape" ;
+    sh:description
+        "L5: Elke DelegationFulfillment (delegatie-invulling) moet via
+         fulfillsDelegation verwijzen naar een DelegationAuthority
+         (delegatiegrondslag)." ;
+
+    sh:property [
+        sh:path ufol:fulfillsDelegation ;
+        sh:minCount 1 ;
+        sh:class ufol:DelegationAuthority ;
+        sh:message "L5: DelegationFulfillment.fulfillsDelegation vereist ten minste één DelegationAuthority."
+    ] .
+
+
+###############################################################################
+# L6 — Policy: grounded in DelegationAuthority, inheres in InstitutionalAgent
+###############################################################################
+
+ufol:PolicyShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:Policy ;
+    sh:name "PolicyShape" ;
+    sh:description
+        "L6: Een Policy (Weigand 2024) moet:
+         (a) inheren aan een InstitutionalAgent via policyInheresIn;
+         (b) gegrond zijn in een DelegationAuthority via policyGroundedIn." ;
+
+    sh:property [
+        sh:path ufol:policyInheresIn ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:InstitutionalAgent ;
+        sh:message "L6a: Policy.policyInheresIn vereist precies één ufoc:InstitutionalAgent."
+    ] ;
+
+    sh:property [
+        sh:path ufol:policyGroundedIn ;
+        sh:minCount 1 ;
+        sh:class ufol:DelegationAuthority ;
+        sh:message "L6b: Policy.policyGroundedIn vereist ten minste één DelegationAuthority."
+    ] .
+
+
+###############################################################################
+# L7 — PolicyDocument described by at least one Policy
+###############################################################################
+
+ufol:PolicyDocumentShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:PolicyDocument ;
+    sh:name "PolicyDocumentShape" ;
+    sh:description
+        "L7: Een PolicyDocument (artefact) moet beschreven zijn door
+         (d.w.z. de inverse van describedByDocument hebben voor)
+         ten minste één Policy." ;
+
+    sh:sparql [
+        sh:name    "L7-document-has-policy" ;
+        sh:message "L7: PolicyDocument is niet gekoppeld aan een Policy via describedByDocument." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:select  """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS {
+                    ?policy ufol:describedByDocument $this .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# L8 — TemporalCondition: hasStartDate ≤ hasEndDate when both present
+###############################################################################
+
+ufol:TemporalConditionShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:TemporalCondition ;
+    sh:name "TemporalConditionShape" ;
+    sh:description
+        "L8: Als een TemporalCondition zowel hasStartDate als hasEndDate
+         heeft, moet het startpunt voor of gelijk zijn aan het eindpunt." ;
+
+    sh:sparql [
+        sh:name    "L8-start-before-end" ;
+        sh:message "L8: TemporalCondition.hasStartDate moet ≤ hasEndDate zijn." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this ufol:hasStartDate ?s .
+                $this ufol:hasEndDate   ?e .
+                FILTER (?s > ?e)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# L9 — DomainVariable inheres in LegalSubject or LegalObject
+###############################################################################
+
+ufol:DomainVariableShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:DomainVariable ;
+    sh:name "DomainVariableShape" ;
+    sh:description
+        "L9: Een DomainVariable (variabele) moet inheren aan een
+         LegalSubject of een LegalObject." ;
+
+    sh:property [
+        sh:path gufo:inheresIn ;
+        sh:minCount 1 ;
+        sh:message "L9a: DomainVariable.inheresIn is vereist."
+    ] ;
+
+    sh:sparql [
+        sh:name    "L9b-inhere-in-legal-entity" ;
+        sh:message "L9b: DomainVariable moet inheren aan een ufol:LegalSubject of ufol:LegalObject." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this gufo:inheresIn ?bearer .
+                FILTER NOT EXISTS {
+                    { ?bearer a ufol:LegalSubject }
+                    UNION
+                    { ?bearer a ufol:LegalObject  }
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# L10 — LegalFact relates to at least one LegalRelator
+###############################################################################
+
+ufol:LegalFactShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:LegalFact ;
+    sh:name "LegalFactShape" ;
+    sh:description
+        "L10: Elk LegalFact (rechtsfeit) moet via createsLegalRelation,
+         modifiesLegalRelation of terminatesLegalRelation betrekking
+         hebben op ten minste één LegalRelator." ;
+
+    sh:sparql [
+        sh:name    "L10-fact-relates-relator" ;
+        sh:message "L10: LegalFact heeft geen relatie met een LegalRelator via creates/modifies/terminatesLegalRelation." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:select  """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS {
+                    { $this ufol:createsLegalRelation    ?r }
+                    UNION
+                    { $this ufol:modifiesLegalRelation   ?r }
+                    UNION
+                    { $this ufol:terminatesLegalRelation ?r }
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# L11 — NormativeSituation has a legal basis (LegalNorm)
+###############################################################################
+
+ufol:NormativeSituationShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:NormativeSituation ;
+    sh:name "NormativeSituationShape" ;
+    sh:description
+        "L11: Elke NormativeSituation moet gegrond zijn in een LegalNorm
+         via hasLegalBasis." ;
+
+    sh:property [
+        sh:path ufol:hasLegalBasis ;
+        sh:minCount 1 ;
+        sh:class ufol:LegalNorm ;
+        sh:message "L11: NormativeSituation.hasLegalBasis vereist ten minste één LegalNorm."
+    ] .
+
+
+###############################################################################
+# L12 — ClaimRightRelator has an EnforceabilityLevel
+###############################################################################
+
+ufol:ClaimRightRelatorShape
+    a sh:NodeShape ;
+    sh:targetClass ufol:ClaimRightRelator ;
+    sh:name "ClaimRightRelatorShape" ;
+    sh:description
+        "L12: Elke ClaimRightRelator (aanspraak–verplichting) moet een
+         hasEnforceability hebben (krachtig, na ingebrekestelling,
+         of zwak — Wetsanalyse §4.3.3)." ;
+
+    sh:property [
+        sh:path ufol:hasEnforceability ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufol:EnforceabilityLevel ;
+        sh:message "L12: ClaimRightRelator.hasEnforceability vereist precies één EnforceabilityLevel."
+    ] .
+
+
+###############################################################################
+# Prefix declarations for SPARQL constraints
+###############################################################################
+
+<https://valor-ecosystem.nl/shacl/ufo-l>
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "https://nemo-ufes.github.io/gufo/"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufoc" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufol" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-l#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+# END OF SHACL — UFO-L
+###############################################################################

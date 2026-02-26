@@ -1,0 +1,1044 @@
+@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+###############################################################################
+# VALOR-O — Module 00c: UFO-L  (Legal Relations)
+#
+# Purpose : Formalise the normative/legal layer of VALOR-O.
+#           Covers: LegalSubject, LegalObject, LegalRelation (Hohfeld's
+#           four correlate-pairs), Norm, NormativeSituation, LegalFact,
+#           DerivationRule, DelegationAuthority, and the Weigand (2024)
+#           policy-as-delegation pattern.
+#
+#           Enriched with concepts from:
+#             - Wetsanalyse (Ausems, Bulles, Lokin 2021) — juridisch
+#               analyseschema (16 elements), Hohfeld subclasses,
+#               DerivationRule (afleidingsregel), LegalObject (rechtsobject),
+#               DelegationAuthority/Fulfillment (delegatiebevoegdheid),
+#               TemporalCondition (tijdsaanduiding als voorwaarde vs.
+#               parameter), DomainVariable (variabele + variabelewaarde).
+#             - Weigand, Johannesson, Andersson (2024) — policy as bundle
+#               of rights/duties inhering in an agent via delegation,
+#               distinct from the policy document as artifact.
+#
+# Sources : Guizzardi et al. (2015), UFO-L: An Ontological Account of
+#             Legal Relationships.
+#           Ausems, Bulles, Lokin (2021), Wetsanalyse.
+#           Weigand et al. (2024), VMBO 2024, CEUR-WS Vol. 3821.
+#
+# Imports : 00a-gufo-core.ttl, 00b-ufo-c.ttl
+###############################################################################
+
+<https://valor-ecosystem.nl/ontology/ufo-l>
+    a owl:Ontology ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    dcterms:title "VALOR-O — UFO-L Legal Relations"@nl ;
+    dcterms:description
+        "Ontologie van rechtsbetrekkingen, normen, rechtsfeiten en
+         delegatie. Gebouwd op UFO-L en verrijkt met het juridisch
+         analyseschema (Wetsanalyse) en de beleidsontologie (Weigand)."@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+# ── OVERVIEW OF HOHFELD CORRELATE PAIRS ──────────────────────────────────────
+#
+#  Wetsanalyse §4.3.3  /  UFO-L §3
+#
+#  Pair 1 — Claim-Right  ↔  Duty          (aanspraak – verplichting)
+#  Pair 2 — Power/Competence ↔ Liability  (bevoegdheid – gehoudenheid)
+#  Pair 3 — Immunity ↔ No-Power           (immuniteit – geen bevoegdheid)
+#  Pair 4 — Privilege/Liberty ↔ No-Right  (vrijheid – geen aanspraak)
+#
+#  Each pair is reified as a LegalRelator that mediates two LegalSubjects
+#  and generates two IntrinsicModes (one per party).
+###############################################################################
+
+
+###############################################################################
+# ── 1. LEGAL SUBJECT (Rechtssubject) ─────────────────────────────────────────
+###############################################################################
+
+ufol:LegalSubject
+    a owl:Class ;
+    gufo:ontoumlStereotype "role" ;
+    rdfs:subClassOf ufoc:Agent ;
+    rdfs:label "LegalSubject"@en , "Rechtssubject"@nl ;
+    rdfs:comment
+        "Een Agent in zijn hoedanigheid als drager van rechten en plichten.
+         Een rechtssubject speelt deze rol in de context van een
+         LegalRelator (rechtsbetrekking)."@nl .
+
+ufol:NaturalPersonSubject
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalSubject ;
+    rdfs:label "NaturalPersonSubject"@en , "Natuurlijk persoon"@nl ;
+    rdfs:comment
+        "Een rechtssubject dat een fysieke persoon is. Draagt rechten en
+         plichten vanwege zijn hoedanigheid als natuurlijk persoon in een
+         specifieke juridische relatie (bijv. belastingplichtige, burger,
+         werknemer)."@nl .
+
+ufol:LegalPersonSubject
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalSubject ;
+    rdfs:label "LegalPersonSubject"@en , "Rechtspersoon"@nl ;
+    rdfs:comment
+        "Een rechtssubject dat een institutionele agent is (gemeente,
+         bedrijf, bestuursorgaan). Bestaat door collectieve erkenning
+         en draagt rechten en plichten als rechtspersoon."@nl .
+
+
+###############################################################################
+# ── 2. LEGAL OBJECT (Rechtsobject) ───────────────────────────────────────────
+#
+#  Toevoeging op basis van Wetsanalyse element 2.
+#  Een rechtsobject is het voorwerp van een rechtsbetrekking:
+#  de zaak, dienst, handeling of het informatieobject waarop de
+#  rechtsbetrekking betrekking heeft.
+###############################################################################
+
+ufol:LegalObject
+    a owl:Class ;
+    gufo:ontoumlStereotype "kind" ;
+    rdfs:subClassOf gufo:FunctionalComplex ;
+    rdfs:label "LegalObject"@en , "Rechtsobject"@nl ;
+    rdfs:comment
+        "Het voorwerp van een rechtsbetrekking: een zaak, dienst,
+         handeling of informatieobject waarop een LegalRelator betrekking
+         heeft. Wetsanalyse: 'het voorwerp waarop een in de wetgeving
+         beschreven handeling of situatie betrekking heeft'."@nl .
+
+ufol:PhysicalLegalObject
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalObject ;
+    rdfs:label "PhysicalLegalObject"@en , "Fysiek rechtsobject"@nl ;
+    rdfs:comment "Een tastbare zaak als rechtsobject (woning, voertuig)."@nl .
+
+ufol:AbstractLegalObject
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalObject ;
+    rdfs:label "AbstractLegalObject"@en , "Abstract rechtsobject"@nl ;
+    rdfs:comment
+        "Een niet-fysiek rechtsobject: uitkering, bijdrage, vergunning,
+         recht op studiefinanciering."@nl .
+
+ufol:InformationLegalObject
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalObject ;
+    rdfs:label "InformationLegalObject"@en , "Informatierechtsobject"@nl ;
+    rdfs:comment
+        "Een informatie-object als rechtsobject: aangifte, bezwaarschrift,
+         beschikking, aanvraag."@nl .
+
+
+###############################################################################
+# ── 3. NORM ───────────────────────────────────────────────────────────────────
+#
+#  A Norm is a social object (UFO-C) that instates a NormativeSituation.
+#  The NormativeSituation constitutes the LegalRelator.
+#
+#  Norm types follow Wetsanalyse §4.2.2:
+#    - Conduct norm (gedragsregel): obliges, forbids, permits behaviour
+#    - Competence norm (bevoegdheidsregel): grants authority to act
+#    - Derivation norm (afleidingsregel): determines rights/duty content
+###############################################################################
+
+ufol:LegalNorm
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:Norm ;
+    rdfs:label "LegalNorm"@en , "Rechtsnorm"@nl ;
+    rdfs:comment
+        "Een sociaal object dat een juridisch geldige norm constitueert.
+         Rechtsnormen zijn in formele of gedelegeerde wetgeving verankerd
+         en worden door institutionele autoriteit gehandhaafd."@nl .
+
+ufol:ConductNorm
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalNorm ;
+    rdfs:label "ConductNorm"@en , "Gedragsregel"@nl ;
+    rdfs:comment
+        "Een rechtsnorm die gedrag of handelen gebiedt, verbiedt of
+         toestaat. Wetsanalyse: 'gedragsregels staan bepaalde gedragingen
+         of handelingen toe, verbieden of leggen ze op'."@nl .
+
+ufol:CompetenceNorm
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalNorm ;
+    rdfs:label "CompetenceNorm"@en , "Bevoegdheidsregel"@nl ;
+    rdfs:comment
+        "Een rechtsnorm die een bestuursorgaan of rechtssubject de
+         bevoegdheid verleent een bepaalde handeling te verrichten of
+         een bepaalde toestand tot stand te brengen."@nl .
+
+ufol:NormativeSituation
+    a owl:Class ;
+    gufo:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "NormativeSituation"@en , "Normatieve situatie"@nl ;
+    rdfs:comment
+        "Een situatie die bestaat doordat een LegalNorm van toepassing
+         is op een of meer LegalSubjects. De NormativeSituation
+         constitueert de LegalRelator (rechtsbetrekking)."@nl .
+
+ufol:instatesNormativeSituation
+    a owl:ObjectProperty ;
+    rdfs:label "instates normative situation"@en ;
+    rdfs:domain ufol:LegalNorm ;
+    rdfs:range  ufol:NormativeSituation ;
+    rdfs:comment
+        "Relateert een LegalNorm aan de NormativeSituation die zij in
+         het leven roept zodra zij van toepassing is."@nl .
+
+ufol:hasLegalBasis
+    a owl:ObjectProperty ;
+    rdfs:label "has legal basis"@en ;
+    rdfs:domain ufol:NormativeSituation ;
+    rdfs:range  ufol:LegalNorm ;
+    rdfs:comment
+        "Relateert een NormativeSituation (of LegalRelator) aan de
+         LegalNorm waarop zij is gebaseerd. Fundeert traceerbaarheid:
+         elke Tessera in Lexa heeft via dit pad een bronwetsartikel."@nl .
+
+
+###############################################################################
+# ── 4. LEGAL RELATION / RELATOR (Rechtsbetrekking) ───────────────────────────
+#
+#  A LegalRelator is a Relator (UFO) that mediates two LegalSubjects.
+#  Following Hohfeld, it generates an IntrinsicMode in each party:
+#    - the right-holder gets a RightMode
+#    - the duty-bearer gets a DutyMode
+#
+#  The LegalRelator has a LegalObject (what the relation is about) and
+#  a temporal scope (optionally bounded by TemporalConditions).
+###############################################################################
+
+ufol:LegalRelator
+    a owl:Class ;
+    gufo:ontoumlStereotype "relator" ;
+    rdfs:subClassOf gufo:Relator ;
+    rdfs:label "LegalRelator"@en , "Rechtsbetrekking"@nl ;
+    rdfs:comment
+        "Een Relator die een juridische verhouding uitdrukt tussen twee
+         LegalSubjects. Medieert een rechthebbende (right-holder) en een
+         plichthebbende (duty-bearer). Wetsanalyse: 'een juridische relatie
+         tussen twee rechtssubjecten en beschrijft een specifieke juridische
+         toestand'."@nl .
+
+ufol:hasRightHolder
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has right holder"@en , "heeft rechthebbende"@nl ;
+    rdfs:domain ufol:LegalRelator ;
+    rdfs:range  ufol:LegalSubject .
+
+ufol:hasDutyBearer
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has duty bearer"@en , "heeft plichthebbende"@nl ;
+    rdfs:domain ufol:LegalRelator ;
+    rdfs:range  ufol:LegalSubject .
+
+ufol:hasLegalObject
+    a owl:ObjectProperty ;
+    rdfs:label "has legal object"@en , "heeft rechtsobject"@nl ;
+    rdfs:domain ufol:LegalRelator ;
+    rdfs:range  ufol:LegalObject ;
+    rdfs:comment
+        "Relateert een rechtsbetrekking aan het rechtsobject: het voorwerp
+         waarop de rechtsbetrekking betrekking heeft."@nl .
+
+ufol:hasTemporalScope
+    a owl:ObjectProperty ;
+    rdfs:label "has temporal scope"@en ;
+    rdfs:domain ufol:LegalRelator ;
+    rdfs:range  ufol:TemporalCondition ;
+    rdfs:comment
+        "De temporele geldigheidsscope van de rechtsbetrekking: een
+         termijn, peildatum of periode waarbinnen zij geldt."@nl .
+
+# ── Right and Duty Modes ──────────────────────────────────────────────────────
+
+ufol:RightMode
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "RightMode"@en , "Recht (modus)"@nl ;
+    rdfs:comment
+        "De intrinsieke modus die de rechthebbende draagt als gevolg van
+         de LegalRelator: zijn recht op nakoming door de plichthebbende."@nl .
+
+ufol:DutyMode
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "DutyMode"@en , "Plicht (modus)"@nl ;
+    rdfs:comment
+        "De intrinsieke modus die de plichthebbende draagt als gevolg
+         van de LegalRelator: zijn juridische verplichting."@nl .
+
+ufol:hasRightMode
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:hasQuality ;
+    rdfs:label "has right mode"@en ;
+    rdfs:domain ufol:LegalRelator ;
+    rdfs:range  ufol:RightMode .
+
+ufol:hasDutyMode
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:hasQuality ;
+    rdfs:label "has duty mode"@en ;
+    rdfs:domain ufol:LegalRelator ;
+    rdfs:range  ufol:DutyMode .
+
+
+###############################################################################
+# ── 5. HOHFELD SUBCLASSES (Wetsanalyse §4.3.3) ───────────────────────────────
+###############################################################################
+
+# ── Pair 1: Claim-Right ↔ Duty (aanspraak – verplichting) ────────────────────
+
+ufol:ClaimRightRelator
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalRelator ;
+    rdfs:label "ClaimRightRelator"@en , "Aanspraak–verplichting"@nl ;
+    rdfs:comment
+        "Het meest voorkomende type rechtsbetrekking. De plichthebbende
+         heeft de verplichting een bepaalde handeling te verrichten of na
+         te laten; de rechthebbende heeft de aanspraak dat dit ook
+         daadwerkelijk gebeurt. Wetsanalyse onderscheidt drie varianten:
+         krachtige aanspraak, aanspraak na ingebrekestelling, zwakke
+         aanspraak."@nl .
+
+ufol:EnforceabilityLevel
+    a owl:Class ;
+    rdfs:subClassOf gufo:Quality ;
+    rdfs:label "EnforceabilityLevel"@en , "Afdwingbaarheidsniveau"@nl ;
+    rdfs:comment
+        "De mate waarin de aanspraak afdwingbaar is. Waarden:
+         StrongClaim (krachtige aanspraak — fatale verplichting),
+         ClaimAfterDefault (aanspraak na ingebrekestelling),
+         WeakClaim (zwakke aanspraak — zwakke verplichting)."@nl .
+
+ufol:StrongClaim
+    a ufol:EnforceabilityLevel ;
+    rdfs:label "StrongClaim"@en , "Krachtige aanspraak"@nl .
+
+ufol:ClaimAfterDefault
+    a ufol:EnforceabilityLevel ;
+    rdfs:label "ClaimAfterDefault"@en , "Aanspraak na ingebrekestelling"@nl .
+
+ufol:WeakClaim
+    a ufol:EnforceabilityLevel ;
+    rdfs:label "WeakClaim"@en , "Zwakke aanspraak"@nl .
+
+ufol:hasEnforceability
+    a owl:ObjectProperty ;
+    rdfs:label "has enforceability"@en ;
+    rdfs:domain ufol:ClaimRightRelator ;
+    rdfs:range  ufol:EnforceabilityLevel .
+
+# ── Pair 2: Power/Competence ↔ Liability (bevoegdheid – gehoudenheid) ─────────
+
+ufol:CompetenceRelator
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalRelator ;
+    rdfs:label "CompetenceRelator"@en , "Bevoegdheid–gehoudenheid"@nl ;
+    rdfs:comment
+        "Een rechtsbetrekking waarbij de rechthebbende (de bevoegde agent)
+         de bevoegdheid heeft een juridische toestand tot stand te brengen
+         die de plichthebbende (de gehoudene) raakt. Wetsanalyse:
+         gebonden bevoegdheid (indicatief presens) vs. discretionaire
+         bevoegdheid ('kan', 'naar zijn oordeel')."@nl .
+
+ufol:CompetenceType
+    a owl:Class ;
+    rdfs:subClassOf gufo:Quality ;
+    rdfs:label "CompetenceType"@en , "Bevoegdheidstype"@nl .
+
+ufol:BoundCompetence
+    a ufol:CompetenceType ;
+    rdfs:label "BoundCompetence"@en , "Gebonden bevoegdheid"@nl ;
+    rdfs:comment
+        "De bevoegde agent heeft geen vrijheid bij de uitoefening van
+         de bevoegdheid. Herkenbaar aan indicatief presens in de wet."@nl .
+
+ufol:DiscretionaryCompetence
+    a ufol:CompetenceType ;
+    rdfs:label "DiscretionaryCompetence"@en , "Discretionaire bevoegdheid"@nl ;
+    rdfs:comment
+        "De bevoegde agent heeft vrijheid om de bevoegdheid wel of niet
+         uit te oefenen. Herkenbaar aan 'kan', 'naar zijn oordeel'."@nl .
+
+ufol:hasCompetenceType
+    a owl:ObjectProperty ;
+    rdfs:label "has competence type"@en ;
+    rdfs:domain ufol:CompetenceRelator ;
+    rdfs:range  ufol:CompetenceType .
+
+# ── Pair 3: Immunity ↔ No-Power (immuniteit – geen bevoegdheid) ───────────────
+
+ufol:ImmunityRelator
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalRelator ;
+    rdfs:label "ImmunityRelator"@en , "Immuniteit–geen bevoegdheid"@nl ;
+    rdfs:comment
+        "Een rechtsbetrekking waarbij de rechthebbende een immuniteit
+         heeft die de bevoegdheid van de wederpartij als het ware
+         neutraliseert. Voorbeeld: diplomatieke immuniteit."@nl .
+
+# ── Pair 4: Privilege/Liberty ↔ No-Right (vrijheid – geen aanspraak) ──────────
+
+ufol:LibertyRelator
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalRelator ;
+    rdfs:label "LibertyRelator"@en , "Vrijheid–geen aanspraak"@nl ;
+    rdfs:comment
+        "Een rechtsbetrekking waarbij de rechthebbende een vrije keuze
+         heeft waarop de wederpartij geen aanspraak kan maken.
+         Wetsanalyse: 'voor de uitvoeringspraktijk minder relevant'
+         omdat er geen rechtsfeiten bij horen."@nl .
+
+
+###############################################################################
+# ── 6. LEGAL FACT (Rechtsfeit) ────────────────────────────────────────────────
+#
+#  A legal fact is an Event that creates, modifies or extinguishes a
+#  LegalRelator (rechtsbetrekking).
+#
+#  Wetsanalyse element 4, four subclasses:
+#    a. Rechtshandeling (intentional act aimed at legal effect)
+#    b. Feitelijke handeling met rechtsgevolg (act with unintended legal effect)
+#    c. Gebeurtenis met rechtsgevolg (event without acting subject)
+#    d. Tijdsverloop met rechtsgevolg (temporal trigger)
+###############################################################################
+
+ufol:LegalFact
+    a owl:Class ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:Event ;
+    rdfs:label "LegalFact"@en , "Rechtsfeit"@nl ;
+    rdfs:comment
+        "Een handeling of gebeurtenis, of tijdsverloop dat een wijziging
+         in de juridische toestand teweegbrengt. Wetsanalyse: 'rechtsfeiten
+         creëren, wijzigen of beëindigen rechten en plichten'."@nl .
+
+ufol:createsLegalRelation
+    a owl:ObjectProperty ;
+    rdfs:label "creates legal relation"@en ;
+    rdfs:domain ufol:LegalFact ;
+    rdfs:range  ufol:LegalRelator ;
+    rdfs:comment "Het rechtsfeit doet een nieuwe LegalRelator ontstaan."@nl .
+
+ufol:modifiesLegalRelation
+    a owl:ObjectProperty ;
+    rdfs:label "modifies legal relation"@en ;
+    rdfs:domain ufol:LegalFact ;
+    rdfs:range  ufol:LegalRelator .
+
+ufol:terminatesLegalRelation
+    a owl:ObjectProperty ;
+    rdfs:label "terminates legal relation"@en ;
+    rdfs:domain ufol:LegalFact ;
+    rdfs:range  ufol:LegalRelator .
+
+# ── 6a: Rechtshandeling ───────────────────────────────────────────────────────
+
+ufol:LegalAct
+    a owl:Class ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf ufol:LegalFact ;
+    rdfs:subClassOf gufo:Action ;
+    rdfs:label "LegalAct"@en , "Rechtshandeling"@nl ;
+    rdfs:comment
+        "Een handeling die iemand uitvoert met de bedoeling een bepaald
+         rechtsgevolg tot stand te brengen. Wetsanalyse: 'op rechtsgevolg
+         gerichte wil die zich door een verklaring heeft geopenbaard'."@nl .
+
+ufol:PublicLawAct
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalAct ;
+    rdfs:label "PublicLawAct"@en , "Publiekrechtelijke rechtshandeling"@nl ;
+    rdfs:comment
+        "Een rechtshandeling waarbij een bestuursorgaan zijn bevoegdheid
+         ontleent aan een wettelijk voorschrift en het handelen op
+         rechtsgevolgen is gericht (bijv. een besluit ex art. 1:3 Awb)."@nl .
+
+ufol:PrivateLawAct
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalAct ;
+    rdfs:label "PrivateLawAct"@en , "Privaatrechtelijke rechtshandeling"@nl ;
+    rdfs:comment
+        "Een rechtshandeling in de privaatrechtelijke sfeer (overeenkomst,
+         eenzijdige rechtshandeling ex art. 3:33 BW)."@nl .
+
+# ── 6b: Feitelijke handeling met rechtsgevolg ─────────────────────────────────
+
+ufol:FactualActWithLegalEffect
+    a owl:Class ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf ufol:LegalFact ;
+    rdfs:subClassOf gufo:Action ;
+    rdfs:label "FactualActWithLegalEffect"@en ,
+               "Feitelijke handeling met rechtsgevolg"@nl ;
+    rdfs:comment
+        "Een handeling met rechtsgevolg zonder dat de betrokkene dat
+         rechtsgevolg beoogde."@nl .
+
+# ── 6c: Gebeurtenis met rechtsgevolg ──────────────────────────────────────────
+
+ufol:EventWithLegalEffect
+    a owl:Class ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf ufol:LegalFact ;
+    rdfs:label "EventWithLegalEffect"@en , "Gebeurtenis met rechtsgevolg"@nl ;
+    rdfs:comment
+        "Een gebeurtenis die rechtsgevolgen heeft zonder dat daar een
+         handelend rechtssubject aan te pas komt (overlijden,
+         natuurramp)."@nl .
+
+# ── 6d: Tijdsverloop met rechtsgevolg ─────────────────────────────────────────
+
+ufol:TemporalTrigger
+    a owl:Class ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf ufol:LegalFact ;
+    rdfs:label "TemporalTrigger"@en , "Tijdsverloop met rechtsgevolg"@nl ;
+    rdfs:comment
+        "Een tijdsverloop waaraan de wet een rechtsgevolg verbindt:
+         het aflopen van een termijn brengt een wijziging in de juridische
+         toestand teweeg."@nl .
+
+ufol:triggerDuration
+    a owl:DatatypeProperty ;
+    rdfs:label "trigger duration"@en ;
+    rdfs:domain ufol:TemporalTrigger ;
+    rdfs:range  xsd:duration ;
+    rdfs:comment "De duur van de termijn die het rechtsgevolg triggert."@nl .
+
+
+###############################################################################
+# ── 7. TEMPORAL CONDITION (Tijdsaanduiding) ───────────────────────────────────
+#
+#  Wetsanalyse element 12: tijdsaanduidingen bepalen de geldigheidsscope
+#  van rechtsbetrekkingen of zijn parameters in afleidingsregels.
+#  Onderscheid: tijdsaanduiding-als-voorwaarde vs. peildatum-als-parameter.
+###############################################################################
+
+ufol:TemporalCondition
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "TemporalCondition"@en , "Tijdsaanduiding"@nl ;
+    rdfs:comment
+        "Een tijdsgebonden conditie die de geldigheid van een
+         rechtsbetrekking of de toepasselijkheid van een afleidingsregel
+         begrenst. Wetsanalyse element 12: tijdsaanduidingen kunnen een
+         verbijzondering zijn van een voorwaarde (termijn) of van een
+         parameter (peildatum)."@nl .
+
+ufol:DeadlineCondition
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:TemporalCondition ;
+    rdfs:label "DeadlineCondition"@en , "Termijn"@nl ;
+    rdfs:comment
+        "Een tijdsaanduiding die fungeert als voorwaarde: de handeling
+         moet binnen de gestelde termijn worden verricht om het
+         beoogde rechtsgevolg te hebben."@nl .
+
+ufol:ReferenceDate
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:TemporalCondition ;
+    rdfs:label "ReferenceDate"@en , "Peildatum / referentieperiode"@nl ;
+    rdfs:comment
+        "Een tijdsaanduiding die fungeert als parameter in een
+         afleidingsregel: een vaste datum of periode waarop de
+         toestand van het rechtssubject beoordeeld wordt
+         (bijv. 1 januari van het kalenderjaar)."@nl .
+
+ufol:hasStartDate
+    a owl:DatatypeProperty ;
+    rdfs:label "has start date"@en ;
+    rdfs:domain ufol:TemporalCondition ;
+    rdfs:range  xsd:date .
+
+ufol:hasEndDate
+    a owl:DatatypeProperty ;
+    rdfs:label "has end date"@en ;
+    rdfs:domain ufol:TemporalCondition ;
+    rdfs:range  xsd:date .
+
+
+###############################################################################
+# ── 8. DOMAIN VARIABLE (Variabele + Variabelewaarde) ─────────────────────────
+#
+#  Wetsanalyse elements 7+8: een variabele is een kenmerk van een
+#  rechtssubject, rechtsobject, rechtsbetrekking of rechtsfeit dat voor
+#  verschillende instanties een andere waarde kan hebben.
+#  In gUFO: een Quality-type dat inhereert aan een LegalSubject of LegalObject.
+###############################################################################
+
+ufol:DomainVariable
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:Quality ;
+    rdfs:label "DomainVariable"@en , "Variabele"@nl ;
+    rdfs:comment
+        "Een kenmerk van een rechtssubject, rechtsobject, rechtsbetrekking
+         of rechtsfeit dat per instantie een andere waarde kan hebben.
+         Wetsanalyse element 7: 'de waarde die een bepaalde variabele kan
+         hebben' is een DomainVariableValue."@nl .
+
+ufol:DomainVariableValue
+    a owl:Class ;
+    rdfs:subClassOf gufo:QualityValue ;
+    rdfs:label "DomainVariableValue"@en , "Variabelewaarde"@nl ;
+    rdfs:comment
+        "De concrete waarde van een DomainVariable voor een specifieke
+         instantie (bijv. inkomen = € 45.000, leeftijd = 67)."@nl .
+
+ufol:LegalParameter
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufol:DomainVariable ;
+    rdfs:label "LegalParameter"@en , "Parameter"@nl ;
+    rdfs:comment
+        "Een variabele die over een periode voor alle rechtssubjecten
+         en rechtsobjecten gelijke waarden heeft. Wetsanalyse element 9:
+         'vaste getallen of waarden in een afleidingsregel die over een
+         periode gelijk zijn voor alle rechtssubjecten en rechtsobjecten'
+         (bijv. premiepercentage, drempelbedrag)."@nl .
+
+ufol:LegalParameterValue
+    a owl:Class ;
+    rdfs:subClassOf ufol:DomainVariableValue ;
+    rdfs:label "LegalParameterValue"@en , "Parameterwaarde"@nl ;
+    rdfs:comment
+        "De concrete waarde van een LegalParameter in een gegeven periode
+         (bijv. maximumdagloon 2020 = € 57.232)."@nl .
+
+ufol:hasVariableValue
+    a owl:ObjectProperty ;
+    rdfs:label "has variable value"@en ;
+    rdfs:domain ufol:DomainVariable ;
+    rdfs:range  ufol:DomainVariableValue .
+
+
+###############################################################################
+# ── 9. DERIVATION RULE (Afleidingsregel) ─────────────────────────────────────
+#
+#  Wetsanalyse element 6: an afleidingsregel is a rule that derives new
+#  facts or values from existing ones. It determines whether a right exists
+#  (beslisregel) or its extent (rekenregel).
+#
+#  In UFO terms: a normative specification that links a set of
+#  DomainVariables (input) to a LegalRelator or DomainVariable (output)
+#  via a derivation logic. The rule is a SocialObject (UFO-C) — it is
+#  collectively accepted as binding.
+###############################################################################
+
+ufol:DerivationRule
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "DerivationRule"@en , "Afleidingsregel"@nl ;
+    rdfs:comment
+        "Een rechtsnorm die de inhoud of omvang van een rechtsbetrekking
+         bepaalt door nieuwe feiten of waarden af te leiden uit bestaande.
+         Wetsanalyse element 6: beslisregel (bepaalt of een recht bestaat)
+         of rekenregel (bepaalt de hoogte/duur van een recht)."@nl .
+
+ufol:DecisionRule
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:DerivationRule ;
+    rdfs:label "DecisionRule"@en , "Beslisregel"@nl ;
+    rdfs:comment
+        "Een afleidingsregel die bepaalt of een rechtssubject of
+         rechtsobject tot een bepaalde categorie behoort of recht heeft
+         op een bepaalde rechtsbetrekking (bijv. art. 17 WW:
+         recht op uitkering)."@nl .
+
+ufol:CalculationRule
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:DerivationRule ;
+    rdfs:label "CalculationRule"@en , "Rekenregel"@nl ;
+    rdfs:comment
+        "Een afleidingsregel die de hoogte of duur van een recht of plicht
+         bepaalt (bijv. art. 47 WW: hoogte uitkering = 0,75 × (...))."@nl .
+
+ufol:hasInputVariable
+    a owl:ObjectProperty ;
+    rdfs:label "has input variable"@en ;
+    rdfs:domain ufol:DerivationRule ;
+    rdfs:range  ufol:DomainVariable ;
+    rdfs:comment
+        "Een DomainVariable die als invoervariabele wordt gebruikt in de
+         afleidingsregel."@nl .
+
+ufol:hasOutputVariable
+    a owl:ObjectProperty ;
+    rdfs:label "has output variable"@en ;
+    rdfs:domain ufol:DerivationRule ;
+    rdfs:range  ufol:DomainVariable ;
+    rdfs:comment
+        "De DomainVariable (uitvoervariabele) die door de afleidingsregel
+         wordt bepaald."@nl .
+
+ufol:derivesRelator
+    a owl:ObjectProperty ;
+    rdfs:label "derives relator"@en ;
+    rdfs:domain ufol:DerivationRule ;
+    rdfs:range  ufol:LegalRelator ;
+    rdfs:comment
+        "De LegalRelator (rechtsbetrekking) waarvan het bestaan of de
+         omvang wordt afgeleid door deze DerivationRule."@nl .
+
+ufol:dependsOnRule
+    a owl:ObjectProperty ;
+    rdfs:label "depends on rule"@en ;
+    rdfs:domain ufol:DerivationRule ;
+    rdfs:range  ufol:DerivationRule ;
+    rdfs:comment
+        "Afleidingshiërarchie (Wetsanalyse): een afleidingsregel kan
+         afhankelijk zijn van de uitvoer van een andere afleidingsregel.
+         Transitief: modelleer geen cirkels."@nl .
+
+ufol:hasCondition
+    a owl:ObjectProperty ;
+    rdfs:label "has condition"@en ;
+    rdfs:domain ufol:DerivationRule ;
+    rdfs:range  ufol:LegalCondition ;
+    rdfs:comment
+        "De voorwaarde(n) waaronder de afleidingsregel van toepassing is
+         (Wetsanalyse element 5)."@nl .
+
+# ── Condition (Voorwaarde, Wetsanalyse element 5) ─────────────────────────────
+
+ufol:LegalCondition
+    a owl:Class ;
+    gufo:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "LegalCondition"@en , "Voorwaarde"@nl ;
+    rdfs:comment
+        "Een conditie die beschrijft aan welke omstandigheid voldaan moet
+         zijn voor het intreden van een rechtsgevolg. Wetsanalyse element
+         5: 'herkenbaar aan voegwoorden zoals indien, als, tenzij, mits'."@nl .
+
+ufol:CumulativeCondition
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalCondition ;
+    rdfs:label "CumulativeCondition"@en , "Cumulatieve voorwaarde"@nl ;
+    rdfs:comment "Alle deelcondities moeten gelden (AND)."@nl .
+
+ufol:AlternativeCondition
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalCondition ;
+    rdfs:label "AlternativeCondition"@en , "Alternatieve voorwaarde"@nl ;
+    rdfs:comment "Ten minste één deelconditie moet gelden (OR)."@nl .
+
+ufol:hasSubCondition
+    a owl:ObjectProperty ;
+    rdfs:label "has sub-condition"@en ;
+    rdfs:domain ufol:LegalCondition ;
+    rdfs:range  ufol:LegalCondition .
+
+
+###############################################################################
+# ── 10. DELEGATION AUTHORITY (Delegatiebevoegdheid) ──────────────────────────
+#
+#  Wetsanalyse elements 14+15 + Weigand (2024) policy-as-delegation.
+#
+#  A DelegationAuthority is a CompetenceRelator where:
+#    - the right-holder (delegating body) grants authority to make rules
+#    - the duty-bearer (delegatee) may or must exercise that authority
+#
+#  The resulting rules constitute a Policy (Weigand): a bundle of
+#  rights/duties inhering in an agent via this delegation chain.
+#  The PolicyDocument (beleidsregel, AMvB, ministeriële regeling) is
+#  an InformationLegalObject that describes (but is NOT identical to)
+#  the Policy.
+###############################################################################
+
+ufol:DelegationAuthority
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:CompetenceRelator ;
+    rdfs:label "DelegationAuthority"@en , "Delegatiebevoegdheid"@nl ;
+    rdfs:comment
+        "Een bevoegdheidsrechtsbetrekking waarbij de bevoegde agent
+         (delegating body) de bevoegdheid heeft — of de opdracht — om
+         nadere regels te stellen over een rechtsbetrekking, rechtsfeit
+         of afleidingsregel. Wetsanalyse element 14."@nl .
+
+ufol:DelegationMandatory
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:DelegationAuthority ;
+    rdfs:label "MandatoryDelegation"@en , "Verplichte delegatie"@nl ;
+    rdfs:comment
+        "Verplichte delegatie: de (nadere) regels moeten worden gesteld.
+         Herkenbaar aan: 'bij amvb worden regels gesteld'."@nl .
+
+ufol:DelegationFacultative
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:DelegationAuthority ;
+    rdfs:label "FacultativeDelegation"@en , "Facultatieve delegatie"@nl ;
+    rdfs:comment
+        "Facultatieve delegatie: er is een keuze om de wettelijke regels
+         al dan niet uit te werken. Herkenbaar aan: 'kunnen regels
+         worden gesteld'."@nl .
+
+ufol:allowsSubdelegation
+    a owl:DatatypeProperty ;
+    rdfs:label "allows subdelegation"@en ;
+    rdfs:domain ufol:DelegationAuthority ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        "Wetsanalyse: subdelegatie is mogelijk als 'bij of krachtens'
+         wordt gebruikt in de delegatiebevoegdheid."@nl .
+
+ufol:DelegationFulfillment
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:LegalNorm ;
+    rdfs:label "DelegationFulfillment"@en , "Delegatie-invulling"@nl ;
+    rdfs:comment
+        "De concrete regeling of het regelingsonderdeel waarin de
+         DelegationAuthority is ingevuld (bijv. een AMvB, ministeriële
+         regeling of beleidsregel). Wetsanalyse element 15."@nl .
+
+ufol:fulfillsDelegation
+    a owl:ObjectProperty ;
+    rdfs:label "fulfills delegation"@en ;
+    rdfs:domain ufol:DelegationFulfillment ;
+    rdfs:range  ufol:DelegationAuthority ;
+    rdfs:comment
+        "Expliciete terugverwijzing van de delegatie-invulling naar
+         de delegatiegrondslag in de bovenliggende wet. Wetsanalyse:
+         'het is praktisch als de wetgever in de delegatie-invulling
+         uitdrukkelijk verwijst naar de delegatiegrondslag'."@nl .
+
+
+###############################################################################
+# ── 11. POLICY (Weigand 2024) ─────────────────────────────────────────────────
+#
+#  A Policy is NOT a document or a description. It is a bundle of
+#  rights and duties (RightMode and DutyMode IntrinsicModes) that inheres
+#  in an InstitutionalAgent via a Delegatum (UFO-C delegation relator).
+#
+#  Weigand's key distinction:
+#    - Policy (ufol:Policy)       — the normative entity (what obliges)
+#    - PolicyDocument (ufol:PolicyDocument) — the artifact that describes it
+#
+#  This resolves the tension in VALOR-O between policy-as-obligation
+#  and policy-as-text.
+###############################################################################
+
+ufol:Policy
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "Policy"@en , "Beleid (normatief)"@nl ;
+    rdfs:comment
+        "Een bundel van rechten en plichten (RightMode en DutyMode
+         IntrinsicModes) die inhereert aan een institutionele agent via
+         een delegatieverhouding (Delegatum). Weigand (2024): 'a policy
+         is NOT a normative description but a bundle of rights and duties
+         inhering in an organizational agent'. Onderscheiden van het
+         beleidsdocument."@nl .
+
+ufol:PolicyDocument
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufol:InformationLegalObject ;
+    rdfs:label "PolicyDocument"@en , "Beleidsdocument"@nl ;
+    rdfs:comment
+        "Een informatieobject (artefact) dat een Policy beschrijft maar
+         er niet mee identiek is. Weigand (2024): het document draagt de
+         Policy, maar de Policy zelf is een normatieve entiteit die
+         inhereert aan de organisatie."@nl .
+
+ufol:describedByDocument
+    a owl:ObjectProperty ;
+    rdfs:label "described by document"@en ;
+    rdfs:domain ufol:Policy ;
+    rdfs:range  ufol:PolicyDocument ;
+    rdfs:comment
+        "Relateert een Policy aan het PolicyDocument dat haar beschrijft.
+         De relatie is niet-identiteit: wijziging van het document wijzigt
+         niet automatisch de Policy (die vereist een nieuwe Delegatum)."@nl .
+
+ufol:policyInheresIn
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:inheresIn ;
+    rdfs:label "policy inheres in"@en ;
+    rdfs:domain ufol:Policy ;
+    rdfs:range  ufoc:InstitutionalAgent ;
+    rdfs:comment
+        "De institutionele agent (organisatie) in wie de Policy inhereert
+         via de delegatieverhouding."@nl .
+
+ufol:policyGroundedIn
+    a owl:ObjectProperty ;
+    rdfs:label "policy grounded in"@en ;
+    rdfs:domain ufol:Policy ;
+    rdfs:range  ufol:DelegationAuthority ;
+    rdfs:comment
+        "De DelegationAuthority (delegatiebevoegdheid in de bovenliggende
+         wet) die de grondslag vormt voor deze Policy."@nl .
+
+ufol:policyContainsRight
+    a owl:ObjectProperty ;
+    rdfs:label "policy contains right"@en ;
+    rdfs:domain ufol:Policy ;
+    rdfs:range  ufol:RightMode .
+
+ufol:policyContainsDuty
+    a owl:ObjectProperty ;
+    rdfs:label "policy contains duty"@en ;
+    rdfs:domain ufol:Policy ;
+    rdfs:range  ufol:DutyMode .
+
+
+###############################################################################
+# ── 12. SOURCE DEFINITION (Brondefinitie, Wetsanalyse element 16) ─────────────
+###############################################################################
+
+ufol:SourceDefinition
+    a owl:Class ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "SourceDefinition"@en , "Brondefinitie"@nl ;
+    rdfs:comment
+        "Een begripsomschrijving die expliciet is opgenomen in wetgeving
+         en een eenduidige betekenis geeft aan een in de wetgeving
+         gebruikte term. Wetsanalyse element 16. Te onderscheiden van
+         analytische begrippen die bij Wetsanalyse worden gemaakt maar
+         geen directe wettelijke bron hebben."@nl .
+
+ufol:definedTerm
+    a owl:DatatypeProperty ;
+    rdfs:label "defined term"@en ;
+    rdfs:domain ufol:SourceDefinition ;
+    rdfs:range  xsd:string .
+
+ufol:definitionText
+    a owl:DatatypeProperty ;
+    rdfs:label "definition text"@en ;
+    rdfs:domain ufol:SourceDefinition ;
+    rdfs:range  xsd:string .
+
+ufol:sourceArticle
+    a owl:DatatypeProperty ;
+    rdfs:label "source article"@en ;
+    rdfs:domain ufol:SourceDefinition ;
+    rdfs:range  xsd:string ;
+    rdfs:comment
+        "Identificator van het wetsartikel waar de brondefinitie
+         staat (bijv. 'art. 1:1 Awb' of een JCIL URI)."@nl .
+
+
+###############################################################################
+# ── 13. LEXA SHORTCUT PROPERTIES ─────────────────────────────────────────────
+#
+#  Convenience properties for the Lexa perspective SPARQL queries.
+###############################################################################
+
+ufol:hasRight
+    a owl:ObjectProperty ;
+    rdfs:label "has right"@en ;
+    rdfs:domain ufol:LegalSubject ;
+    rdfs:range  ufol:RightMode ;
+    owl:propertyChainAxiom (
+        [ owl:inverseOf ufol:hasRightHolder ]
+        ufol:hasRightMode
+    ) ;
+    rdfs:comment
+        "Afgeleide eigenschap: een rechtssubject heeft een RightMode als
+         er een LegalRelator bestaat waarbij het de rechthebbende is."@nl .
+
+ufol:hasDuty
+    a owl:ObjectProperty ;
+    rdfs:label "has duty"@en ;
+    rdfs:domain ufol:LegalSubject ;
+    rdfs:range  ufol:DutyMode ;
+    owl:propertyChainAxiom (
+        [ owl:inverseOf ufol:hasDutyBearer ]
+        ufol:hasDutyMode
+    ) ;
+    rdfs:comment
+        "Afgeleide eigenschap: een rechtssubject heeft een DutyMode als
+         er een LegalRelator bestaat waarbij het de plichthebbende is."@nl .
+
+ufol:isSubjectOf
+    a owl:ObjectProperty ;
+    rdfs:label "is subject of"@en ;
+    rdfs:domain ufol:LegalSubject ;
+    rdfs:range  ufol:LegalRelator ;
+    rdfs:comment
+        "Relateert een rechtssubject aan alle LegalRelators waarbij het
+         betrokken is (als rechthebbende of plichthebbende)."@nl .
+
+
+###############################################################################
+# ── 14. SHACL CONSTRAINTS (inline documentation) ──────────────────────────────
+#
+#  Key constraints (see shacl/00c-ufo-l.shacl.ttl):
+#
+#  (L1) LegalRelator mediates exactly 2 distinct LegalSubjects (hasRightHolder
+#       and hasDutyBearer, owl:differentFrom)
+#  (L2) LegalRelator has exactly 1 hasLegalObject
+#  (L3) DerivationRule has at least 1 hasInputVariable and exactly 1
+#       hasOutputVariable or exactly 1 derivesRelator
+#  (L4) DelegationFulfillment must have fulfillsDelegation pointing to a
+#       DelegationAuthority
+#  (L5) Policy must have policyGroundedIn pointing to a DelegationAuthority
+#  (L6) PolicyDocument must have describedByDocument inverse of describedByDocument
+#  (L7) TemporalCondition hasStartDate ≤ hasEndDate if both present
+#  (L8) DomainVariable characterizes LegalSubject or LegalObject
+###############################################################################
+
+ufol:_shacl_constraints
+    rdfs:comment
+        """Constraints (see SHACL file):
+        L1: LegalRelator mediates exactly 2 distinct LegalSubjects.
+        L2: LegalRelator has exactly 1 LegalObject.
+        L3: DerivationRule has ≥1 input variable and exactly 1 output/relator.
+        L4: DelegationFulfillment.fulfillsDelegation → DelegationAuthority.
+        L5: Policy.policyGroundedIn → DelegationAuthority.
+        L6: PolicyDocument is describedByDocument target.
+        L7: TemporalCondition start ≤ end.
+        L8: DomainVariable inheres in LegalSubject or LegalObject.""" .
+
+
+###############################################################################
+# END OF MODULE 00c — UFO-L Legal Relations
+###############################################################################

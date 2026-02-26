@@ -1,0 +1,282 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+###############################################################################
+# VALOR-O — SHACL Shapes: UFO-C Social Entities (Module 00b)
+#
+# Constraints C1–C8 as documented in 00b-ufo-c.ttl.
+###############################################################################
+
+<https://valor-ecosystem.nl/shacl/ufo-c>
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — UFO-C Social Entities"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+# C1 — SocialCommitment mediates exactly 2 distinct Agents
+###############################################################################
+
+ufoc:SocialCommitmentShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:SocialCommitment ;
+    sh:name "SocialCommitmentShape" ;
+    sh:description
+        "C1: SocialCommitment vereist precies één hasCommittedAgent,
+         precies één hasClaimantAgent, precies één hasCommitmentContent,
+         en de twee agents moeten van elkaar verschillen." ;
+
+    sh:property [
+        sh:path ufoc:hasCommittedAgent ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "C1a: SocialCommitment vereist precies één hasCommittedAgent (ufoc:Agent)."
+    ] ;
+
+    sh:property [
+        sh:path ufoc:hasClaimantAgent ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "C1b: SocialCommitment vereist precies één hasClaimantAgent (ufoc:Agent)."
+    ] ;
+
+    sh:property [
+        sh:path ufoc:hasCommitmentContent ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class gufo:Situation ;
+        sh:message "C1c: SocialCommitment vereist precies één hasCommitmentContent (gufo:Situation)."
+    ] ;
+
+    sh:sparql [
+        sh:name    "C1d-agents-distinct" ;
+        sh:message "C1d: hasCommittedAgent en hasClaimantAgent mogen niet naar dezelfde agent verwijzen." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this ufoc:hasCommittedAgent ?a .
+                $this ufoc:hasClaimantAgent  ?b .
+                FILTER (?a = ?b)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# C2 — CommitmentMode inheres in the committed agent
+###############################################################################
+
+ufoc:CommitmentModeShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:CommitmentMode ;
+    sh:name "CommitmentModeShape" ;
+    sh:description
+        "C2: CommitmentMode moet inheren aan de hasCommittedAgent van
+         de bijbehorende SocialCommitment." ;
+
+    sh:property [
+        sh:path gufo:inheresIn ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "C2a: CommitmentMode.inheresIn vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:sparql [
+        sh:name    "C2b-inhere-committed" ;
+        sh:message "C2b: CommitmentMode moet inheren aan de hasCommittedAgent van zijn SocialCommitment." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:select  """
+            SELECT $this WHERE {
+                ?commitment ufoc:hasCommitmentMode $this ;
+                            ufoc:hasCommittedAgent ?committed .
+                $this gufo:inheresIn ?bearer .
+                FILTER (?bearer != ?committed)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# C3 — ClaimMode inheres in the claimant agent
+###############################################################################
+
+ufoc:ClaimModeShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:ClaimMode ;
+    sh:name "ClaimModeShape" ;
+    sh:description
+        "C3: ClaimMode moet inheren aan de hasClaimantAgent van de
+         bijbehorende SocialCommitment." ;
+
+    sh:property [
+        sh:path gufo:inheresIn ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "C3a: ClaimMode.inheresIn vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:sparql [
+        sh:name    "C3b-inhere-claimant" ;
+        sh:message "C3b: ClaimMode moet inheren aan de hasClaimantAgent van zijn SocialCommitment." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:select  """
+            SELECT $this WHERE {
+                ?commitment ufoc:hasClaimMode     $this ;
+                            ufoc:hasClaimantAgent ?claimant .
+                $this gufo:inheresIn ?bearer .
+                FILTER (?bearer != ?claimant)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# C4 — SocialRole participates in at least one SocialCommitment
+###############################################################################
+
+ufoc:SocialRoleShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:SocialRole ;
+    sh:name "SocialRoleShape" ;
+    sh:description
+        "C4: Een SocialRole moet betrokken zijn bij ten minste één
+         SocialCommitment als committed of claimant agent." ;
+
+    sh:sparql [
+        sh:name    "C4-role-in-commitment" ;
+        sh:message "C4: SocialRole heeft geen SocialCommitment als committed of claimant agent." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:select  """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS {
+                    { ?c ufoc:hasCommittedAgent $this }
+                    UNION
+                    { ?c ufoc:hasClaimantAgent  $this }
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# C5 — IntentionalMode has exactly one propositional content (Situation)
+###############################################################################
+
+ufoc:IntentionalModeShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:IntentionalMode ;
+    sh:name "IntentionalModeShape" ;
+    sh:description
+        "C5: Elke IntentionalMode vereist precies één
+         hasPropositionalContent van type gufo:Situation." ;
+
+    sh:property [
+        sh:path gufo:hasPropositionalContent ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class gufo:Situation ;
+        sh:message "C5: IntentionalMode.hasPropositionalContent vereist precies één gufo:Situation."
+    ] .
+
+
+###############################################################################
+# C6 — Agent partition: must be PhysicalAgent or InstitutionalAgent
+###############################################################################
+
+ufoc:AgentPartitionShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:Agent ;
+    sh:name "AgentPartitionShape" ;
+    sh:description
+        "C6: Elke Agent moet een PhysicalAgent of InstitutionalAgent zijn." ;
+
+    sh:or (
+        [ sh:class ufoc:PhysicalAgent      ]
+        [ sh:class ufoc:InstitutionalAgent ]
+    ) ;
+    sh:message "C6: Agent moet ufoc:PhysicalAgent of ufoc:InstitutionalAgent zijn." .
+
+
+###############################################################################
+# C7 — Delegatum: delegator ≠ delegatee, both required
+###############################################################################
+
+ufoc:DelegatumShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:Delegatum ;
+    sh:name "DelegatumShape" ;
+    sh:description
+        "C7: Delegatum vereist precies één hasDelegator en één
+         hasDelegatee, en ze moeten verschillen." ;
+
+    sh:property [
+        sh:path ufoc:hasDelegator ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Delegator ;
+        sh:message "C7a: Delegatum vereist precies één hasDelegator (ufoc:Delegator)."
+    ] ;
+
+    sh:property [
+        sh:path ufoc:hasDelegatee ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Delegatee ;
+        sh:message "C7b: Delegatum vereist precies één hasDelegatee (ufoc:Delegatee)."
+    ] ;
+
+    sh:sparql [
+        sh:name    "C7c-delegator-ne-delegatee" ;
+        sh:message "C7c: Delegator en Delegatee moeten van elkaar verschillen." ;
+        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this ufoc:hasDelegator ?d1 ;
+                      ufoc:hasDelegatee ?d2 .
+                FILTER (?d1 = ?d2)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# C8 — Norm is a SocialObject: must inhere in a collective Agent
+###############################################################################
+
+ufoc:NormShape
+    a sh:NodeShape ;
+    sh:targetClass ufoc:Norm ;
+    sh:name "NormShape" ;
+    sh:description
+        "C8: Een Norm is een SocialObject en moet inheren aan een
+         institutionele of collectieve Agent (normen bestaan door
+         collectieve erkenning)." ;
+
+    sh:property [
+        sh:path gufo:inheresIn ;
+        sh:minCount 1 ;
+        sh:class ufoc:InstitutionalAgent ;
+        sh:message "C8: Norm.inheresIn vereist ten minste één ufoc:InstitutionalAgent."
+    ] .
+
+
+###############################################################################
+# Prefix declarations for SPARQL constraints
+###############################################################################
+
+<https://valor-ecosystem.nl/shacl/ufo-c>
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "https://nemo-ufes.github.io/gufo/"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufoc" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+# END OF SHACL — UFO-C
+###############################################################################
