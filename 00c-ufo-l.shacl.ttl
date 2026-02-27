@@ -7,6 +7,8 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shl:  <https://valor-ecosystem.nl/shacl/ufo-l> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — SHACL Shapes: UFO-L Legal Relations (Module 00c)
@@ -17,7 +19,7 @@
 #   DomainVariable, SourceDefinition.
 ###############################################################################
 
-<https://valor-ecosystem.nl/shacl/ufo-l>
+shl
     a owl:Ontology ;
     dcterms:title "VALOR-O SHACL — UFO-L Legal Relations"@nl ;
     owl:versionInfo "0.1" .
@@ -52,7 +54,7 @@ ufol:LegalRelatorShape
     sh:sparql [
         sh:name    "L1c-subjects-distinct" ;
         sh:message "L1c: hasRightHolder en hasDutyBearer mogen niet naar hetzelfde LegalSubject verwijzen." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:prefixes shl ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufol:hasRightHolder ?r .
@@ -127,7 +129,7 @@ ufol:DerivationRuleShape
     sh:sparql [
         sh:name    "L4b-output-xor-relator" ;
         sh:message "L4b: DerivationRule vereist ofwel hasOutputVariable ofwel derivesRelator (niet beide, niet geen van beide)." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:prefixes shl ;
         sh:select  """
             SELECT $this WHERE {
                 BIND(
@@ -207,7 +209,7 @@ ufol:PolicyDocumentShape
     sh:sparql [
         sh:name    "L7-document-has-policy" ;
         sh:message "L7: PolicyDocument is niet gekoppeld aan een Policy via describedByDocument." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:prefixes shl ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
@@ -233,7 +235,7 @@ ufol:TemporalConditionShape
     sh:sparql [
         sh:name    "L8-start-before-end" ;
         sh:message "L8: TemporalCondition.hasStartDate moet ≤ hasEndDate zijn." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:prefixes shl ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufol:hasStartDate ?s .
@@ -265,7 +267,7 @@ ufol:DomainVariableShape
     sh:sparql [
         sh:name    "L9b-inhere-in-legal-entity" ;
         sh:message "L9b: DomainVariable moet inheren aan een ufol:LegalSubject of ufol:LegalObject." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:prefixes shl ;
         sh:select  """
             SELECT $this WHERE {
                 $this gufo:inheresIn ?bearer .
@@ -295,7 +297,7 @@ ufol:LegalFactShape
     sh:sparql [
         sh:name    "L10-fact-relates-relator" ;
         sh:message "L10: LegalFact heeft geen relatie met een LegalRelator via creates/modifies/terminatesLegalRelation." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-l> ;
+        sh:prefixes shl ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
@@ -355,7 +357,7 @@ ufol:ClaimRightRelatorShape
 # Prefix declarations for SPARQL constraints
 ###############################################################################
 
-<https://valor-ecosystem.nl/shacl/ufo-l>
+shl
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;

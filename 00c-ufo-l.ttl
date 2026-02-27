@@ -6,6 +6,7 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — Module 00c: UFO-L  (Legal Relations)
@@ -35,10 +36,10 @@
 # Imports : 00a-gufo-core.ttl, 00b-ufo-c.ttl
 ###############################################################################
 
-<https://valor-ecosystem.nl/ontology/ufo-l>
+vo:ufo-l
     a owl:Ontology ;
-    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
-    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports vo:gufo-core ;
+    owl:imports vo:ufo-c ;
     dcterms:title "VALOR-O — UFO-L Legal Relations"@nl ;
     dcterms:description
         "Ontologie van rechtsbetrekkingen, normen, rechtsfeiten en
@@ -68,6 +69,7 @@
 
 ufol:LegalSubject
     a owl:Class ;
+    rdf:type gufo:Role ;
     gufo:ontoumlStereotype "role" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "LegalSubject"@en , "Rechtssubject"@nl ;
@@ -78,6 +80,7 @@ ufol:LegalSubject
 
 ufol:NaturalPersonSubject
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalSubject ;
     rdfs:label "NaturalPersonSubject"@en , "Natuurlijk persoon"@nl ;
@@ -89,6 +92,7 @@ ufol:NaturalPersonSubject
 
 ufol:LegalPersonSubject
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalSubject ;
     rdfs:label "LegalPersonSubject"@en , "Rechtspersoon"@nl ;
@@ -109,6 +113,7 @@ ufol:LegalPersonSubject
 
 ufol:LegalObject
     a owl:Class ;
+    rdf:type gufo:Kind ;
     gufo:ontoumlStereotype "kind" ;
     rdfs:subClassOf gufo:FunctionalComplex ;
     rdfs:label "LegalObject"@en , "Rechtsobject"@nl ;
@@ -120,6 +125,7 @@ ufol:LegalObject
 
 ufol:PhysicalLegalObject
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalObject ;
     rdfs:label "PhysicalLegalObject"@en , "Fysiek rechtsobject"@nl ;
@@ -127,6 +133,7 @@ ufol:PhysicalLegalObject
 
 ufol:AbstractLegalObject
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalObject ;
     rdfs:label "AbstractLegalObject"@en , "Abstract rechtsobject"@nl ;
@@ -136,6 +143,7 @@ ufol:AbstractLegalObject
 
 ufol:InformationLegalObject
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalObject ;
     rdfs:label "InformationLegalObject"@en , "Informatierechtsobject"@nl ;
@@ -158,6 +166,7 @@ ufol:InformationLegalObject
 
 ufol:LegalNorm
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufoc:Norm ;
     rdfs:label "LegalNorm"@en , "Rechtsnorm"@nl ;
@@ -168,6 +177,7 @@ ufol:LegalNorm
 
 ufol:ConductNorm
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalNorm ;
     rdfs:label "ConductNorm"@en , "Gedragsregel"@nl ;
@@ -178,6 +188,7 @@ ufol:ConductNorm
 
 ufol:CompetenceNorm
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalNorm ;
     rdfs:label "CompetenceNorm"@en , "Bevoegdheidsregel"@nl ;
@@ -188,6 +199,7 @@ ufol:CompetenceNorm
 
 ufol:NormativeSituation
     a owl:Class ;
+    rdf:type gufo:SituationType ;
     gufo:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "NormativeSituation"@en , "Normatieve situatie"@nl ;
@@ -230,6 +242,7 @@ ufol:hasLegalBasis
 
 ufol:LegalRelator
     a owl:Class ;
+    rdf:type gufo:Relator ;
     gufo:ontoumlStereotype "relator" ;
     rdfs:subClassOf gufo:Relator ;
     rdfs:label "LegalRelator"@en , "Rechtsbetrekking"@nl ;
@@ -276,6 +289,7 @@ ufol:hasTemporalScope
 
 ufol:RightMode
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "RightMode"@en , "Recht (modus)"@nl ;
@@ -285,6 +299,7 @@ ufol:RightMode
 
 ufol:DutyMode
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "DutyMode"@en , "Plicht (modus)"@nl ;
@@ -315,6 +330,7 @@ ufol:hasDutyMode
 
 ufol:ClaimRightRelator
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalRelator ;
     rdfs:label "ClaimRightRelator"@en , "Aanspraak–verplichting"@nl ;
@@ -358,6 +374,7 @@ ufol:hasEnforceability
 
 ufol:CompetenceRelator
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalRelator ;
     rdfs:label "CompetenceRelator"@en , "Bevoegdheid–gehoudenheid"@nl ;
@@ -397,6 +414,7 @@ ufol:hasCompetenceType
 
 ufol:ImmunityRelator
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalRelator ;
     rdfs:label "ImmunityRelator"@en , "Immuniteit–geen bevoegdheid"@nl ;
@@ -409,6 +427,7 @@ ufol:ImmunityRelator
 
 ufol:LibertyRelator
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalRelator ;
     rdfs:label "LibertyRelator"@en , "Vrijheid–geen aanspraak"@nl ;
@@ -434,6 +453,7 @@ ufol:LibertyRelator
 
 ufol:LegalFact
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf gufo:Event ;
     rdfs:label "LegalFact"@en , "Rechtsfeit"@nl ;
@@ -465,6 +485,7 @@ ufol:terminatesLegalRelation
 
 ufol:LegalAct
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufol:LegalFact ;
     rdfs:subClassOf gufo:Action ;
@@ -476,6 +497,7 @@ ufol:LegalAct
 
 ufol:PublicLawAct
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalAct ;
     rdfs:label "PublicLawAct"@en , "Publiekrechtelijke rechtshandeling"@nl ;
@@ -486,6 +508,7 @@ ufol:PublicLawAct
 
 ufol:PrivateLawAct
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalAct ;
     rdfs:label "PrivateLawAct"@en , "Privaatrechtelijke rechtshandeling"@nl ;
@@ -497,6 +520,7 @@ ufol:PrivateLawAct
 
 ufol:FactualActWithLegalEffect
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufol:LegalFact ;
     rdfs:subClassOf gufo:Action ;
@@ -510,6 +534,7 @@ ufol:FactualActWithLegalEffect
 
 ufol:EventWithLegalEffect
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufol:LegalFact ;
     rdfs:label "EventWithLegalEffect"@en , "Gebeurtenis met rechtsgevolg"@nl ;
@@ -522,6 +547,7 @@ ufol:EventWithLegalEffect
 
 ufol:TemporalTrigger
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufol:LegalFact ;
     rdfs:label "TemporalTrigger"@en , "Tijdsverloop met rechtsgevolg"@nl ;
@@ -548,6 +574,7 @@ ufol:triggerDuration
 
 ufol:TemporalCondition
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "TemporalCondition"@en , "Tijdsaanduiding"@nl ;
@@ -560,6 +587,7 @@ ufol:TemporalCondition
 
 ufol:DeadlineCondition
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:TemporalCondition ;
     rdfs:label "DeadlineCondition"@en , "Termijn"@nl ;
@@ -570,6 +598,7 @@ ufol:DeadlineCondition
 
 ufol:ReferenceDate
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:TemporalCondition ;
     rdfs:label "ReferenceDate"@en , "Peildatum / referentieperiode"@nl ;
@@ -603,6 +632,7 @@ ufol:hasEndDate
 
 ufol:DomainVariable
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "DomainVariable"@en , "Variabele"@nl ;
@@ -622,6 +652,7 @@ ufol:DomainVariableValue
 
 ufol:LegalParameter
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufol:DomainVariable ;
     rdfs:label "LegalParameter"@en , "Parameter"@nl ;
@@ -662,6 +693,7 @@ ufol:hasVariableValue
 
 ufol:DerivationRule
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufoc:SocialObject ;
     rdfs:label "DerivationRule"@en , "Afleidingsregel"@nl ;
@@ -673,6 +705,7 @@ ufol:DerivationRule
 
 ufol:DecisionRule
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:DerivationRule ;
     rdfs:label "DecisionRule"@en , "Beslisregel"@nl ;
@@ -684,6 +717,7 @@ ufol:DecisionRule
 
 ufol:CalculationRule
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:DerivationRule ;
     rdfs:label "CalculationRule"@en , "Rekenregel"@nl ;
@@ -741,6 +775,7 @@ ufol:hasCondition
 
 ufol:LegalCondition
     a owl:Class ;
+    rdf:type gufo:SituationType ;
     gufo:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "LegalCondition"@en , "Voorwaarde"@nl ;
@@ -751,6 +786,7 @@ ufol:LegalCondition
 
 ufol:CumulativeCondition
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalCondition ;
     rdfs:label "CumulativeCondition"@en , "Cumulatieve voorwaarde"@nl ;
@@ -758,6 +794,7 @@ ufol:CumulativeCondition
 
 ufol:AlternativeCondition
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalCondition ;
     rdfs:label "AlternativeCondition"@en , "Alternatieve voorwaarde"@nl ;
@@ -788,6 +825,7 @@ ufol:hasSubCondition
 
 ufol:DelegationAuthority
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:CompetenceRelator ;
     rdfs:label "DelegationAuthority"@en , "Delegatiebevoegdheid"@nl ;
@@ -799,6 +837,7 @@ ufol:DelegationAuthority
 
 ufol:DelegationMandatory
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:DelegationAuthority ;
     rdfs:label "MandatoryDelegation"@en , "Verplichte delegatie"@nl ;
@@ -808,6 +847,7 @@ ufol:DelegationMandatory
 
 ufol:DelegationFacultative
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:DelegationAuthority ;
     rdfs:label "FacultativeDelegation"@en , "Facultatieve delegatie"@nl ;
@@ -827,6 +867,7 @@ ufol:allowsSubdelegation
 
 ufol:DelegationFulfillment
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:LegalNorm ;
     rdfs:label "DelegationFulfillment"@en , "Delegatie-invulling"@nl ;
@@ -864,6 +905,7 @@ ufol:fulfillsDelegation
 
 ufol:Policy
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "Policy"@en , "Beleid (normatief)"@nl ;
@@ -877,6 +919,7 @@ ufol:Policy
 
 ufol:PolicyDocument
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufol:InformationLegalObject ;
     rdfs:label "PolicyDocument"@en , "Beleidsdocument"@nl ;
@@ -934,6 +977,7 @@ ufol:policyContainsDuty
 
 ufol:SourceDefinition
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufoc:SocialObject ;
     rdfs:label "SourceDefinition"@en , "Brondefinitie"@nl ;

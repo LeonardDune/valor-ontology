@@ -5,6 +5,8 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shg:  <https://valor-ecosystem.nl/shacl/gufo-core> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — SHACL Shapes: gUFO Core (Module 00a)
@@ -14,7 +16,7 @@
 # domain classes may extend it.
 ###############################################################################
 
-<https://valor-ecosystem.nl/shacl/gufo-core>
+shg
     a owl:Ontology ;
     dcterms:title "VALOR-O SHACL — gUFO Core"@nl ;
     owl:versionInfo "0.1" .
@@ -67,7 +69,7 @@ gufo:RelatorShape
     sh:sparql [
         sh:name    "G2b-distinct-mediated" ;
         sh:message "G2b: Een Relator mag niet tweemaal dezelfde Endurant mediëren." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/gufo-core> ;
+        sh:prefixes shg ;
         sh:select  """
             SELECT $this
             WHERE {
@@ -118,7 +120,7 @@ gufo:EventTemporalShape
     sh:sparql [
         sh:name    "G4-begin-before-end" ;
         sh:message "G4: gufo:hasBeginPoint moet ≤ gufo:hasEndPoint zijn." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/gufo-core> ;
+        sh:prefixes shg ;
         sh:select  """
             SELECT $this
             WHERE {
@@ -191,13 +193,15 @@ gufo:KindPunningShape
 
     sh:sparql [
         sh:name    "G7-kind-punning" ;
-        sh:message "G7: Resource met ontoumlStereotype 'kind' mist rdf:type gufo:Kind." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/gufo-core> ;
+        sh:message "G7: Domeinontologie-klasse met ontoumlStereotype 'kind' mist rdf:type gufo:Kind. (gUFO-primitieven zelf zijn uitgesloten.)" ;
+        sh:prefixes shg ;
         sh:select  """
             SELECT $this
             WHERE {
                 $this gufo:ontoumlStereotype "kind" .
                 FILTER NOT EXISTS { $this rdf:type gufo:Kind }
+                # Exclude gUFO primitives: they ARE the type hierarchy, not instances of it
+                FILTER (!STRSTARTS(STR($this), "https://nemo-ufes.github.io/gufo/"))
             }
         """
     ] .
@@ -207,7 +211,7 @@ gufo:KindPunningShape
 # Prefix declarations for SPARQL constraints
 ###############################################################################
 
-<https://valor-ecosystem.nl/shacl/gufo-core>
+shg
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;

@@ -6,6 +6,8 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shc:  <https://valor-ecosystem.nl/shacl/ufo-c> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — SHACL Shapes: UFO-C Social Entities (Module 00b)
@@ -13,7 +15,7 @@
 # Constraints C1–C8 as documented in 00b-ufo-c.ttl.
 ###############################################################################
 
-<https://valor-ecosystem.nl/shacl/ufo-c>
+shc
     a owl:Ontology ;
     dcterms:title "VALOR-O SHACL — UFO-C Social Entities"@nl ;
     owl:versionInfo "0.1" .
@@ -56,7 +58,7 @@ ufoc:SocialCommitmentShape
     sh:sparql [
         sh:name    "C1d-agents-distinct" ;
         sh:message "C1d: hasCommittedAgent en hasClaimantAgent mogen niet naar dezelfde agent verwijzen." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufoc:hasCommittedAgent ?a .
@@ -89,7 +91,7 @@ ufoc:CommitmentModeShape
     sh:sparql [
         sh:name    "C2b-inhere-committed" ;
         sh:message "C2b: CommitmentMode moet inheren aan de hasCommittedAgent van zijn SocialCommitment." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
                 ?commitment ufoc:hasCommitmentMode $this ;
@@ -123,7 +125,7 @@ ufoc:ClaimModeShape
     sh:sparql [
         sh:name    "C3b-inhere-claimant" ;
         sh:message "C3b: ClaimMode moet inheren aan de hasClaimantAgent van zijn SocialCommitment." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
                 ?commitment ufoc:hasClaimMode     $this ;
@@ -150,7 +152,7 @@ ufoc:SocialRoleShape
     sh:sparql [
         sh:name    "C4-role-in-commitment" ;
         sh:message "C4: SocialRole heeft geen SocialCommitment als committed of claimant agent." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
@@ -230,7 +232,7 @@ ufoc:DelegatumShape
     sh:sparql [
         sh:name    "C7c-delegator-ne-delegatee" ;
         sh:message "C7c: Delegator en Delegatee moeten van elkaar verschillen." ;
-        sh:prefixes <https://valor-ecosystem.nl/shacl/ufo-c> ;
+        sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufoc:hasDelegator ?d1 ;
@@ -266,7 +268,7 @@ ufoc:NormShape
 # Prefix declarations for SPARQL constraints
 ###############################################################################
 
-<https://valor-ecosystem.nl/shacl/ufo-c>
+shc
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;

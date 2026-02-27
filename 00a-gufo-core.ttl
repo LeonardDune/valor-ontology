@@ -1,9 +1,10 @@
-@prefix gufo: <https://nemo-ufes.github.io/gufo/> .
-@prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — Module 00a: gUFO Core
@@ -21,7 +22,7 @@
 # and remove the local declarations.
 ###############################################################################
 
-<https://valor-ecosystem.nl/ontology/gufo-core>
+vo:gufo-core
     a owl:Ontology ;
     dcterms:title "VALOR-O — gUFO Core subset"@nl ;
     dcterms:description

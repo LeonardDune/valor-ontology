@@ -6,6 +6,7 @@
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — Module 00b: UFO-C  (Social Entities)
@@ -22,9 +23,9 @@
 # Imports : 00a-gufo-core.ttl
 ###############################################################################
 
-<https://valor-ecosystem.nl/ontology/ufo-c>
+vo:ufo-c
     a owl:Ontology ;
-    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports vo:gufo-core ;
     dcterms:title "VALOR-O — UFO-C Social Entities"@nl ;
     dcterms:description
         "Ontologie van sociale entiteiten: agents, intentionele toestanden,
@@ -42,6 +43,7 @@
 
 ufoc:Agent
     a owl:Class ;
+    rdf:type gufo:Kind ;
     gufo:ontoumlStereotype "kind" ;
     rdfs:subClassOf gufo:FunctionalComplex ;
     rdfs:label "Agent"@en , "Agent"@nl ;
@@ -52,6 +54,7 @@ ufoc:Agent
 
 ufoc:PhysicalAgent
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "PhysicalAgent"@en , "Fysieke agent"@nl ;
@@ -59,6 +62,7 @@ ufoc:PhysicalAgent
 
 ufoc:InstitutionalAgent
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "InstitutionalAgent"@en , "Institutionele agent"@nl ;
@@ -88,6 +92,7 @@ ufoc:InstitutionalAgent
 
 ufoc:IntentionalMode
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntentionalMode ;
     rdfs:label "IntentionalMode"@en , "Intentionele toestand"@nl ;
@@ -99,6 +104,7 @@ ufoc:IntentionalMode
 
 ufoc:Belief
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:IntentionalMode ;
     rdfs:label "Belief"@en , "Overtuiging"@nl ;
@@ -110,6 +116,7 @@ ufoc:Belief
 
 ufoc:Desire
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:IntentionalMode ;
     rdfs:label "Desire"@en , "Wens"@nl ;
@@ -119,6 +126,7 @@ ufoc:Desire
 
 ufoc:Goal
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Desire ;
     rdfs:label "Goal"@en , "Doel"@nl ;
@@ -128,6 +136,7 @@ ufoc:Goal
 
 ufoc:SoftGoal
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Desire ;
     rdfs:label "SoftGoal"@en , "Preferentiedoel"@nl ;
@@ -140,6 +149,7 @@ ufoc:SoftGoal
 
 ufoc:Intention
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Goal ;
     rdfs:label "Intention"@en , "Intentie"@nl ;
@@ -151,6 +161,7 @@ ufoc:Intention
 
 ufoc:Interest
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Desire ;
     rdfs:label "Interest"@en , "Belang"@nl ;
@@ -163,6 +174,7 @@ ufoc:Interest
 
 ufoc:Concern
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:IntentionalMode ;
     rdfs:label "Concern"@en , "Zorg / betrokkenheid"@nl ;
@@ -190,6 +202,7 @@ ufoc:Concern
 
 ufoc:SocialCommitment
     a owl:Class ;
+    rdf:type gufo:Relator ;
     gufo:ontoumlStereotype "relator" ;
     rdfs:subClassOf gufo:Relator ;
     rdfs:label "SocialCommitment"@en , "Sociale toezegging (relator)"@nl ;
@@ -202,6 +215,7 @@ ufoc:SocialCommitment
 
 ufoc:CommitmentMode
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "CommitmentMode"@en , "Toezeggingsmodus"@nl ;
@@ -212,6 +226,7 @@ ufoc:CommitmentMode
 
 ufoc:ClaimMode
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "ClaimMode"@en , "Aanspraakmodus"@nl ;
@@ -276,6 +291,7 @@ ufoc:hasClaimMode
 
 ufoc:SocialObject
     a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "SocialObject"@en , "Sociaal object"@nl ;
@@ -286,24 +302,26 @@ ufoc:SocialObject
 
 ufoc:Norm
     a owl:Class ;
+    rdf:type gufo:SubKind ;
     gufo:ontoumlStereotype "subkind" ;
     rdfs:subClassOf ufoc:SocialObject ;
     rdfs:label "Norm"@en , "Norm"@nl ;
     rdfs:comment
-        "Een sociaal object dat voorschrijft of verbiedt dat agents
+        "Een sociaal object dat schrijft voor of verbiedt dat agents
          bepaalde handelingen verrichten of bepaalde toestanden
          bewerkstelligen. Normen kunnen juridisch (UFO-L), organisatorisch
          of moreel zijn."@nl .
 
 ufoc:NormativeSituation
     a owl:Class ;
+    rdf:type gufo:SituationType ;
     gufo:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "NormativeSituation"@en , "Normatieve situatie"@nl ;
     rdfs:comment
         "Een situatie die ontstaat doordat een Norm van toepassing is op
-         een bepaalde agent of toestand. De Norm stelt de normatieve
-         situatie in; de normatieve situatie constitueert rechten en plichten."@nl .
+         een bepaalde agent of toestand. De Norm instelt de normatieve
+         situatie; de normatieve situatie constitueert rechten en plichten."@nl .
 
 ufoc:instates
     a owl:ObjectProperty ;
@@ -325,6 +343,7 @@ ufoc:instates
 
 ufoc:SocialRole
     a owl:Class ;
+    rdf:type gufo:Role ;
     gufo:ontoumlStereotype "role" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "SocialRole"@en , "Sociale rol"@nl ;
@@ -350,6 +369,7 @@ ufoc:SocialRole
 
 ufoc:Delegatum
     a owl:Class ;
+    rdf:type gufo:Relator ;
     gufo:ontoumlStereotype "relator" ;
     rdfs:subClassOf ufoc:SocialCommitment ;
     rdfs:label "Delegatum"@en , "Delegatieverhouding"@nl ;
@@ -360,6 +380,7 @@ ufoc:Delegatum
 
 ufoc:Delegator
     a owl:Class ;
+    rdf:type gufo:Role ;
     gufo:ontoumlStereotype "role" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "Delegator"@en , "Opdrachtgever"@nl ;
@@ -367,6 +388,7 @@ ufoc:Delegator
 
 ufoc:Delegatee
     a owl:Class ;
+    rdf:type gufo:Role ;
     gufo:ontoumlStereotype "role" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "Delegatee"@en , "Uitvoerend agent"@nl ;
@@ -408,6 +430,7 @@ ufoc:hasDelegatedGoal
 
 ufoc:SocialAction
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf gufo:Action ;
     rdfs:label "SocialAction"@en , "Sociale handeling"@nl ;
@@ -417,6 +440,7 @@ ufoc:SocialAction
 
 ufoc:CommitmentCreationAction
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufoc:SocialAction ;
     rdfs:label "CommitmentCreationAction"@en , "Toezeggingshandeling"@nl ;
@@ -426,6 +450,7 @@ ufoc:CommitmentCreationAction
 
 ufoc:CommitmentFulfillmentAction
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufoc:SocialAction ;
     rdfs:label "CommitmentFulfillmentAction"@en , "Nakomingshandeling"@nl ;
@@ -435,6 +460,7 @@ ufoc:CommitmentFulfillmentAction
 
 ufoc:CommitmentRevocationAction
     a owl:Class ;
+    rdf:type gufo:EventType ;
     gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufoc:SocialAction ;
     rdfs:label "CommitmentRevocationAction"@en , "Herroepingshandeling"@nl ;
