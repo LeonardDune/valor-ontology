@@ -1,0 +1,196 @@
+###############################################################################
+#  VALOR-O — Module 00e SHACL: COoDM Decision Ontology + COVER Value Ascription
+#
+#  Constraints:
+#    §A  COoDM
+#      E1  Deliberation.triggeredBy      — vereist DecisionSituation
+#      E2  Deliberation.considers        — vereist ≥1 DecisionAlternative
+#      E3  Deliberation.resultedIn       — vereist precies 1 Decision
+#      E4  Decision.decisionGoal         — vereist precies 1 DecisionGoal
+#    §B  COVER
+#      E5  ValueExperience.hasBeneficiary    — vereist ≥1 Agent (participatie)
+#      E6  ValueExperience.ofType           — vereist precies 1 ValueType
+#      E7  ValueExperience.hasValence       — vereist precies 1 ValueScale
+#      E8  ValueTension.involvesTension    — vereist ≥2 ValueExperiences
+#      E9  ValueAscription: beholder, beneficiary en experience verplicht
+###############################################################################
+
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+###############################################################################
+#  §A — COoDM Constraints
+###############################################################################
+
+###############################################################################
+#  E1 — Deliberation moet getriggerd zijn door een DecisionSituation
+###############################################################################
+
+coodm:DeliberationShape
+    a sh:NodeShape ;
+    sh:targetClass coodm:Deliberation ;
+    sh:name "DeliberationShape" ;
+    sh:description
+        "E1–E3: Een Deliberation moet (a) getriggerd zijn door een
+         DecisionSituation, (b) minstens één DecisionAlternative overwegen,
+         en (c) precies één Decision produceren." ;
+
+    sh:property [
+        sh:path coodm:triggeredBy ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class coodm:DecisionSituation ;
+        sh:severity sh:Violation ;
+        sh:message "E1: Deliberation.triggeredBy vereist precies één DecisionSituation."
+    ] ;
+
+    sh:property [
+        sh:path coodm:considers ;
+        sh:minCount 1 ;
+        sh:class coodm:DecisionAlternative ;
+        sh:severity sh:Violation ;
+        sh:message "E2: Deliberation.considers vereist ten minste één DecisionAlternative."
+    ] ;
+
+    sh:property [
+        sh:path coodm:resultedIn ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class coodm:Decision ;
+        sh:severity sh:Violation ;
+        sh:message "E3: Deliberation.resultedIn vereist precies één Decision."
+    ] .
+
+
+###############################################################################
+#  E4 — Decision moet precies één DecisionGoal hebben
+###############################################################################
+
+coodm:DecisionShape
+    a sh:NodeShape ;
+    sh:targetClass coodm:Decision ;
+    sh:name "DecisionShape" ;
+    sh:description
+        "E4: Een Decision moet precies één DecisionGoal hebben als
+         propositiële inhoud." ;
+
+    sh:property [
+        sh:path coodm:decisionGoal ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class coodm:DecisionGoal ;
+        sh:severity sh:Violation ;
+        sh:message "E4: Decision.decisionGoal vereist precies één DecisionGoal."
+    ] .
+
+
+###############################################################################
+#  §B — COVER Constraints
+###############################################################################
+
+###############################################################################
+
+###############################################################################
+#  E5–E7 — ValueExperience: beneficiary, type en valentie verplicht
+#  (DD-036: ValueExperience is nu een Event, niet een Quality)
+###############################################################################
+
+cover:ValueExperienceShape
+    a sh:NodeShape ;
+    sh:targetClass cover:ValueExperience ;
+    sh:name "ValueExperienceShape" ;
+    sh:description
+        "E5–E7: Een ValueExperience (event) moet (a) een ValueBeneficiary hebben,
+         (b) van precies één ValueType zijn, en (c) precies één valentie hebben.
+         Conform Sales et al. (2017) en DD-036." ;
+
+    sh:property [
+        sh:path cover:hasBeneficiary ;
+        sh:minCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "E5: ValueExperience.hasBeneficiary vereist ten minste één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path cover:ofType ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class cover:ValueType ;
+        sh:severity sh:Violation ;
+        sh:message "E6: ValueExperience.ofType vereist precies één cover:ValueType."
+    ] ;
+
+    sh:property [
+        sh:path cover:hasValence ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class cover:ValueScale ;
+        sh:severity sh:Violation ;
+        sh:message "E7: ValueExperience.hasValence vereist precies één cover:ValueScale."
+    ] .
+
+
+###############################################################################
+#  E8 — ValueTension vereist minimaal twee betrokken ValueExperiences
+###############################################################################
+
+cover:ValueTensionShape
+    a sh:NodeShape ;
+    sh:targetClass cover:ValueTension ;
+    sh:name "ValueTensionShape" ;
+    sh:description "E8: Een ValueTension vereist minimaal twee ValueExperiences." ;
+
+    sh:property [
+        sh:path cover:involvesTension ;
+        sh:minCount 2 ;
+        sh:class cover:ValueExperience ;
+        sh:severity sh:Violation ;
+        sh:message "E8: ValueTension.involvesTension vereist ten minste twee cover:ValueExperiences."
+    ] .
+
+
+###############################################################################
+#  E9 — ValueAscription: beholder, beneficiary en experience verplicht
+#  (DD-036: ValueAscription is een Relator met twee mediatie-partijen)
+###############################################################################
+
+cover:ValueAscriptionShape
+    a sh:NodeShape ;
+    sh:targetClass cover:ValueAscription ;
+    sh:name "ValueAscriptionShape" ;
+    sh:description
+        "E9: Een ValueAscription (Relator) moet (a) een beoordelende agent hebben,
+         (b) een begunstigde agent hebben, en (c) een ValueExperience beoordelen.
+         Conform Sales et al. (2017) Fig. 2 en DD-036." ;
+
+    sh:property [
+        sh:path cover:hasBeholderAgent ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "E9a: ValueAscription.hasBeholderAgent vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path cover:hasBeneficiaryAgent ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "E9b: ValueAscription.hasBeneficiaryAgent vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path cover:ascribesValueTo ;
+        sh:minCount 1 ;
+        sh:class cover:ValueExperience ;
+        sh:severity sh:Violation ;
+        sh:message "E9c: ValueAscription.ascribesValueTo vereist ten minste één cover:ValueExperience."
+    ] .
+
+###############################################################################
+#  Einde 00e-coodm.shacl.ttl
+###############################################################################

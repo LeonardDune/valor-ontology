@@ -1,0 +1,370 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufob:  <https://valor-ecosystem.nl/ontology/ufo-b#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shb:  <https://valor-ecosystem.nl/shacl/ufo-b#> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+# VALOR-O — SHACL Shapes: UFO-B Events & Causality (Module 00b)
+#
+# Elke constraint verwijst naar het UFO-B axioma dat eraan ten grondslag ligt.
+# Constraints zijn Violation tenzij expliciet sh:Warning.
+# Zie DESIGN-DECISIONS.md §DD-022 voor de rationale van severity-keuzes.
+###############################################################################
+
+shb:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — UFO-B Events & Causality"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+# B0 — Elke Event-instantie is óf AtomicEvent óf ComplexEvent
+#
+# UFO-B-2013 M1/M2: disjuncte, complete partitie.
+# [DD-007] In OWL is de complete partitie uitgedrukt als
+# owl:disjointUnionOf in 00b-ufo-b.ttl. Deze SHACL-constraint
+# detecteert Event-instanties die geen van beide subklassen zijn
+# (open-world-compensatie).
+# Severity: Warning (open-world: data kan onvolledig zijn).
+###############################################################################
+
+shb:EventPartitionShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:Event ;
+    sh:severity sh:Warning ;
+    sh:name "EventPartitionShape" ;
+    sh:description
+        "B0: Elke gufo:Event-instantie moet óf ufob:AtomicEvent óf
+         ufob:ComplexEvent zijn (UFO-B-2013 M1/M2, disjuncte partitie)." ;
+    sh:sparql [
+        sh:name    "B0-event-partition" ;
+        sh:message "B0 (waarschuwing): Event-instantie is geen AtomicEvent of ComplexEvent." ;
+        sh:prefixes shb: ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this a gufo:Event .
+                FILTER NOT EXISTS { $this a ufob:AtomicEvent }
+                FILTER NOT EXISTS { $this a ufob:ComplexEvent }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# B1 — ComplexEvent heeft ten minste 2 disjuncte event-delen
+#
+# UFO-B-2013 §3.1 axioma M6 (Weak Supplementation Principle):
+#   ∀e:ComplexEvent ∃e1,e2:Event [
+#     properPart(e1,e) ∧ properPart(e2,e) ∧ ¬overlap(e1,e2) ]
+# Gesimplificeerd in SHACL: minCount 2 op isProperPartOf-inverse.
+# Severity: Violation (WSP is een kern-mereologisch principe).
+###############################################################################
+
+shb:ComplexEventPartsShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:ComplexEvent ;
+    sh:name "ComplexEventPartsShape" ;
+    sh:description
+        "B1: Een ComplexEvent moet ten minste 2 disjuncte event-delen hebben
+         (UFO-B-2013 M6, Weak Supplementation Principle)." ;
+    sh:property [
+        sh:path     [ sh:inversePath gufo:isProperPartOf ] ;
+        sh:minCount 2 ;
+        sh:class    gufo:Event ;
+        sh:name     "hasEventParts" ;
+        sh:message  "B1: ComplexEvent vereist ten minste 2 event-delen via gufo:isProperPartOf."
+    ] .
+
+
+###############################################################################
+# B2 — AtomicEvent.excDependsOn is functioneel (max. 1 Object)
+#
+# UFO-B-2013 §3.2 axioma P1:
+#   ∀e:AtomicEvent ∃!o:Object excDepends(e,o)
+# [DD-007] excDependsOn is functioneel; gufo:hasParticipant is dit niet.
+# Severity: Violation (uniqueness van drager is een UFO-B-kernaxioma).
+###############################################################################
+
+shb:AtomicEventDependenceShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:AtomicEvent ;
+    sh:name "AtomicEventDependenceShape" ;
+    sh:description
+        "B2: Een AtomicEvent hangt af van precies één Object via
+         excDependsOn (UFO-B-2013 P1)." ;
+    sh:property [
+        sh:path     ufob:excDependsOn ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    gufo:Object ;
+        sh:name     "excDependsOn" ;
+        sh:message  "B2: AtomicEvent.excDependsOn vereist precies één gufo:Object."
+    ] .
+
+
+###############################################################################
+# B3 — Disposition.manifestedBy is functioneel (max. 1 AtomicEvent)
+#
+# UFO-B-2013 §3.5 axioma D2:
+#   ∀d:Disposition manifestedBy(d) ⊆ AtomicEvent
+# De manifestatie is één specifiek AtomicEvent.
+# Severity: Violation (functioneel axioma).
+###############################################################################
+
+shb:DispositionManifestationShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:Disposition ;
+    sh:name "DispositionManifestationShape" ;
+    sh:description
+        "B3: Een Disposition manifsteert zich als ten hoogste 1 AtomicEvent
+         (UFO-B-2013 D2, functioneel)." ;
+    sh:property [
+        sh:path     ufob:manifestedBy ;
+        sh:maxCount 1 ;
+        sh:class    ufob:AtomicEvent ;
+        sh:name     "manifestedBy" ;
+        sh:message  "B3: Disposition.manifestedBy mag maximaal 1 AtomicEvent hebben."
+    ] .
+
+
+###############################################################################
+# B4 — Disposition heeft precies 1 activerende Situation
+#
+# UFO-B-2013 §3.5 axioma D4:
+#   ∀d:Disposition ∀s1,s2 activates(s1,d) ∧ activates(s2,d) → s1 = s2
+# Geïmplementeerd via inverse van activates (max. 1 activerende situatie).
+# Severity: Violation (functionaliteitsaxioma).
+###############################################################################
+
+shb:DispositionActivationShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:Disposition ;
+    sh:name "DispositionActivationShape" ;
+    sh:description
+        "B4: Een Disposition wordt geactiveerd door ten hoogste 1 Situation
+         (UFO-B-2013 D4, functioneel)." ;
+    sh:property [
+        sh:path     [ sh:inversePath ufob:activates ] ;
+        sh:maxCount 1 ;
+        sh:class    gufo:Situation ;
+        sh:name     "activatedBy" ;
+        sh:message  "B4: Disposition wordt geactiveerd door maximaal 1 Situation (axioma D4)."
+    ] .
+
+
+###############################################################################
+# B5 — AtomicEvent.wasTriggeredBy is functioneel (max. 1 Situation)
+#
+# UFO-B-2013 §3.4 axioma S3:
+#   ∀e:Event ∃!s:Situation triggeredBy(e,s)
+# [DD-009] gufo:contributedToTrigger is niet-functioneel in gUFO;
+# SHACL compenseert de zwakkere OWL-declaratie.
+# Severity: Violation voor AtomicEvent (strikter dan ComplexEvent).
+###############################################################################
+
+shb:AtomicEventTriggerShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:AtomicEvent ;
+    sh:name "AtomicEventTriggerShape" ;
+    sh:description
+        "B5: Een AtomicEvent wordt getriggerd door precies 1 Situation
+         (UFO-B-2013 S3, via gufo:wasTriggeredBy)." ;
+    sh:property [
+        sh:path     gufo:wasTriggeredBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    gufo:Situation ;
+        sh:name     "wasTriggeredBy" ;
+        sh:message  "B5: AtomicEvent.wasTriggeredBy vereist precies 1 Situation (axioma S3)."
+    ] .
+
+
+###############################################################################
+# B6 — directlyCauses is asymmetrisch en irreflexief
+#
+# UFO-B-2013 §3.4: causaliteit is gericht en onomkeerbaar.
+# [DD-010] Dit is niet als OWL-eigenschap gedeclareerd (beslisbaarheidsrisico);
+# SHACL dwingt het af als SPARQL-constraint.
+# Severity: Violation.
+###############################################################################
+
+shb:CausalAsymmetryShape
+    a sh:NodeShape ;
+    sh:targetSubjectsOf ufob:directlyCauses ;
+    sh:name "CausalAsymmetryShape" ;
+    sh:description
+        "B6: ufob:directlyCauses is asymmetrisch en irreflexief
+         (UFO-B-2013 §3.4, causaliteit is onomkeerbaar)." ;
+    sh:sparql [
+        sh:name    "B6a-irreflexive" ;
+        sh:message "B6a: Een event kan niet zichzelf veroorzaken (irreflexiviteit)." ;
+        sh:prefixes shb: ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this ufob:directlyCauses $this .
+            }
+        """
+    ] ;
+    sh:sparql [
+        sh:name    "B6b-asymmetric" ;
+        sh:message "B6b: Causale relatie is asymmetrisch: als A veroorzaakt B, dan niet B veroorzaakt A." ;
+        sh:prefixes shb: ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this ufob:directlyCauses ?other .
+                ?other ufob:directlyCauses $this .
+            }
+        """
+    ] .
+
+
+###############################################################################
+# B7 — CausalRelation.hasCausalPolarity is '+' of '-'
+#
+# VALOR-O CLD-extensie: polariteit is een verplichte annotatie op elke
+# gemodelleerde CausalRelation (in het Causa-perspectief).
+# Severity: Warning (niet alle CausalRelations zijn per se CLD-relaties).
+###############################################################################
+
+shb:CausalRelationPolarityShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:CausalRelation ;
+    sh:severity sh:Warning ;
+    sh:name "CausalRelationPolarityShape" ;
+    sh:description
+        "B7: Elke CausalRelation in een CLD moet een hasCausalPolarity
+         hebben met waarde '+' of '-'." ;
+    sh:property [
+        sh:path     ufob:hasCausalPolarity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in       ( "+" "-" ) ;
+        sh:name     "hasCausalPolarity" ;
+        sh:message  "B7 (waarschuwing): CausalRelation mist polariteit '+' of '-'."
+    ] .
+
+
+###############################################################################
+# B8 — «historicalRole» stereotype-constraint
+#
+# [DD-011] Klassen met ontoumlStereotype 'historicalRole' moeten:
+# (a) subklasse zijn van gufo:Role
+# (b) verbonden zijn met een event-klasse via participation
+# Severity: Warning (verbinding via participation niet altijd als triple
+# aanwezig in data).
+###############################################################################
+
+shb:HistoricalRoleStereotypeShape
+    a sh:NodeShape ;
+    sh:targetSubjectsOf gufo:ontoumlStereotype ;
+    sh:severity sh:Warning ;
+    sh:name "HistoricalRoleStereotypeShape" ;
+    sh:description
+        "B8: Klassen met ontoumlStereotype 'historicalRole' moeten
+         subklasse zijn van gufo:Role (UFO-B-2019 §3.2)." ;
+    sh:sparql [
+        sh:name    "B8-historicalRole-subClassOf-Role" ;
+        sh:message "B8 (waarschuwing): Class met 'historicalRole' stereotype is geen subklasse van gufo:Role." ;
+        sh:prefixes shb: ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this gufo:ontoumlStereotype "historicalRole" .
+                FILTER NOT EXISTS { $this rdfs:subClassOf gufo:Role }
+                FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# B9 — Event.broughtAbout is functioneel per AtomicEvent
+#
+# UFO-B-2013 §3.4 axioma S2:
+#   ∀e:Event ∃!s:Situation bringsAbout(e,s)
+# Severity: Violation voor AtomicEvent.
+###############################################################################
+
+shb:AtomicEventOutcomeShape
+    a sh:NodeShape ;
+    sh:targetClass ufob:AtomicEvent ;
+    sh:name "AtomicEventOutcomeShape" ;
+    sh:description
+        "B9: Een AtomicEvent brengt precies 1 Situation tot stand
+         (UFO-B-2013 S2, via gufo:broughtAbout)." ;
+    sh:property [
+        sh:path     gufo:broughtAbout ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    gufo:Situation ;
+        sh:name     "broughtAbout" ;
+        sh:message  "B9: AtomicEvent.broughtAbout vereist precies 1 Situation (axioma S2)."
+    ] .
+
+
+###############################################################################
+# B10 — Triggerende en voortgebrachte Situation zijn disjunct
+#
+# UFO-B-2013 §3.4 axioma S4:
+#   bringsAbout(e,s) ∧ triggeredBy(e,s') → s ≠ s'
+# Het event brengt iets nieuws tot stand; het triggert niet wat het zelf
+# voortbrengt.
+# Severity: Violation.
+###############################################################################
+
+shb:TriggerOutcomeDisjointShape
+    a sh:NodeShape ;
+    sh:targetClass gufo:Event ;
+    sh:name "TriggerOutcomeDisjointShape" ;
+    sh:description
+        "B10: De triggerende Situation en de voortgebrachte Situation
+         van hetzelfde Event mogen niet identiek zijn (UFO-B-2013 S4)." ;
+    sh:sparql [
+        sh:name    "B10-trigger-outcome-disjoint" ;
+        sh:message "B10: Het event triggert en brengt dezelfde Situation tot stand (axioma S4 geschonden)." ;
+        sh:prefixes shb: ;
+        sh:select  """
+            SELECT $this
+            WHERE {
+                $this gufo:wasTriggeredBy ?s .
+                $this gufo:broughtAbout ?s .
+            }
+        """
+    ] .
+
+
+###############################################################################
+# Prefix declarations voor SPARQL constraints
+###############################################################################
+
+shb:
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufob" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-b#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdf" ;
+        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdfs" ;
+        sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+# END OF SHACL — UFO-B Events & Causality
+###############################################################################

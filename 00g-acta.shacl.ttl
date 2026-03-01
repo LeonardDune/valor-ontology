@@ -1,0 +1,191 @@
+###############################################################################
+#  VALOR-O — Module 00g SHACL: ACTA Transactieontologie
+#
+#  Constraints:
+#    §A  Transaction
+#      G1  Transaction.hasInitiator     — vereist precies 1 Agent
+#      G2  Transaction.hasExecutor      — vereist precies 1 Agent
+#      G3  Transaction.hasTransactionResult — vereist precies 1 Result
+#      G4  Transaction: Initiator ≠ Executor (publieke transactie)
+#    §B  ProductionAct
+#      G5  ProductionAct.isProductionActOf — vereist precies 1 Transaction
+#      G6  ProductionAct.performedBy    — vereist precies 1 Agent
+#    §C  CoordinationAct
+#      G7  CoordinationAct.performedBy  — vereist precies 1 Agent
+#    §D  Juridische koppelingen
+#      G8  PositiveResult → createsLegalRelator aanbeveling (Warning)
+###############################################################################
+
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+
+###############################################################################
+#  §A — Transaction constraints
+###############################################################################
+
+acta:TransactionShape
+    a sh:NodeShape ;
+    sh:targetClass acta:Transaction ;
+    sh:name "TransactionShape" ;
+    sh:description
+        "G1–G3: Een transactie vereist precies één Initiator, één Executor
+         en precies één TransactionResult. Conform DEMO CTP en
+         Almeida et al. (2013)." ;
+
+    sh:property [
+        sh:path acta:hasInitiator ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "G1: Transaction.hasInitiator vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path acta:hasExecutor ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "G2: Transaction.hasExecutor vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path acta:hasTransactionResult ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class acta:TransactionResult ;
+        sh:severity sh:Violation ;
+        sh:message "G3: Transaction.hasTransactionResult vereist precies één acta:TransactionResult."
+    ] .
+
+
+###############################################################################
+#  G4 — PublicServiceTransaction: Initiator ≠ Executor
+#  (In een publieke transactie zijn burger en overheid per definitie
+#   verschillende agents — dit is het archetype van dienstverlening)
+###############################################################################
+
+acta:PublicServiceTransactionShape
+    a sh:NodeShape ;
+    sh:targetClass acta:PublicServiceTransaction ;
+    sh:name "PublicServiceTransactionShape" ;
+    sh:description
+        "G4: In een PublicServiceTransaction moeten de Initiator en
+         Executor verschillende agents zijn. Een overheid kan niet
+         tegelijk burger en dienstverlener zijn in dezelfde transactie." ;
+
+    sh:sparql [
+        sh:message "G4: PublicServiceTransaction.hasInitiator en hasExecutor mogen niet dezelfde Agent zijn." ;
+        sh:severity sh:Violation ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#"
+            ]
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this acta:hasInitiator ?initiator .
+                $this acta:hasExecutor ?executor .
+                FILTER (?initiator = ?executor)
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  §B — ProductionAct constraints
+###############################################################################
+
+acta:ProductionActShape
+    a sh:NodeShape ;
+    sh:targetClass acta:ProductionAct ;
+    sh:name "ProductionActShape" ;
+    sh:description
+        "G5–G6: Een ProductionAct behoort tot precies één Transaction
+         en heeft precies één performer (de Executor)." ;
+
+    sh:property [
+        sh:path acta:isProductionActOf ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class acta:Transaction ;
+        sh:severity sh:Violation ;
+        sh:message "G5: ProductionAct.isProductionActOf vereist precies één acta:Transaction."
+    ] ;
+
+    sh:property [
+        sh:path acta:performedBy ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "G6: ProductionAct.performedBy vereist precies één ufoc:Agent (de Executor)."
+    ] .
+
+
+###############################################################################
+#  §C — CoordinationAct constraints
+###############################################################################
+
+acta:CoordinationActShape
+    a sh:NodeShape ;
+    sh:targetClass acta:CoordinationAct ;
+    sh:name "CoordinationActShape" ;
+    sh:description "G7: Een CoordinationAct heeft precies één performer." ;
+
+    sh:property [
+        sh:path acta:performedBy ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message "G7: CoordinationAct.performedBy vereist precies één ufoc:Agent."
+    ] .
+
+
+###############################################################################
+#  §D — Juridische koppelingen
+###############################################################################
+
+###############################################################################
+#  G8 — PositiveResult: aanbeveling voor createsLegalRelator
+#  (Warning: een positief resultaat dat geen nieuwe LegalRelator schept
+#   is ontologisch onvolledig maar niet altijd fout — bijv. informatieverstrekking)
+###############################################################################
+
+acta:PositiveResultShape
+    a sh:NodeShape ;
+    sh:targetClass acta:PositiveResult ;
+    sh:name "PositiveResultShape" ;
+    sh:description
+        "G8: Een PositiveResult wordt aanbevolen te zijn gekoppeld aan
+         een nieuwe LegalRelator (via createsLegalRelator op de
+         bijbehorende ProductionAct). Zonder LegalRelator is het
+         ontologisch onduidelijk welk recht de burger verkrijgt." ;
+
+    sh:sparql [
+        sh:message "G8: Dit PositiveResult is niet gekoppeld aan een nieuwe LegalRelator via de ProductionAct — overweeg acta:createsLegalRelator toe te voegen." ;
+        sh:severity sh:Warning ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#"
+            ]
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                ?tx acta:hasTransactionResult $this .
+                ?act acta:isProductionActOf ?tx .
+                FILTER NOT EXISTS { ?act acta:createsLegalRelator ?lr }
+            }
+        """
+    ] .
+
+###############################################################################
+#  Einde 00g-acta.shacl.ttl
+###############################################################################

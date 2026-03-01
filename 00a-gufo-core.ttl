@@ -1,4 +1,4 @@
-@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
@@ -16,6 +16,20 @@
 #
 # Source  : Almeida et al. (2019), gUFO v1.0.0
 #           https://nemo-ufes.github.io/gufo/
+#           URI: https://nemo-ufes.github.io/gufo/gufo.ttl
+#
+# Module structuur (na invoeging UFO-B als aparte module):
+#   00a-gufo-core.ttl      ← dit bestand: gUFO-primitieven
+#   00b-ufo-b.ttl          ← UFO-B events en causaliteit (nieuw)
+#   00c-ufo-c.ttl          ← UFO-C sociale entiteiten
+#   00d-ufo-l.ttl          ← UFO-L rechtsbetrekkingen
+#
+# DESIGN DECISIONS (zie DESIGN-DECISIONS.md voor volledige rationale):
+#   DD-001 · Curated subset i.p.v. owl:imports
+#   DD-002 · OWL2 Punning als standaardpatroon
+#   DD-003 · gUFO-primitieven uitgesloten van punning-verplichting
+#   DD-004 · gufo:Participation — terminologisch conflict met UFO-B
+#   DD-005 · Allen-relaties als SPARQL-queries, niet als OWL-properties
 #
 # In production: replace body of each class/property with
 #   owl:imports <https://nemo-ufes.github.io/gufo/gufo.ttl>
@@ -42,7 +56,8 @@ vo:gufo-core
 #  │   │   │   ├── IntrinsicMode   (unshareable, e.g. a belief)
 #  │   │   │   └── Quality         (value-bearing intrinsic aspect)
 #  │   │   └── ExtrinsicAspect
-#  │   │       └── Relator         (mediates a material relation)
+#  │   │       ├── Relator         (mediates a material relation)
+#  │   │       └── ExtrinsicMode   (inheres in one; also depends on another)
 #  │   └── Collection
 #  └── Event                     (partially present / perdurant)
 #      ├── Action
@@ -155,6 +170,20 @@ gufo:Relator
          or more objects. A relator unifies the relata into a nexus
          (e.g. a marriage, a contract, an employment)."@en .
 
+gufo:ExtrinsicMode
+    a owl:Class ;
+    rdfs:subClassOf gufo:ExtrinsicAspect ;
+    rdfs:label "ExtrinsicMode"@en ;
+    rdfs:comment
+        "An aspect that inheres in exactly one individual (its bearer) but
+         is also externally dependent on another individual (the extrinsic
+         object). Unlike a Relator, the dependence is asymmetric: there is
+         one primary bearer and one external object.
+         Examples: a social commitment (inheres in the committed agent,
+         depends on the claimant); a belief about a person (inheres in the
+         believer, depends on the believed-about individual).
+         Source: gUFO 1.0 §2.7; UFO-C (Guizzardi et al. 2013)."@en .
+
 # ── Event branch ──────────────────────────────────────────────────────────────
 
 gufo:Event
@@ -178,8 +207,21 @@ gufo:Participation
     rdfs:subClassOf gufo:Event ;
     rdfs:label "Participation"@en ;
     rdfs:comment
-        "An event that represents the participation of an endurant in
-         another event."@en .
+        """An event that represents the participation of an endurant in
+         another event.
+
+         [DD-004] TERMINOLOGISCH CONFLICT MET UFO-B:
+         gUFO's gufo:Participation (subklasse van Event) is NIET identiek
+         aan UFO-B 'Participation' (§3.2, axioma P4). UFO-B definieert
+         Participation als afgeleide klasse: het maximale deel van een
+         ComplexEvent dat exclusief afhangt van precies één Object:
+           P4: ∀e:Event Participation(e) ↔ ∃!o:Object excDepends(e,o)
+         Dit is een derivatie op event-mereologie, geen zelfstandige klasse.
+         gUFO maakt er pragmatisch een concrete klasse van voor
+         GraphDB/SPARQL-compatibiliteit.
+         VALOR-O volgt gUFO hier. Zie 00b-ufo-b.ttl voor het mereologische
+         patroon dat UFO-B Participation simuleert via SPARQL.
+         Bron: UFO-B-2013 §3.2 (P1-P5); gUFO-spec §3.3."""@en .
 
 # ── Situation ──────────────────────────────────────────────────────────────────
 
@@ -477,6 +519,46 @@ gufo:historicallyDependsOn
     rdfs:comment
         "Relates an individual to another individual whose prior existence
          was necessary for the first individual to come into existence."@en .
+
+# ── External dependence (ExtrinsicMode) ──────────────────────────────────────
+
+gufo:externallyDependsOn
+    a owl:ObjectProperty ;
+    rdfs:label "externally depends on"@en ;
+    rdfs:domain gufo:ExtrinsicAspect ;
+    rdfs:range  gufo:Endurant ;
+    rdfs:comment
+        "Relates an ExtrinsicMode to the external individual it depends on
+         (the extrinsic object — not the bearer). An ExtrinsicMode both
+         inheres in its bearer (via gufo:inheresIn) and externally depends
+         on another individual (via this property).
+         Example: a social commitment inheres in the committed agent and
+         externally depends on the claimant agent.
+         Source: gUFO 1.0 §2.7; OntoUML «externalDependence»."@en .
+
+# ── Creation and Termination of Endurants ────────────────────────────────────
+
+gufo:wasCreatedIn
+    a owl:ObjectProperty ;
+    rdfs:label "was created in"@en ;
+    rdfs:domain gufo:Endurant ;
+    rdfs:range  gufo:Event ;
+    rdfs:comment
+        "Relates an endurant to the event in which it came into existence.
+         Inverse direction of the OntoUML «creation» stereotype relation
+         (Event → Endurant). Used as the gUFO anchor for «creation»
+         properties in VALOR-O (DD-025)."@en .
+
+gufo:wasTerminatedIn
+    a owl:ObjectProperty ;
+    rdfs:label "was terminated in"@en ;
+    rdfs:domain gufo:Endurant ;
+    rdfs:range  gufo:Event ;
+    rdfs:comment
+        "Relates an endurant to the event in which it ceased to exist.
+         Inverse direction of the OntoUML «termination» stereotype relation
+         (Event → Endurant). Used as the gUFO anchor for «termination»
+         properties in VALOR-O (DD-025)."@en .
 
 # ── Temporal ──────────────────────────────────────────────────────────────────
 

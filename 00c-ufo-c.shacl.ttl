@@ -1,5 +1,5 @@
 @prefix sh:    <http://www.w3.org/ns/shacl#> .
-@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -22,15 +22,15 @@ shc
 
 
 ###############################################################################
-# C1 — SocialCommitment mediates exactly 2 distinct Agents
+# C1 — SocialRelator mediates exactly 2 distinct Agents
 ###############################################################################
 
-ufoc:SocialCommitmentShape
+ufoc:SocialRelatorShape
     a sh:NodeShape ;
-    sh:targetClass ufoc:SocialCommitment ;
-    sh:name "SocialCommitmentShape" ;
+    sh:targetClass ufoc:SocialRelator ;
+    sh:name "SocialRelatorShape" ;
     sh:description
-        "C1: SocialCommitment vereist precies één hasCommittedAgent,
+        "C1: SocialRelator vereist precies één hasCommittedAgent,
          precies één hasClaimantAgent, precies één hasCommitmentContent,
          en de twee agents moeten van elkaar verschillen." ;
 
@@ -38,21 +38,21 @@ ufoc:SocialCommitmentShape
         sh:path ufoc:hasCommittedAgent ;
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:class ufoc:Agent ;
-        sh:message "C1a: SocialCommitment vereist precies één hasCommittedAgent (ufoc:Agent)."
+        sh:message "C1a: SocialRelator vereist precies één hasCommittedAgent (ufoc:Agent)."
     ] ;
 
     sh:property [
         sh:path ufoc:hasClaimantAgent ;
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:class ufoc:Agent ;
-        sh:message "C1b: SocialCommitment vereist precies één hasClaimantAgent (ufoc:Agent)."
+        sh:message "C1b: SocialRelator vereist precies één hasClaimantAgent (ufoc:Agent)."
     ] ;
 
     sh:property [
         sh:path ufoc:hasCommitmentContent ;
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:class gufo:Situation ;
-        sh:message "C1c: SocialCommitment vereist precies één hasCommitmentContent (gufo:Situation)."
+        sh:message "C1c: SocialRelator vereist precies één hasCommitmentContent (gufo:Situation)."
     ] ;
 
     sh:sparql [
@@ -70,33 +70,41 @@ ufoc:SocialCommitmentShape
 
 
 ###############################################################################
-# C2 — CommitmentMode inheres in the committed agent
+# C2 — SocialCommitment: inhereert in committed agent, afhankelijk van claimant
 ###############################################################################
 
-ufoc:CommitmentModeShape
+ufoc:SocialCommitmentShape
     a sh:NodeShape ;
-    sh:targetClass ufoc:CommitmentMode ;
-    sh:name "CommitmentModeShape" ;
+    sh:targetClass ufoc:SocialCommitment ;
+    sh:name "SocialCommitmentShape" ;
     sh:description
-        "C2: CommitmentMode moet inheren aan de hasCommittedAgent van
-         de bijbehorende SocialCommitment." ;
+        "C2: SocialCommitment moet via commitmentInheresIn inheren aan de
+         hasCommittedAgent van zijn SocialRelator, en via commitmentDependsOn
+         afhankelijk zijn van de hasClaimantAgent." ;
 
     sh:property [
-        sh:path gufo:inheresIn ;
+        sh:path ufoc:commitmentInheresIn ;
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:class ufoc:Agent ;
-        sh:message "C2a: CommitmentMode.inheresIn vereist precies één ufoc:Agent."
+        sh:message "C2a: SocialCommitment.commitmentInheresIn vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path ufoc:commitmentDependsOn ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "C2b: SocialCommitment.commitmentDependsOn vereist precies één ufoc:Agent."
     ] ;
 
     sh:sparql [
-        sh:name    "C2b-inhere-committed" ;
-        sh:message "C2b: CommitmentMode moet inheren aan de hasCommittedAgent van zijn SocialCommitment." ;
+        sh:name    "C2c-inhere-committed" ;
+        sh:message "C2c: SocialCommitment.commitmentInheresIn moet overeenkomen met de hasCommittedAgent van de bijbehorende SocialRelator." ;
         sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
-                ?commitment ufoc:hasCommitmentMode $this ;
-                            ufoc:hasCommittedAgent ?committed .
-                $this gufo:inheresIn ?bearer .
+                ?relator ufoc:hasCommitmentMoment $this ;
+                         ufoc:hasCommittedAgent   ?committed .
+                $this ufoc:commitmentInheresIn ?bearer .
                 FILTER (?bearer != ?committed)
             }
         """
@@ -104,33 +112,41 @@ ufoc:CommitmentModeShape
 
 
 ###############################################################################
-# C3 — ClaimMode inheres in the claimant agent
+# C3 — SocialClaim: inhereert in claimant agent, afhankelijk van committed
 ###############################################################################
 
-ufoc:ClaimModeShape
+ufoc:SocialClaimShape
     a sh:NodeShape ;
-    sh:targetClass ufoc:ClaimMode ;
-    sh:name "ClaimModeShape" ;
+    sh:targetClass ufoc:SocialClaim ;
+    sh:name "SocialClaimShape" ;
     sh:description
-        "C3: ClaimMode moet inheren aan de hasClaimantAgent van de
-         bijbehorende SocialCommitment." ;
+        "C3: SocialClaim moet via claimInheresIn inheren aan de
+         hasClaimantAgent van zijn SocialRelator, en via claimDependsOn
+         afhankelijk zijn van de hasCommittedAgent." ;
 
     sh:property [
-        sh:path gufo:inheresIn ;
+        sh:path ufoc:claimInheresIn ;
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:class ufoc:Agent ;
-        sh:message "C3a: ClaimMode.inheresIn vereist precies één ufoc:Agent."
+        sh:message "C3a: SocialClaim.claimInheresIn vereist precies één ufoc:Agent."
+    ] ;
+
+    sh:property [
+        sh:path ufoc:claimDependsOn ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "C3b: SocialClaim.claimDependsOn vereist precies één ufoc:Agent."
     ] ;
 
     sh:sparql [
-        sh:name    "C3b-inhere-claimant" ;
-        sh:message "C3b: ClaimMode moet inheren aan de hasClaimantAgent van zijn SocialCommitment." ;
+        sh:name    "C3c-inhere-claimant" ;
+        sh:message "C3c: SocialClaim.claimInheresIn moet overeenkomen met de hasClaimantAgent van de bijbehorende SocialRelator." ;
         sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
-                ?commitment ufoc:hasClaimMode     $this ;
-                            ufoc:hasClaimantAgent ?claimant .
-                $this gufo:inheresIn ?bearer .
+                ?relator ufoc:hasClaimMoment    $this ;
+                         ufoc:hasClaimantAgent  ?claimant .
+                $this ufoc:claimInheresIn ?bearer .
                 FILTER (?bearer != ?claimant)
             }
         """
@@ -138,7 +154,7 @@ ufoc:ClaimModeShape
 
 
 ###############################################################################
-# C4 — SocialRole participates in at least one SocialCommitment
+# C4 — SocialRole participates in at least one SocialRelator
 ###############################################################################
 
 ufoc:SocialRoleShape
@@ -147,18 +163,18 @@ ufoc:SocialRoleShape
     sh:name "SocialRoleShape" ;
     sh:description
         "C4: Een SocialRole moet betrokken zijn bij ten minste één
-         SocialCommitment als committed of claimant agent." ;
+         SocialRelator als committed of claimant agent." ;
 
     sh:sparql [
-        sh:name    "C4-role-in-commitment" ;
-        sh:message "C4: SocialRole heeft geen SocialCommitment als committed of claimant agent." ;
+        sh:name    "C4-role-in-relator" ;
+        sh:message "C4: SocialRole heeft geen SocialRelator als committed of claimant agent." ;
         sh:prefixes shc ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
-                    { ?c ufoc:hasCommittedAgent $this }
+                    { ?r ufoc:hasCommittedAgent $this }
                     UNION
-                    { ?c ufoc:hasClaimantAgent  $this }
+                    { ?r ufoc:hasClaimantAgent  $this }
                 }
             }
         """
@@ -272,7 +288,7 @@ shc
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;
-        sh:namespace "https://nemo-ufes.github.io/gufo/"^^xsd:anyURI
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
     ] ;
     sh:declare [
         sh:prefix    "ufoc" ;

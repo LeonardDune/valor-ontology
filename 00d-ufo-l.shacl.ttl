@@ -1,5 +1,5 @@
 @prefix sh:    <http://www.w3.org/ns/shacl#> .
-@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
 @prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
@@ -166,7 +166,8 @@ ufol:DelegationFulfillmentShape
 
 
 ###############################################################################
-# L6 — Policy: grounded in DelegationAuthority, inheres in InstitutionalAgent
+# L6 — Policy: ExtrinsicMode — inheres in InstitutionalAgent, depends on Agent,
+#              grounded in DelegationAuthority
 ###############################################################################
 
 ufol:PolicyShape
@@ -174,9 +175,11 @@ ufol:PolicyShape
     sh:targetClass ufol:Policy ;
     sh:name "PolicyShape" ;
     sh:description
-        "L6: Een Policy (Weigand 2024) moet:
+        "L6: Een Policy (ExtrinsicMode, Weigand 2024) moet:
          (a) inheren aan een InstitutionalAgent via policyInheresIn;
-         (b) gegrond zijn in een DelegationAuthority via policyGroundedIn." ;
+         (b) extern afhankelijk zijn van een Agent via policyDependsOn;
+         (c) gegrond zijn in een DelegationAuthority via policyGroundedIn;
+         (d) de bearer en de geadresseerde moeten van elkaar verschillen." ;
 
     sh:property [
         sh:path ufol:policyInheresIn ;
@@ -186,10 +189,17 @@ ufol:PolicyShape
     ] ;
 
     sh:property [
+        sh:path ufol:policyDependsOn ;
+        sh:minCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "L6b: Policy.policyDependsOn vereist ten minste één ufoc:Agent (geadresseerde)."
+    ] ;
+
+    sh:property [
         sh:path ufol:policyGroundedIn ;
         sh:minCount 1 ;
         sh:class ufol:DelegationAuthority ;
-        sh:message "L6b: Policy.policyGroundedIn vereist ten minste één DelegationAuthority."
+        sh:message "L6c: Policy.policyGroundedIn vereist ten minste één DelegationAuthority."
     ] .
 
 
@@ -361,7 +371,7 @@ shl
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;
-        sh:namespace "https://nemo-ufes.github.io/gufo/"^^xsd:anyURI
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
     ] ;
     sh:declare [
         sh:prefix    "ufoc" ;

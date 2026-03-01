@@ -1,4 +1,4 @@
-@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -9,23 +9,36 @@
 @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
-# VALOR-O — Module 00b: UFO-C  (Social Entities)
+# VALOR-O — Module 00c: UFO-C  (Social Entities)
 #
 # Purpose : Formalise the social layer of UFO needed by VALOR-O.
 #           Covers: Agent, intentional modes (goal, belief, desire,
 #           intention, commitment/claim pair), social objects (norms,
 #           roles as social constructs), and the delegation pattern.
 #
+# Module structuur (na invoeging UFO-B als aparte module — DD-019):
+#   00a-gufo-core.ttl  → 00b-ufo-b.ttl  → 00c-ufo-c.ttl (dit bestand)
+#                                       → 00d-ufo-l.ttl
+#
+# DESIGN DECISIONS (zie DESIGN-DECISIONS.md):
+#   DD-013 · SocialCommitment als ExtrinsicMode; SocialRelator als overkoepelende Relator
+#   DD-014 · Norm als mode van InstitutionalAgent
+#   DD-015 · Concern als fundering van het Issue-concept
+#   DD-020 · Taal van rdfs:comment (NL domein, EN technisch)
+#   DD-024 · «characterization» in beide richtingen (VALOR-O-conventie)
+#   DD-025 · «creation»/«termination» via wasCreatedIn/wasTerminatedIn
+#
 # Source  : Guizzardi et al. (2013), "UFO-C: A Foundational Ontology
 #           for Social Entities"; Guizzardi (2005) PhD thesis;
 #           de Oliveira Bringuente et al. (2011).
 #
-# Imports : 00a-gufo-core.ttl
+# Imports : 00a-gufo-core.ttl, 00b-ufo-b.ttl
 ###############################################################################
 
 vo:ufo-c
     a owl:Ontology ;
     owl:imports vo:gufo-core ;
+    owl:imports vo:ufo-b ;
     dcterms:title "VALOR-O — UFO-C Social Entities"@nl ;
     dcterms:description
         "Ontologie van sociale entiteiten: agents, intentionele toestanden,
@@ -92,7 +105,6 @@ ufoc:InstitutionalAgent
 
 ufoc:IntentionalMode
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntentionalMode ;
     rdfs:label "IntentionalMode"@en , "Intentionele toestand"@nl ;
@@ -104,7 +116,6 @@ ufoc:IntentionalMode
 
 ufoc:Belief
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:IntentionalMode ;
     rdfs:label "Belief"@en , "Overtuiging"@nl ;
@@ -116,7 +127,6 @@ ufoc:Belief
 
 ufoc:Desire
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:IntentionalMode ;
     rdfs:label "Desire"@en , "Wens"@nl ;
@@ -126,7 +136,6 @@ ufoc:Desire
 
 ufoc:Goal
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Desire ;
     rdfs:label "Goal"@en , "Doel"@nl ;
@@ -136,7 +145,6 @@ ufoc:Goal
 
 ufoc:SoftGoal
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Desire ;
     rdfs:label "SoftGoal"@en , "Preferentiedoel"@nl ;
@@ -149,7 +157,6 @@ ufoc:SoftGoal
 
 ufoc:Intention
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Goal ;
     rdfs:label "Intention"@en , "Intentie"@nl ;
@@ -161,7 +168,6 @@ ufoc:Intention
 
 ufoc:Interest
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:Desire ;
     rdfs:label "Interest"@en , "Belang"@nl ;
@@ -174,7 +180,6 @@ ufoc:Interest
 
 ufoc:Concern
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufoc:IntentionalMode ;
     rdfs:label "Concern"@en , "Zorg / betrokkenheid"@nl ;
@@ -186,94 +191,178 @@ ufoc:Concern
 
 
 ###############################################################################
-# ── 3. COMMITMENT / CLAIM RELATOR ─────────────────────────────────────────────
+# ── 3. SOCIAL RELATOR, COMMITMENT AND CLAIM ───────────────────────────────────
 #
-#  A Commitment is a social relator between two agents:
-#    - the Committed agent (who commits)
-#    - the Claimant agent  (who holds the claim)
-#  The commitment inheres in the committed agent as a social duty;
-#  the claim inheres in the claimant as a social right.
+#  UFO-C (Guizzardi et al. 2013; Poletaeva et al. 2017) distinguishes:
 #
-#  This is the core pattern that underlies:
-#    - DEMO transactions (a transaction IS a commitment)
-#    - UFO-L legal relations (rights and duties as special commitments)
-#    - i* dependencies (a dependency IS a commitment)
+#    SocialRelator     — the overarching Relator connecting two Agents.
+#                        It is constituted by a pair of mutually dependent
+#                        ExtrinsicModes: a SocialCommitment and a SocialClaim.
+#
+#    SocialCommitment  — an ExtrinsicMode inhering in the committed Agent
+#                        and externally dependent on the claimant Agent.
+#                        Represents the duty-side of the social bond.
+#
+#    SocialClaim       — an ExtrinsicMode inhering in the claimant Agent
+#                        and externally dependent on the committed Agent.
+#                        Represents the right-side of the social bond.
+#
+#  Both Moments share the same propositional content, which is a property
+#  of the SocialRelator as a whole (Poletaeva 2017 §3.2).
+#
+#  DESIGN DECISION DD-013 (revised):
+#    Previous versions modelled SocialCommitment as a Relator — ontologically
+#    incorrect. The Relator is the SocialRelator; Commitment and Claim are
+#    the two ExtrinsicMode components that together constitute it.
+#    Source: Guizzardi et al. (2013) UFO-C; Poletaeva et al. (2017) Fig. 3.
+#
+#  This pattern underlies:
+#    - DEMO transactions (Transaction is a SocialRelator subclass)
+#    - UFO-L legal relations (LegalRelator subClassOf SocialRelator)
+#    - i* dependencies (a dependency IS a social relator)
 ###############################################################################
 
-ufoc:SocialCommitment
+ufoc:SocialRelator
     a owl:Class ;
     rdf:type gufo:Relator ;
     gufo:ontoumlStereotype "relator" ;
     rdfs:subClassOf gufo:Relator ;
-    rdfs:label "SocialCommitment"@en , "Sociale toezegging (relator)"@nl ;
+    rdfs:label "SocialRelator"@en , "Sociale relator"@nl ;
     rdfs:comment
-        "Een Relator die een normatieve band uitdrukt tussen twee agents:
-         de committed agent heeft een sociale plicht ten aanzien van de
-         claimant agent. De commitment en de bijbehorende claim zijn
-         modi van de respectievelijke agents die worden bijeengehouden
-         door dit Relator."@nl .
+        "Een Relator die de normatieve band tussen twee agents uitdrukt.
+         Bestaat uit een SocialCommitment (plicht-kant) en een SocialClaim
+         (recht-kant) die samen de relator constitueren. De propositionele
+         inhoud is eigenschap van de relator als geheel.
+         Bron: UFO-C (Guizzardi et al. 2013); Poletaeva et al. (2017)."@nl .
 
-ufoc:CommitmentMode
+ufoc:SocialCommitment
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
-    rdfs:subClassOf gufo:IntrinsicMode ;
-    rdfs:label "CommitmentMode"@en , "Toezeggingsmodus"@nl ;
+    rdfs:subClassOf gufo:ExtrinsicMode ;
+    rdfs:label "SocialCommitment"@en , "Sociale toezegging"@nl ;
     rdfs:comment
-        "De intrinsieke modus die de committed agent draagt als gevolg van
-         de SocialCommitment: de sociale verplichting om de propositiële
-         inhoud waar te maken."@nl .
+        "Een ExtrinsicMode die inhereert in de committed agent (de plicht-
+         dragende partij) en extern afhankelijk is van de claimant agent.
+         Vertegenwoordigt de plicht-kant van de sociale band.
+         DD-013 (revisie): dit is NIET de overkoepelende Relator, maar één
+         van de twee constituerende Moments van de SocialRelator."@nl .
 
-ufoc:ClaimMode
+ufoc:SocialClaim
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
-    rdfs:subClassOf gufo:IntrinsicMode ;
-    rdfs:label "ClaimMode"@en , "Aanspraakmodus"@nl ;
+    rdfs:subClassOf gufo:ExtrinsicMode ;
+    rdfs:label "SocialClaim"@en , "Sociale aanspraak"@nl ;
     rdfs:comment
-        "De intrinsieke modus die de claimant agent draagt als gevolg van
-         de SocialCommitment: het sociale recht om nakoming te verwachten."@nl .
+        "Een ExtrinsicMode die inhereert in de claimant agent (de recht-
+         houdende partij) en extern afhankelijk is van de committed agent.
+         Vertegenwoordigt de recht-kant van de sociale band. Spiegelbeeld
+         van SocialCommitment; deelt dezelfde propositionele inhoud."@nl .
 
-# Mediation relations of SocialCommitment
+# ── SocialRelator: mediation en inhoud ───────────────────────────────────────
 
 ufoc:hasCommittedAgent
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
     rdfs:subPropertyOf gufo:mediates ;
     rdfs:label "has committed agent"@en ;
-    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:domain ufoc:SocialRelator ;
     rdfs:range  ufoc:Agent ;
-    rdfs:comment "De agent die de toezegging draagt."@nl .
+    rdfs:comment "De agent die de plicht draagt in de sociale relator."@nl .
 
 ufoc:hasClaimantAgent
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
     rdfs:subPropertyOf gufo:mediates ;
     rdfs:label "has claimant agent"@en ;
-    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:domain ufoc:SocialRelator ;
     rdfs:range  ufoc:Agent ;
-    rdfs:comment "De agent ten behoeve van wie de toezegging geldt."@nl .
+    rdfs:comment "De agent ten behoeve van wie de plicht geldt."@nl .
 
 ufoc:hasCommitmentContent
     a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:hasPropositionalContent ;
     rdfs:label "has commitment content"@en ;
-    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:domain ufoc:SocialRelator ;
     rdfs:range  gufo:Situation ;
     rdfs:comment
-        "De propositionele inhoud van de toezegging: de toestand die de
-         committed agent dient te bewerkstelligen."@nl .
+        "De propositionele inhoud van de sociale relator: de toestand die
+         de committed agent dient te bewerkstelligen. Gedeeld door beide
+         constituerende Moments (SocialCommitment en SocialClaim).
+         Geen OntoUML-relatie-stereotype: Relator→Situation is een
+         gUFO-primitieve relatie (hasPropositionalContent) zonder
+         OntoUML-2.0-equivalent (DD-026)."@nl .
 
-ufoc:hasCommitmentMode
-    a owl:ObjectProperty ;
-    rdfs:subPropertyOf gufo:hasQuality ;
-    rdfs:label "has commitment mode"@en ;
-    rdfs:domain ufoc:SocialCommitment ;
-    rdfs:range  ufoc:CommitmentMode .
+# ── SocialRelator: componentOf relaties naar zijn Moments ────────────────────
 
-ufoc:hasClaimMode
+ufoc:hasCommitmentMoment
     a owl:ObjectProperty ;
-    rdfs:subPropertyOf gufo:hasQuality ;
-    rdfs:label "has claim mode"@en ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
+    rdfs:label "has commitment moment"@en ;
+    rdfs:domain ufoc:SocialRelator ;
+    rdfs:range  ufoc:SocialCommitment ;
+    rdfs:comment
+        "Relateert de SocialRelator aan zijn plicht-Moment (SocialCommitment).
+         De SocialCommitment is een constituerend deel van de relator."@nl .
+
+ufoc:hasClaimMoment
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
+    rdfs:label "has claim moment"@en ;
+    rdfs:domain ufoc:SocialRelator ;
+    rdfs:range  ufoc:SocialClaim ;
+    rdfs:comment
+        "Relateert de SocialRelator aan zijn recht-Moment (SocialClaim).
+         De SocialClaim is een constituerend deel van de relator."@nl .
+
+# ── SocialCommitment: inherentie en externe afhankelijkheid ──────────────────
+
+ufoc:commitmentInheresIn
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
+    rdfs:subPropertyOf gufo:inheresIn ;
+    rdfs:label "commitment inheres in"@en ;
     rdfs:domain ufoc:SocialCommitment ;
-    rdfs:range  ufoc:ClaimMode .
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De SocialCommitment inhereert in de committed agent: deze draagt
+         de sociale verplichting als intrinsieke eigenschap."@nl .
+
+ufoc:commitmentDependsOn
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "externalDependence" ;
+    rdfs:subPropertyOf gufo:externallyDependsOn ;
+    rdfs:label "commitment depends on"@en ;
+    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De SocialCommitment is extern afhankelijk van de claimant agent:
+         zonder de claimant kan de commitment niet bestaan."@nl .
+
+# ── SocialClaim: inherentie en externe afhankelijkheid ───────────────────────
+
+ufoc:claimInheresIn
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
+    rdfs:subPropertyOf gufo:inheresIn ;
+    rdfs:label "claim inheres in"@en ;
+    rdfs:domain ufoc:SocialClaim ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De SocialClaim inhereert in de claimant agent: deze draagt het
+         sociale recht als intrinsieke eigenschap."@nl .
+
+ufoc:claimDependsOn
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "externalDependence" ;
+    rdfs:subPropertyOf gufo:externallyDependsOn ;
+    rdfs:label "claim depends on"@en ;
+    rdfs:domain ufoc:SocialClaim ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De SocialClaim is extern afhankelijk van de committed agent:
+         zonder de committed agent kan de claim niet bestaan."@nl .
 
 
 ###############################################################################
@@ -291,7 +380,6 @@ ufoc:hasClaimMode
 
 ufoc:SocialObject
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "SocialObject"@en , "Sociaal object"@nl ;
@@ -325,6 +413,8 @@ ufoc:NormativeSituation
 
 ufoc:instates
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "historicalDependence" ;
+    rdfs:subPropertyOf gufo:contributedToTrigger ;
     rdfs:label "instates"@en ;
     rdfs:domain ufoc:Norm ;
     rdfs:range  ufoc:NormativeSituation ;
@@ -371,12 +461,14 @@ ufoc:Delegatum
     a owl:Class ;
     rdf:type gufo:Relator ;
     gufo:ontoumlStereotype "relator" ;
-    rdfs:subClassOf ufoc:SocialCommitment ;
+    rdfs:subClassOf ufoc:SocialRelator ;
     rdfs:label "Delegatum"@en , "Delegatieverhouding"@nl ;
     rdfs:comment
-        "Een SocialCommitment waarbij de committed agent (delegatee) een
+        "Een SocialRelator waarbij de committed agent (delegatee) een
          doel van de claimant agent (delegator) overneemt en zich verbindt
-         dat doel na te streven namens de delegator."@nl .
+         dat doel na te streven namens de delegator.
+         DD-013 (revisie): Delegatum is een subklasse van SocialRelator
+         (niet meer van SocialCommitment)."@nl .
 
 ufoc:Delegator
     a owl:Class ;
@@ -398,6 +490,7 @@ ufoc:Delegatee
 
 ufoc:hasDelegator
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
     rdfs:subPropertyOf ufoc:hasClaimantAgent ;
     rdfs:label "has delegator"@en ;
     rdfs:domain ufoc:Delegatum ;
@@ -405,6 +498,7 @@ ufoc:hasDelegator
 
 ufoc:hasDelegatee
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
     rdfs:subPropertyOf ufoc:hasCommittedAgent ;
     rdfs:label "has delegatee"@en ;
     rdfs:domain ufoc:Delegatum ;
@@ -416,7 +510,9 @@ ufoc:hasDelegatedGoal
     rdfs:label "has delegated goal"@en ;
     rdfs:domain ufoc:Delegatum ;
     rdfs:range  gufo:Situation ;
-    rdfs:comment "De gewenste situatie die de delegator aan de delegatee overdraagt."@nl .
+    rdfs:comment
+        "De gewenste situatie die de delegator aan de delegatee overdraagt.
+         Geen OntoUML-relatie-stereotype: zie hasCommitmentContent (DD-026)."@nl .
 
 
 ###############################################################################
@@ -470,22 +566,39 @@ ufoc:CommitmentRevocationAction
 
 ufoc:createsCommitment
     a owl:ObjectProperty ;
-    rdfs:subPropertyOf gufo:broughtAbout ;
+    gufo:ontoumlStereotype "creation" ;
+    rdfs:subPropertyOf [ owl:inverseOf gufo:wasCreatedIn ] ;
     rdfs:label "creates commitment"@en ;
     rdfs:domain ufoc:CommitmentCreationAction ;
-    rdfs:range  ufoc:SocialCommitment .
+    rdfs:range  ufoc:SocialRelator ;
+    rdfs:comment
+        "De CommitmentCreationAction brengt een nieuwe SocialRelator tot
+         bestaan. Stereotype «creation» conform OntoUML; gUFO-verankering
+         via inverse van gufo:wasCreatedIn (DD-025)."@nl .
 
 ufoc:fulfillsCommitment
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "termination" ;
+    rdfs:subPropertyOf [ owl:inverseOf gufo:wasTerminatedIn ] ;
     rdfs:label "fulfills commitment"@en ;
     rdfs:domain ufoc:CommitmentFulfillmentAction ;
-    rdfs:range  ufoc:SocialCommitment .
+    rdfs:range  ufoc:SocialRelator ;
+    rdfs:comment
+        "De CommitmentFulfillmentAction beëindigt een SocialRelator doordat
+         de propositionele inhoud is verwezenlijkt. Stereotype «termination»;
+         gUFO-verankering via inverse van gufo:wasTerminatedIn (DD-025)."@nl .
 
 ufoc:revokesCommitment
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "termination" ;
+    rdfs:subPropertyOf [ owl:inverseOf gufo:wasTerminatedIn ] ;
     rdfs:label "revokes commitment"@en ;
     rdfs:domain ufoc:CommitmentRevocationAction ;
-    rdfs:range  ufoc:SocialCommitment .
+    rdfs:range  ufoc:SocialRelator ;
+    rdfs:comment
+        "De CommitmentRevocationAction herroept een SocialRelator eenzijdig.
+         Stereotype «termination»; gUFO-verankering via inverse van
+         gufo:wasTerminatedIn (DD-025)."@nl .
 
 
 ###############################################################################
@@ -495,6 +608,7 @@ ufoc:revokesCommitment
 # An agent's commitment content — shortcut
 ufoc:hasCommitmentTowards
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "material" ;
     rdfs:label "has commitment towards"@en ;
     rdfs:domain ufoc:Agent ;
     rdfs:range  ufoc:Agent ;
@@ -504,12 +618,13 @@ ufoc:hasCommitmentTowards
     ) ;
     rdfs:comment
         "Afgeleide eigenschap: A has commitment towards B als er een
-         SocialCommitment bestaat waarbij A de committed agent is en
+         SocialRelator bestaat waarbij A de committed agent is en
          B de claimant agent."@nl .
 
 # Agent's intentional mode — via characterizes
 ufoc:hasIntentionalMode
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:subPropertyOf gufo:hasQuality ;
     rdfs:label "has intentional mode"@en ;
     rdfs:domain ufoc:Agent ;
@@ -520,6 +635,7 @@ ufoc:hasIntentionalMode
 
 ufoc:hasGoal
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:subPropertyOf ufoc:hasIntentionalMode ;
     rdfs:label "has goal"@en ;
     rdfs:domain ufoc:Agent ;
@@ -527,6 +643,7 @@ ufoc:hasGoal
 
 ufoc:hasInterest
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:subPropertyOf ufoc:hasIntentionalMode ;
     rdfs:label "has interest"@en ;
     rdfs:domain ufoc:Agent ;
@@ -534,6 +651,7 @@ ufoc:hasInterest
 
 ufoc:hasConcern
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:subPropertyOf ufoc:hasIntentionalMode ;
     rdfs:label "has concern"@en ;
     rdfs:domain ufoc:Agent ;
@@ -541,6 +659,7 @@ ufoc:hasConcern
 
 ufoc:hasBelief
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:subPropertyOf ufoc:hasIntentionalMode ;
     rdfs:label "has belief"@en ;
     rdfs:domain ufoc:Agent ;
@@ -568,10 +687,11 @@ ufoc:hasBelief
 ufoc:_shacl_constraints
     rdfs:comment
         """Constraints (see SHACL file):
-        C1: SocialCommitment mediates exactly 2 distinct Agents.
-        C2: CommitmentMode inheres in the committedAgent.
-        C3: ClaimMode inheres in the claimantAgent.
-        C4: SocialRole must participate in ≥1 SocialCommitment.
+        C1: SocialRelator mediates exactly 2 distinct Agents
+            (hasCommittedAgent ≠ hasClaimantAgent).
+        C2: SocialCommitment.commitmentInheresIn = SocialRelator.hasCommittedAgent.
+        C3: SocialClaim.claimInheresIn = SocialRelator.hasClaimantAgent.
+        C4: SocialRole must participate in ≥1 SocialRelator.
         C5: IntentionalMode.hasPropositionalContent → Situation.""" .
 
 

@@ -1,4 +1,4 @@
-@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
 @prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
@@ -9,7 +9,7 @@
 @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
-# VALOR-O — Module 00c: UFO-L  (Legal Relations)
+# VALOR-O — Module 00d: UFO-L  (Legal Relations)
 #
 # Purpose : Formalise the normative/legal layer of VALOR-O.
 #           Covers: LegalSubject, LegalObject, LegalRelation (Hohfeld's
@@ -28,17 +28,27 @@
 #               of rights/duties inhering in an agent via delegation,
 #               distinct from the policy document as artifact.
 #
+# Module structuur (na invoeging UFO-B — DD-019):
+#   00a-gufo-core.ttl → 00b-ufo-b.ttl → 00c-ufo-c.ttl → 00d-ufo-l.ttl
+#
+# DESIGN DECISIONS (zie DESIGN-DECISIONS.md):
+#   DD-016 · Policy vs. PolicyDocument (Weigand 2024)
+#   DD-017 · Hohfeld-implementatie met enforceability-gradaties
+#   DD-018 · LegalObject als verplicht gegeven bij elke LegalRelator
+#   DD-019 · Module-nummering na invoeging UFO-B
+#
 # Sources : Guizzardi et al. (2015), UFO-L: An Ontological Account of
 #             Legal Relationships.
 #           Ausems, Bulles, Lokin (2021), Wetsanalyse.
 #           Weigand et al. (2024), VMBO 2024, CEUR-WS Vol. 3821.
 #
-# Imports : 00a-gufo-core.ttl, 00b-ufo-c.ttl
+# Imports : 00a-gufo-core.ttl, 00b-ufo-b.ttl, 00c-ufo-c.ttl
 ###############################################################################
 
 vo:ufo-l
     a owl:Ontology ;
     owl:imports vo:gufo-core ;
+    owl:imports vo:ufo-b ;
     owl:imports vo:ufo-c ;
     dcterms:title "VALOR-O — UFO-L Legal Relations"@nl ;
     dcterms:description
@@ -80,8 +90,8 @@ ufol:LegalSubject
 
 ufol:NaturalPersonSubject
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    gufo:ontoumlStereotype "subkind" ;
+    rdf:type gufo:EventType ;
+    gufo:ontoumlStereotype "event" ;
     rdfs:subClassOf ufol:LegalSubject ;
     rdfs:label "NaturalPersonSubject"@en , "Natuurlijk persoon"@nl ;
     rdfs:comment
@@ -210,6 +220,8 @@ ufol:NormativeSituation
 
 ufol:instatesNormativeSituation
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "historicalDependence" ;
+    rdfs:subPropertyOf gufo:contributedToTrigger ;
     rdfs:label "instates normative situation"@en ;
     rdfs:domain ufol:LegalNorm ;
     rdfs:range  ufol:NormativeSituation ;
@@ -219,6 +231,8 @@ ufol:instatesNormativeSituation
 
 ufol:hasLegalBasis
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "historicalDependence" ;
+    rdfs:subPropertyOf gufo:historicallyDependsOn ;
     rdfs:label "has legal basis"@en ;
     rdfs:domain ufol:NormativeSituation ;
     rdfs:range  ufol:LegalNorm ;
@@ -244,17 +258,20 @@ ufol:LegalRelator
     a owl:Class ;
     rdf:type gufo:Relator ;
     gufo:ontoumlStereotype "relator" ;
-    rdfs:subClassOf gufo:Relator ;
+    rdfs:subClassOf ufoc:SocialRelator ;
     rdfs:label "LegalRelator"@en , "Rechtsbetrekking"@nl ;
     rdfs:comment
-        "Een Relator die een juridische verhouding uitdrukt tussen twee
+        "Een SocialRelator die een juridische verhouding uitdrukt tussen twee
          LegalSubjects. Medieert een rechthebbende (right-holder) en een
-         plichthebbende (duty-bearer). Wetsanalyse: 'een juridische relatie
-         tussen twee rechtssubjecten en beschrijft een specifieke juridische
-         toestand'."@nl .
+         plichthebbende (duty-bearer). Specialisatie van SocialRelator:
+         de juridische band is een bijzondere vorm van sociale band.
+         Wetsanalyse: 'een juridische relatie tussen twee rechtssubjecten
+         en beschrijft een specifieke juridische toestand'.
+         DD-027: LegalRelator subClassOf ufoc:SocialRelator."@nl .
 
 ufol:hasRightHolder
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
     rdfs:subPropertyOf gufo:mediates ;
     rdfs:label "has right holder"@en , "heeft rechthebbende"@nl ;
     rdfs:domain ufol:LegalRelator ;
@@ -262,6 +279,7 @@ ufol:hasRightHolder
 
 ufol:hasDutyBearer
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
     rdfs:subPropertyOf gufo:mediates ;
     rdfs:label "has duty bearer"@en , "heeft plichthebbende"@nl ;
     rdfs:domain ufol:LegalRelator ;
@@ -269,6 +287,8 @@ ufol:hasDutyBearer
 
 ufol:hasLegalObject
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
     rdfs:label "has legal object"@en , "heeft rechtsobject"@nl ;
     rdfs:domain ufol:LegalRelator ;
     rdfs:range  ufol:LegalObject ;
@@ -278,6 +298,8 @@ ufol:hasLegalObject
 
 ufol:hasTemporalScope
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
+    rdfs:subPropertyOf gufo:hasQuality ;
     rdfs:label "has temporal scope"@en ;
     rdfs:domain ufol:LegalRelator ;
     rdfs:range  ufol:TemporalCondition ;
@@ -289,37 +311,49 @@ ufol:hasTemporalScope
 
 ufol:RightMode
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
-    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:subClassOf ufoc:SocialClaim ;
     rdfs:label "RightMode"@en , "Recht (modus)"@nl ;
     rdfs:comment
-        "De intrinsieke modus die de rechthebbende draagt als gevolg van
-         de LegalRelator: zijn recht op nakoming door de plichthebbende."@nl .
+        "De ExtrinsicMode die de rechthebbende draagt als gevolg van de
+         LegalRelator: zijn recht op nakoming door de plichthebbende.
+         Specialisatie van SocialClaim: het juridische recht is een
+         bijzondere vorm van sociale aanspraak.
+         DD-027: RightMode subClassOf ufoc:SocialClaim."@nl .
 
 ufol:DutyMode
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
-    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:subClassOf ufoc:SocialCommitment ;
     rdfs:label "DutyMode"@en , "Plicht (modus)"@nl ;
     rdfs:comment
-        "De intrinsieke modus die de plichthebbende draagt als gevolg
-         van de LegalRelator: zijn juridische verplichting."@nl .
+        "De ExtrinsicMode die de plichthebbende draagt als gevolg van de
+         LegalRelator: zijn juridische verplichting.
+         Specialisatie van SocialCommitment: de juridische plicht is een
+         bijzondere vorm van sociale toezegging.
+         DD-027: DutyMode subClassOf ufoc:SocialCommitment."@nl .
 
 ufol:hasRightMode
     a owl:ObjectProperty ;
-    rdfs:subPropertyOf gufo:hasQuality ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf ufoc:hasClaimMoment ;
     rdfs:label "has right mode"@en ;
     rdfs:domain ufol:LegalRelator ;
-    rdfs:range  ufol:RightMode .
+    rdfs:range  ufol:RightMode ;
+    rdfs:comment
+        "Relateert de LegalRelator aan zijn RightMode (het recht-Moment).
+         Specialisatie van ufoc:hasClaimMoment."@nl .
 
 ufol:hasDutyMode
     a owl:ObjectProperty ;
-    rdfs:subPropertyOf gufo:hasQuality ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf ufoc:hasCommitmentMoment ;
     rdfs:label "has duty mode"@en ;
     rdfs:domain ufol:LegalRelator ;
-    rdfs:range  ufol:DutyMode .
+    rdfs:range  ufol:DutyMode ;
+    rdfs:comment
+        "Relateert de LegalRelator aan zijn DutyMode (het plicht-Moment).
+         Specialisatie van ufoc:hasCommitmentMoment."@nl .
 
 
 ###############################################################################
@@ -344,6 +378,7 @@ ufol:ClaimRightRelator
 
 ufol:EnforceabilityLevel
     a owl:Class ;
+    gufo:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "EnforceabilityLevel"@en , "Afdwingbaarheidsniveau"@nl ;
     rdfs:comment
@@ -366,6 +401,8 @@ ufol:WeakClaim
 
 ufol:hasEnforceability
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "structuration" ;
+    rdfs:subPropertyOf gufo:hasQuality ;
     rdfs:label "has enforceability"@en ;
     rdfs:domain ufol:ClaimRightRelator ;
     rdfs:range  ufol:EnforceabilityLevel .
@@ -387,6 +424,7 @@ ufol:CompetenceRelator
 
 ufol:CompetenceType
     a owl:Class ;
+    gufo:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "CompetenceType"@en , "Bevoegdheidstype"@nl .
 
@@ -406,6 +444,8 @@ ufol:DiscretionaryCompetence
 
 ufol:hasCompetenceType
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "structuration" ;
+    rdfs:subPropertyOf gufo:hasQuality ;
     rdfs:label "has competence type"@en ;
     rdfs:domain ufol:CompetenceRelator ;
     rdfs:range  ufol:CompetenceType .
@@ -464,22 +504,42 @@ ufol:LegalFact
 
 ufol:createsLegalRelation
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "creation" ;
+    rdfs:subPropertyOf [ owl:inverseOf gufo:wasCreatedIn ] ;
     rdfs:label "creates legal relation"@en ;
     rdfs:domain ufol:LegalFact ;
     rdfs:range  ufol:LegalRelator ;
-    rdfs:comment "Het rechtsfeit doet een nieuwe LegalRelator ontstaan."@nl .
+    rdfs:comment
+        "Het rechtsfeit doet een nieuwe LegalRelator ontstaan.
+         Stereotype «creation»; gUFO-verankering via inverse van
+         gufo:wasCreatedIn (DD-025)."@nl .
 
 ufol:modifiesLegalRelation
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "historicalDependence" ;
+    rdfs:subPropertyOf gufo:historicallyDependsOn ;
     rdfs:label "modifies legal relation"@en ;
     rdfs:domain ufol:LegalFact ;
-    rdfs:range  ufol:LegalRelator .
+    rdfs:range  ufol:LegalRelator ;
+    rdfs:comment
+        "Convenience property: het rechtsfeit wijzigt een LegalRelator.
+         Ontologisch patroon (DD-028): modificatie is terminatie van de
+         oude LegalRelator + creatie van een nieuwe LegalRelator + een
+         historicalDependence van de nieuwe op de oude. Deze property
+         drukt de historische afhankelijkheidsrelatie uit.
+         Stereotype «historicalDependence»."@nl .
 
 ufol:terminatesLegalRelation
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "termination" ;
+    rdfs:subPropertyOf [ owl:inverseOf gufo:wasTerminatedIn ] ;
     rdfs:label "terminates legal relation"@en ;
     rdfs:domain ufol:LegalFact ;
-    rdfs:range  ufol:LegalRelator .
+    rdfs:range  ufol:LegalRelator ;
+    rdfs:comment
+        "Het rechtsfeit beëindigt een bestaande LegalRelator.
+         Stereotype «termination»; gUFO-verankering via inverse van
+         gufo:wasTerminatedIn (DD-025)."@nl .
 
 # ── 6a: Rechtshandeling ───────────────────────────────────────────────────────
 
@@ -574,7 +634,6 @@ ufol:triggerDuration
 
 ufol:TemporalCondition
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "TemporalCondition"@en , "Tijdsaanduiding"@nl ;
@@ -632,7 +691,6 @@ ufol:hasEndDate
 
 ufol:DomainVariable
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "DomainVariable"@en , "Variabele"@nl ;
@@ -644,6 +702,7 @@ ufol:DomainVariable
 
 ufol:DomainVariableValue
     a owl:Class ;
+    gufo:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:QualityValue ;
     rdfs:label "DomainVariableValue"@en , "Variabelewaarde"@nl ;
     rdfs:comment
@@ -652,7 +711,6 @@ ufol:DomainVariableValue
 
 ufol:LegalParameter
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
     rdfs:subClassOf ufol:DomainVariable ;
     rdfs:label "LegalParameter"@en , "Parameter"@nl ;
@@ -665,6 +723,7 @@ ufol:LegalParameter
 
 ufol:LegalParameterValue
     a owl:Class ;
+    gufo:ontoumlStereotype "quality" ;
     rdfs:subClassOf ufol:DomainVariableValue ;
     rdfs:label "LegalParameterValue"@en , "Parameterwaarde"@nl ;
     rdfs:comment
@@ -673,6 +732,8 @@ ufol:LegalParameterValue
 
 ufol:hasVariableValue
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "structuration" ;
+    rdfs:subPropertyOf gufo:hasQualityValue ;
     rdfs:label "has variable value"@en ;
     rdfs:domain ufol:DomainVariable ;
     rdfs:range  ufol:DomainVariableValue .
@@ -727,24 +788,32 @@ ufol:CalculationRule
 
 ufol:hasInputVariable
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasQuality ;
     rdfs:label "has input variable"@en ;
     rdfs:domain ufol:DerivationRule ;
     rdfs:range  ufol:DomainVariable ;
     rdfs:comment
         "Een DomainVariable die als invoervariabele wordt gebruikt in de
-         afleidingsregel."@nl .
+         afleidingsregel. Stereotype «componentOf»: de variabele is een
+         constituerend onderdeel van de regel."@nl .
 
 ufol:hasOutputVariable
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasQuality ;
     rdfs:label "has output variable"@en ;
     rdfs:domain ufol:DerivationRule ;
     rdfs:range  ufol:DomainVariable ;
     rdfs:comment
         "De DomainVariable (uitvoervariabele) die door de afleidingsregel
-         wordt bepaald."@nl .
+         wordt bepaald. Stereotype «componentOf»: de variabele is een
+         constituerend onderdeel van de regel."@nl .
 
 ufol:derivesRelator
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "derivation" ;
+    rdfs:subPropertyOf gufo:contributedToTrigger ;
     rdfs:label "derives relator"@en ;
     rdfs:domain ufol:DerivationRule ;
     rdfs:range  ufol:LegalRelator ;
@@ -754,6 +823,8 @@ ufol:derivesRelator
 
 ufol:dependsOnRule
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "historicalDependence" ;
+    rdfs:subPropertyOf gufo:historicallyDependsOn ;
     rdfs:label "depends on rule"@en ;
     rdfs:domain ufol:DerivationRule ;
     rdfs:range  ufol:DerivationRule ;
@@ -764,12 +835,15 @@ ufol:dependsOnRule
 
 ufol:hasCondition
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasPropositionalContent ;
     rdfs:label "has condition"@en ;
     rdfs:domain ufol:DerivationRule ;
     rdfs:range  ufol:LegalCondition ;
     rdfs:comment
         "De voorwaarde(n) waaronder de afleidingsregel van toepassing is
-         (Wetsanalyse element 5)."@nl .
+         (Wetsanalyse element 5). Stereotype «componentOf»: de LegalCondition
+         is een constituerend onderdeel van de DerivationRule."@nl .
 
 # ── Condition (Voorwaarde, Wetsanalyse element 5) ─────────────────────────────
 
@@ -802,9 +876,15 @@ ufol:AlternativeCondition
 
 ufol:hasSubCondition
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasPropositionalContent ;
     rdfs:label "has sub-condition"@en ;
     rdfs:domain ufol:LegalCondition ;
-    rdfs:range  ufol:LegalCondition .
+    rdfs:range  ufol:LegalCondition ;
+    rdfs:comment
+        "Deelcondities van een samengestelde LegalCondition (AND/OR-boom).
+         Stereotype «componentOf» (Situation→Situation): de deelcondities
+         zijn constituerende onderdelen van de samengestelde conditie."@nl .
 
 
 ###############################################################################
@@ -867,55 +947,74 @@ ufol:allowsSubdelegation
 
 ufol:DelegationFulfillment
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    gufo:ontoumlStereotype "subkind" ;
-    rdfs:subClassOf ufol:LegalNorm ;
+    rdf:type gufo:EventType ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:Event ;
     rdfs:label "DelegationFulfillment"@en , "Delegatie-invulling"@nl ;
     rdfs:comment
         "De concrete regeling of het regelingsonderdeel waarin de
          DelegationAuthority is ingevuld (bijv. een AMvB, ministeriële
-         regeling of beleidsregel). Wetsanalyse element 15."@nl .
+         regeling of beleidsregel). Wetsanalyse element 15.
+         Gecorrigeerd stereotype: «event» i.p.v. «subkind» — dit is een
+         Event-subklasse, geen Endurant-subklasse (DD-026)."@nl .
 
 ufol:fulfillsDelegation
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "termination" ;
+    rdfs:subPropertyOf [ owl:inverseOf gufo:wasTerminatedIn ] ;
     rdfs:label "fulfills delegation"@en ;
     rdfs:domain ufol:DelegationFulfillment ;
     rdfs:range  ufol:DelegationAuthority ;
     rdfs:comment
         "Expliciete terugverwijzing van de delegatie-invulling naar
-         de delegatiegrondslag in de bovenliggende wet. Wetsanalyse:
-         'het is praktisch als de wetgever in de delegatie-invulling
+         de delegatiegrondslag in de bovenliggende wet: de DelegationAuthority
+         wordt 'ingevuld' en daarmee beëindigd als open verplichting.
+         Stereotype «termination» (Event→Relator, DD-025).
+         Wetsanalyse: 'het is praktisch als de wetgever in de delegatie-invulling
          uitdrukkelijk verwijst naar de delegatiegrondslag'."@nl .
 
 
 ###############################################################################
 # ── 11. POLICY (Weigand 2024) ─────────────────────────────────────────────────
 #
-#  A Policy is NOT a document or a description. It is a bundle of
-#  rights and duties (RightMode and DutyMode IntrinsicModes) that inheres
-#  in an InstitutionalAgent via a Delegatum (UFO-C delegation relator).
+#  A Policy is an ExtrinsicMode: it inheres in one InstitutionalAgent (the
+#  bearer/organizer) and is externally dependent on the agents it addresses
+#  (the organizational agents whose behaviour it governs).
 #
-#  Weigand's key distinction:
-#    - Policy (ufol:Policy)       — the normative entity (what obliges)
+#  This follows directly from Weigand (2024) §4.1:
+#    "The policy is a mode of the Organizer; and since it also externally
+#     dependent on the Organizational Agent, it is positioned as part of
+#     the Organization relator."
+#
+#  Consequence: Policy is NOT a specialisation of ufoc:SocialObject or
+#  ufoc:Norm (both IntrinsicModes). Policy and Norm are sibling concepts:
+#    - Norm     (IntrinsicMode) — inheres in a collective agent as a whole;
+#                                 no identified external dependant
+#    - Policy   (ExtrinsicMode) — inheres in the organizer/delegator AND
+#                                 is externally dependent on the addressee
+#
+#  NB: Modes (IntrinsicMode and ExtrinsicMode) receive NO punning type in
+#  gUFO 1.0 — the Taxonomy of Types covers Endurant Types (Kind, Role, etc.)
+#  and Event/Situation Types, but has no ModeType. (DD-029, DD-032)
+#
+#  Weigand's key distinction (maintained):
+#    - Policy (ufol:Policy)           — the normative entity (what obliges)
 #    - PolicyDocument (ufol:PolicyDocument) — the artifact that describes it
-#
-#  This resolves the tension in VALOR-O between policy-as-obligation
-#  and policy-as-text.
 ###############################################################################
 
 ufol:Policy
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
     gufo:ontoumlStereotype "mode" ;
-    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:subClassOf gufo:ExtrinsicMode ;
     rdfs:label "Policy"@en , "Beleid (normatief)"@nl ;
     rdfs:comment
-        "Een bundel van rechten en plichten (RightMode en DutyMode
-         IntrinsicModes) die inhereert aan een institutionele agent via
-         een delegatieverhouding (Delegatum). Weigand (2024): 'a policy
-         is NOT a normative description but a bundle of rights and duties
-         inhering in an organizational agent'. Onderscheiden van het
-         beleidsdocument."@nl .
+        "Een bundel van rechten en plichten (RightMode en DutyMode) die
+         inhereert aan de institutionele agent (organisator/delegator) en
+         extern afhankelijk is van de geadresseerde organisatorische agent.
+         ExtrinsicMode conform Weigand (2024) §4.1.
+         GEEN specialisatie van ufoc:Norm of ufoc:SocialObject: Norm is een
+         IntrinsicMode van een collectieve agent; Policy is een ExtrinsicMode
+         met twee onderscheiden partijen. (DD-032)"@nl .
 
 ufol:PolicyDocument
     a owl:Class ;
@@ -927,30 +1026,48 @@ ufol:PolicyDocument
         "Een informatieobject (artefact) dat een Policy beschrijft maar
          er niet mee identiek is. Weigand (2024): het document draagt de
          Policy, maar de Policy zelf is een normatieve entiteit die
-         inhereert aan de organisatie."@nl .
+         inhereert aan de organisatie. Wijziging van het document wijzigt
+         niet automatisch de Policy."@nl .
 
 ufol:describedByDocument
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "externalDependence" ;
     rdfs:label "described by document"@en ;
     rdfs:domain ufol:Policy ;
     rdfs:range  ufol:PolicyDocument ;
     rdfs:comment
         "Relateert een Policy aan het PolicyDocument dat haar beschrijft.
-         De relatie is niet-identiteit: wijziging van het document wijzigt
-         niet automatisch de Policy (die vereist een nieuwe Delegatum)."@nl .
+         Geen UFO-subproperty: er is geen passende gUFO-property voor de
+         relatie tussen een ExtrinsicMode en een beschrijvend artefact.
+         (DD-032)"@nl .
 
 ufol:policyInheresIn
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:subPropertyOf gufo:inheresIn ;
     rdfs:label "policy inheres in"@en ;
     rdfs:domain ufol:Policy ;
     rdfs:range  ufoc:InstitutionalAgent ;
     rdfs:comment
-        "De institutionele agent (organisatie) in wie de Policy inhereert
-         via de delegatieverhouding."@nl .
+        "De institutionele agent (organisator/delegator) in wie de Policy
+         als ExtrinsicMode inhereert. Primaire afhankelijkheid."@nl .
+
+ufol:policyDependsOn
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "externalDependence" ;
+    rdfs:subPropertyOf gufo:externallyDependsOn ;
+    rdfs:label "policy depends on"@en ;
+    rdfs:domain ufol:Policy ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De geadresseerde agent op wie de Policy van toepassing is en van
+         wie de Policy extern afhankelijk is. Externe afhankelijkheid
+         conform ExtrinsicMode-patroon (DD-032)."@nl .
 
 ufol:policyGroundedIn
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "historicalDependence" ;
+    rdfs:subPropertyOf gufo:historicallyDependsOn ;
     rdfs:label "policy grounded in"@en ;
     rdfs:domain ufol:Policy ;
     rdfs:range  ufol:DelegationAuthority ;
@@ -960,15 +1077,27 @@ ufol:policyGroundedIn
 
 ufol:policyContainsRight
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
     rdfs:label "policy contains right"@en ;
     rdfs:domain ufol:Policy ;
-    rdfs:range  ufol:RightMode .
+    rdfs:range  ufol:RightMode ;
+    rdfs:comment
+        "De RightMode is een constituerend Moment van de Policy-bundel.
+         subPropertyOf gufo:hasProperPart (niet hasQuality: Policy is
+         geen Endurant-bearer van een Quality, maar een bundel Moments).
+         (DD-032)"@nl .
 
 ufol:policyContainsDuty
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
     rdfs:label "policy contains duty"@en ;
     rdfs:domain ufol:Policy ;
-    rdfs:range  ufol:DutyMode .
+    rdfs:range  ufol:DutyMode ;
+    rdfs:comment
+        "De DutyMode is een constituerend Moment van de Policy-bundel.
+         subPropertyOf gufo:hasProperPart (DD-032)."@nl .
 
 
 ###############################################################################
@@ -1018,6 +1147,7 @@ ufol:sourceArticle
 
 ufol:hasRight
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:label "has right"@en ;
     rdfs:domain ufol:LegalSubject ;
     rdfs:range  ufol:RightMode ;
@@ -1031,6 +1161,7 @@ ufol:hasRight
 
 ufol:hasDuty
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "characterization" ;
     rdfs:label "has duty"@en ;
     rdfs:domain ufol:LegalSubject ;
     rdfs:range  ufol:DutyMode ;
@@ -1044,12 +1175,16 @@ ufol:hasDuty
 
 ufol:isSubjectOf
     a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "material" ;
+    rdfs:subPropertyOf gufo:participatedIn ;
     rdfs:label "is subject of"@en ;
     rdfs:domain ufol:LegalSubject ;
     rdfs:range  ufol:LegalRelator ;
     rdfs:comment
         "Relateert een rechtssubject aan alle LegalRelators waarbij het
-         betrokken is (als rechthebbende of plichthebbende)."@nl .
+         betrokken is (als rechthebbende of plichthebbende). Stereotype
+         «material»: afgeleide materiële relatie die het bestaan van de
+         LegalRelator-mediatie weerspiegelt."@nl .
 
 
 ###############################################################################

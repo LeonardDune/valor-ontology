@@ -1,0 +1,395 @@
+###############################################################################
+#  VALOR-O — Module 00f: COVER Value Ascription Ontology (uitbouw)
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/cover#  (prefix cover:)
+#  Versie     : 0.1  (februari 2026)
+#  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00e-coodm
+#
+#  Bron:
+#    Sales, T.P., Guarino, N., Guizzardi, G. & Mylopoulos, J. (2017).
+#    An Ontological Analysis of Value Propositions. EDOC 2017.
+#    [verwijst terug naar] Andersson et al. (2016), VAO.
+#
+#  Relatie tot 00e:
+#    Module 00e (coodm) bevat de kern van COVER: ValueExperience, ValueType,
+#    ValueAscription, ValueBeholder, ValueBeneficiary, ValueTension,
+#    ValueScale, Preference. Module 00f bouwt daarop voort:
+#
+#    §A  ValueObject en ValueBearer
+#    §B  VAComponent, Benefit, Sacrifice
+#    §C  ValueProposition (BusinessVP en OfferingVP)
+#    §D  Properties
+#
+#  Ontwerpbeslissingen:
+#    DD-037 · ValueProposition als subtype van cover:ValueAssertion
+#    DD-038 · VAComponent als Relator met Benefit/Sacrifice subtypen
+#    DD-039 · ValueObject als RoleMixin (substantial in de rol van waarde-drager)
+###############################################################################
+
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+<https://valor-ecosystem.nl/ontology/cover>
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00f — COVER Value Ascription Ontology (uitbouw)"@en ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-b> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/coodm> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        "Uitbouw van de VAO conform Sales et al. (2017): ValueObject,
+         VAComponent (Benefit/Sacrifice) en ValueProposition.
+         Fundeert het Axia-perspectief in VALOR volledig."@nl .
+
+
+###############################################################################
+#  §A — ValueObject en ValueBearer
+#
+#  In Sales §4 / Fig. 1 onderscheidt de VAO twee soorten waarde-dragers
+#  (ValueBearers):
+#    - ValueExperience : een event (gemodelleerd in 00e)
+#    - ValueObject     : een substantial (goed, dienst, besluit)
+#
+#  Een ValueExperience wordt altijd 'enabled by' een ValueObject: je kunt
+#  een streamingervaring niet hebben zonder het streamingplatform.
+#
+#  ValueBearer is de overkoepelende RoleMixin (Fig. 1): zowel
+#  ValueExperiences als ValueObjects kunnen de rol van ValueBearer spelen
+#  in een ValueAscription.
+###############################################################################
+
+###############################################################################
+#  §A1 — ValueBearer  (RoleMixin)
+#
+#  Conform Sales Fig. 1: "<<roleMixin>> ValueBearer" — het overkoepelende
+#  concept voor alles waaraan waarde kan worden toegeschreven. Twee subtypen:
+#  ValueExperience (event, in 00e) en ValueObject (substantial, §A2).
+###############################################################################
+
+cover:ValueBearer
+    a owl:Class ;
+    rdf:type gufo:RoleMixin ;
+    gufo:ontoumlStereotype "roleMixin" ;
+    rdfs:subClassOf gufo:RoleMixin ;
+    rdfs:label "ValueBearer"@en , "Waarde-drager"@nl ;
+    rdfs:comment
+        "Het overkoepelende concept voor entiteiten waaraan waarde kan worden
+         toegeschreven. Twee subtypen conform Sales et al. (2017) Fig. 1:
+         (a) cover:ValueExperience — een event (in 00e);
+         (b) cover:ValueObject — een substantial (goed, dienst, besluit).
+         (DD-039)"@nl .
+
+
+###############################################################################
+#  §A2 — ValueObject  (RoleMixin op Object)
+#
+#  Een substantial (goed, dienst, besluit, informatieobject) dat de rol van
+#  waarde-drager speelt. Conform Sales §4: "value objects are substantials
+#  in UFO (entities that keep their identity in time)."
+#
+#  ValueObject is een RoleMixin op gufo:Object. Een specifiek goed (bijv.
+#  een vergunning, een zorgaanbod, een uitkering) speelt de ValueObject-rol
+#  in de context van een waarde-beoordeling.
+#
+#  Relatie tot ValueExperience: een ValueExperience (event) is typisch
+#  het gebruik/ontvangen/ondergaan van een ValueObject. De ValueExperience
+#  is de 'ultimate bearer' van de waarde-beoordeling; het ValueObject is
+#  de entiteit die de experience 'enables'.
+###############################################################################
+
+cover:ValueObject
+    a owl:Class ;
+    rdf:type gufo:RoleMixin ;
+    gufo:ontoumlStereotype "roleMixin" ;
+    rdfs:subClassOf gufo:RoleMixin ;
+    rdfs:label "ValueObject"@en , "Waardeobject"@nl ;
+    rdfs:comment
+        "Een substantial (goed, dienst, besluit) dat de rol van waarde-drager
+         speelt. Conform Sales et al. (2017) §4: 'value objects are
+         substantials in UFO — entities that keep their identity in time.'
+         Een ValueExperience (event) is typisch het gebruik of ondergaan
+         van een ValueObject: cover:enabledBy relateert de twee.
+         (DD-039)"@nl .
+
+
+###############################################################################
+#  §B — VAComponent, Benefit, Sacrifice
+#
+#  Conform Sales §4 / Fig. 2: een ValueAscription is een aggregaat van
+#  'smaller judgments', de ValueAscription Components (VAComponents).
+#  Elke VAComponent focust op één MentalAspect van de ValueBeholder en
+#  brengt de relevante kwaliteiten van de ValueExperience in verband met
+#  dat mentale aspect.
+#
+#  Twee subtypen:
+#    Benefit   — positief component: de experience voldoet aan een MentalAspect
+#    Sacrifice — negatief component: de experience kost iets (geld, moeite, risico)
+#
+#  Sales §3 (Kambil et al.): drie soorten kosten naast prijs:
+#    risico, moeite, en opportunity cost.
+#
+#  Modellering: VAComponent is een Relator die medieert tussen:
+#    - de ValueAscription (de overkoepelende beoordeling)
+#    - het MentalAspect dat de focus is (ufoc:IntentionalMode)
+#    - de ValueExperience waarover wordt geoordeeld
+###############################################################################
+
+###############################################################################
+#  §B1 — VAComponent
+###############################################################################
+
+cover:VAComponent
+    a owl:Class ;
+    rdf:type gufo:RelationshipType ;
+    gufo:ontoumlStereotype "relator" ;
+    rdfs:subClassOf gufo:Relator ;
+    rdfs:label "VAComponent"@en , "Waarde-ascriptiecomponent"@nl ;
+    rdfs:comment
+        "Een component van een ValueAscription: een deelbeoordeling die
+         focust op één MentalAspect (doel, wens, zorg) van de ValueBeholder
+         en de kwaliteiten van de ValueExperience daarmee in verband brengt.
+         Een ValueAscription is opgebouwd uit één of meer VAComponents.
+         Conform Sales et al. (2017) §4/Fig. 2. (DD-038)"@nl .
+
+
+###############################################################################
+#  §B2 — Benefit (subtype VAComponent)
+###############################################################################
+
+cover:Benefit
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf cover:VAComponent ;
+    rdfs:label "Benefit"@en , "Baat"@nl ;
+    rdfs:comment
+        "Een positief VAComponent: de ValueExperience voldoet (geheel of
+         gedeeltelijk) aan het relevante MentalAspect van de ValueBeholder.
+         Conform Sales et al. (2017) §4: 'benefits are value-generating
+         aspects of the experience.' (DD-038)"@nl .
+
+
+###############################################################################
+#  §B3 — Sacrifice (subtype VAComponent)
+###############################################################################
+
+cover:Sacrifice
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf cover:VAComponent ;
+    rdfs:label "Sacrifice"@en , "Offer"@nl ;
+    rdfs:comment
+        "Een negatief VAComponent: de ValueExperience vereist een opoffering
+         (prijs, risico, moeite, opportunity cost) van de ValueBeholder/
+         ValueBeneficiary. Conform Kambil et al. (1996) zoals geciteerd in
+         Sales et al. (2017) §3: kosten bestaan uit prijs, risico en moeite.
+         (DD-038)"@nl .
+
+
+###############################################################################
+#  §C — ValueProposition
+#
+#  Conform Sales §5.1 / Fig. 4: een ValueProposition is een specifiek type
+#  ValueAssertion waarbij een bedrijf/organisatie (de ValueBeholder) een
+#  oordeel velt over de waarde die een marktsegment (de ValueBeneficiary)
+#  zal toekennen aan de ervaringen die een Offering mogelijk maakt.
+#
+#  Cruciale onderscheidingen (Sales §5):
+#    - VP ≠ Offering: een VP beantwoordt WATom en WAAROM klanten kiezen;
+#      een Offering beschrijft HOE waarde wordt geleverd.
+#    - BusinessVP vs. OfferingVP: twee abstractieniveaus.
+#
+#  In VALOR-context: een ValueProposition is de expliciete claim van een
+#  publieke organisatie over de waarde die burgers zullen ervaren bij het
+#  afnemen van een publieke dienst. Dit is de brug tussen Axia (waarden)
+#  en Acta (dienstverlening / transactiepatroon).
+###############################################################################
+
+###############################################################################
+#  §C1 — ValueProposition
+###############################################################################
+
+cover:ValueProposition
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf cover:ValueAssertion ;
+    rdfs:label "ValueProposition"@en , "Waardepropositie"@nl ;
+    rdfs:comment
+        "Een ValueAssertion waarbij een organisatie (ValueBeholder) stelt
+         dat een marktsegment/doelgroep (ValueBeneficiary) een bepaalde
+         waarde zal toekennen aan de ervaringen die een dienst of aanbod
+         mogelijk maakt. Subtype van cover:ValueAssertion (beholder ≠
+         beneficiary). Conform Sales et al. (2017) §5.
+         In VALOR: de expliciete waardeclaim van een publieke organisatie
+         over haar dienstverlening — brug tussen Axia en Acta. (DD-037)"@nl .
+
+
+###############################################################################
+#  §C2 — BusinessValueProposition
+#
+#  VP op portefeuilleniveau: abstracte claim over de waarde van het totale
+#  dienstenpakket voor een breed marktsegment. Sales §5.2: "the idea of
+#  what the company delivers through all its offerings for a specific
+#  market segment."
+###############################################################################
+
+cover:BusinessValueProposition
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf cover:ValueProposition ;
+    rdfs:label "BusinessValueProposition"@en , "Organisatiewaardepropositie"@nl ;
+    rdfs:comment
+        "Een ValueProposition op het niveau van de totale portefeuille van
+         een organisatie voor een breed marktsegment. Abstract en grofmazig
+         in termen van benefits en sacrifices.
+         In VALOR: de strategische waardeclaim van een gemeente of
+         uitvoeringsorganisatie over haar dienstenpakket als geheel.
+         Conform Sales et al. (2017) §5.2. (DD-037)"@nl .
+
+
+###############################################################################
+#  §C3 — OfferingValueProposition
+#
+#  VP op aanbodniveau: concrete claim over de waarde van één specifieke
+#  dienst of regeling voor een specifiek(er) segment. Sales §5.2: "specifies
+#  the actual value embedded in each offering."
+###############################################################################
+
+cover:OfferingValueProposition
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf cover:ValueProposition ;
+    rdfs:label "OfferingValueProposition"@en , "Dienstwaardepropositie"@nl ;
+    rdfs:comment
+        "Een ValueProposition op het niveau van één specifieke dienst of
+         regeling, gericht op een (sub)segment. Concreet en nauwkeurig
+         in terms van benefits en sacrifices. Conformeert aan de
+         BusinessValueProposition van de organisatie.
+         In VALOR: de expliciete waardeclaim per publieke dienst — bruikbaar
+         als Tessera in het Axia-perspectief. Conform Sales et al. (2017) §5.2.
+         (DD-037)"@nl .
+
+
+###############################################################################
+#  §D — Properties
+###############################################################################
+
+#  ValueExperience ──enabledBy──► cover:ValueObject
+cover:enabledBy
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "enabled by"@en ;
+    rdfs:domain cover:ValueExperience ;
+    rdfs:range  cover:ValueObject ;
+    rdfs:comment
+        "Het ValueObject dat de ValueExperience mogelijk maakt. Conform
+         Sales et al. (2017) §4: ervaringen zijn typisch het gebruik/
+         ondergaan van een ValueObject. De ValueExperience is de 'ultimate
+         bearer'; het ValueObject is de enabler. (DD-039)"@nl .
+
+#  ValueAscription ──hasComponent──► cover:VAComponent
+cover:hasComponent
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
+    rdfs:label "has component"@en ;
+    rdfs:domain cover:ValueAscription ;
+    rdfs:range  cover:VAComponent ;
+    rdfs:comment
+        "Een VAComponent die deel uitmaakt van deze ValueAscription.
+         Een ValueAscription bestaat uit één of meer VAComponents.
+         subPropertyOf gufo:hasProperPart: VAComponents zijn constituerende
+         delen van de ValueAscription-Relator. Conform Sales Fig. 2. (DD-038)"@nl .
+
+#  ValueAscription ──hasBenefit──► cover:Benefit  (specialisatie van hasComponent)
+cover:hasBenefit
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf cover:hasComponent ;
+    rdfs:label "has benefit"@en ;
+    rdfs:domain cover:ValueAscription ;
+    rdfs:range  cover:Benefit ;
+    rdfs:comment
+        "Een Benefit-component van de ValueAscription. (DD-038)"@nl .
+
+#  ValueAscription ──hasSacrifice──► cover:Sacrifice  (specialisatie van hasComponent)
+cover:hasSacrifice
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf cover:hasComponent ;
+    rdfs:label "has sacrifice"@en ;
+    rdfs:domain cover:ValueAscription ;
+    rdfs:range  cover:Sacrifice ;
+    rdfs:comment
+        "Een Sacrifice-component van de ValueAscription. (DD-038)"@nl .
+
+#  VAComponent ──isFocusOf──► ufoc:IntentionalMode  (het mentale aspect)
+cover:isFocusOf
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "is focus of"@en ;
+    rdfs:domain cover:VAComponent ;
+    rdfs:range  ufoc:IntentionalMode ;
+    rdfs:comment
+        "Het MentalAspect (IntentionalMode: doel, wens, zorg) van de
+         ValueBeholder dat de focus vormt van dit VAComponent. De component
+         beoordeelt de ValueExperience vanuit het perspectief van dit
+         mentale aspect. Conform Sales et al. (2017) Fig. 2. (DD-038)"@nl .
+
+#  VAComponent ──concernsExperience──► cover:ValueExperience
+cover:concernsExperience
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "concerns experience"@en ;
+    rdfs:domain cover:VAComponent ;
+    rdfs:range  cover:ValueExperience ;
+    rdfs:comment
+        "De ValueExperience waarover dit VAComponent een deelbeoordeling
+         uitspreekt. subPropertyOf gufo:mediates (VAComponent is een
+         Relator). Conform Sales et al. (2017) Fig. 2. (DD-038)"@nl .
+
+#  ValueProposition ──targetsSegment──► ufoc:Agent  (collectief/marksegment)
+cover:targetsSegment
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "targets segment"@en ;
+    rdfs:domain cover:ValueProposition ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "Het marktsegment of de doelgroep voor wie de ValueProposition geldt.
+         In VALOR: de burgers of organisaties die de publieke dienst afnemen.
+         subPropertyOf gufo:mediates (ValueProposition is een Relator via
+         ValueAssertion). Conform Sales et al. (2017) §5.1. (DD-037)"@nl .
+
+#  OfferingValueProposition ──conformsTo──► cover:BusinessValueProposition
+cover:conformsTo
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "conforms to"@en ;
+    rdfs:domain cover:OfferingValueProposition ;
+    rdfs:range  cover:BusinessValueProposition ;
+    rdfs:comment
+        "De BusinessValueProposition waarmee deze OfferingValueProposition
+         in overeenstemming moet zijn. Conform Sales et al. (2017) §5.2:
+         'OVPs conform to the former [BVP].' (DD-037)"@nl .
+
+###############################################################################
+#  Einde module 00f-cover.ttl
+###############################################################################

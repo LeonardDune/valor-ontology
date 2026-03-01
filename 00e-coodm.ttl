@@ -1,0 +1,680 @@
+###############################################################################
+#  VALOR-O — Module 00e: COoDM Decision Ontology + COVER Value Ascription
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/coodm#
+#  Prefix     : coodm:
+#  Versie     : 0.1  (februari 2026)
+#  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00d-ufo-l
+#
+#  Bronnen:
+#    COoDM  — Guizzardi, R., Carneiro, B.G., Porello, D. & Guizzardi, G.
+#             (2020). A Core Ontology on Decision Making.
+#             Proc. ONTOBRAS 2020, CEUR-WS Vol. 2728, pp. 9–21.
+#    COVER  — Guizzardi, G. et al. (2022). The Common Ontology of Value
+#             and Risk (COVER). Applied Ontology 17(2), pp. 281–313.
+#    Weigand-2024 — zie 00d-ufo-l.ttl
+#
+#  Ontwerpbeslissingen:
+#    DD-030 · Decision als Intention (ufoc:Intention), niet als Event
+#    DD-031 · Preference als Belief (ufoc:Belief), niet als Intention
+#    DD-033 · ValueExperience als gufo:Quality; ValueType als Kind
+#    DD-034 · ValueAscription = Preference in deliberatiecontext
+#    DD-035 · Twee namespaces in één bestand: coodm: en cover:
+#
+#  Structuur:
+#    §A  COoDM — besluitvormingskern
+#        A1. DecisionSituation
+#        A2. Deliberation
+#        A3. DecisionAlternative
+#        A4. Decision
+#        A5. DecisionGoal
+#        A6. Properties
+#    §B  COVER — waarde-ascriptie (eerste opzet)
+#        B1. ValueType
+#        B2. ValueExperience
+#        B3. ValueAscription / Preference
+#        B4. ValueTension
+#        B5. ValueScale
+#        B6. Properties
+###############################################################################
+
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+<https://valor-ecosystem.nl/ontology/coodm>
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00e — COoDM Decision Ontology + COVER Value Ascription"@en ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-b> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        "Integreert COoDM (Guizzardi et al. 2020) en een eerste opzet van
+         COVER (Guizzardi et al. 2022) in VALOR-O. Fundeert het
+         Delibera-perspectief (besluitvorming) en het Axia-perspectief
+         (waarden) in VALOR."@nl .
+
+
+###############################################################################
+#  §A — COoDM: Besluitvormingskern
+#
+#  Centrale structuur conform COoDM §3:
+#
+#    Een agent bevindt zich in een DecisionSituation: zijn intentionele
+#    toestand (Goals, Desires) is niet bevredigd. Dit triggert een
+#    Deliberation-event. Tijdens de deliberatie vergelijkt de agent
+#    DecisionAlternatives op basis van Preferences (ValueAscriptions).
+#    De deliberatie produceert een Decision: een nieuwe Intention met een
+#    DecisionGoal als propositiële inhoud. De Decision wordt gemanifesteerd
+#    in een Action (de uitvoering).
+#
+#    BDI-toewijzing (Rao & Georgeff 1995; COoDM §2):
+#      - Beliefs    → ufoc:Belief (bestaand in 00c)
+#      - Desires    → ufoc:Desire / ufoc:Goal (bestaand in 00c)
+#      - Intentions → ufoc:Intention (bestaand in 00c)
+#      - Decision   → coodm:Decision (subklasse van ufoc:Intention)
+#      - Preference → coodm:Preference (subklasse van ufoc:Belief,
+#                     NIET van ufoc:Intention — DD-031)
+###############################################################################
+
+###############################################################################
+#  §A1 — DecisionSituation
+#
+#  Een situatie die een agent ervaart als onbevredigend ten aanzien van zijn
+#  intentionele toestand: zijn Goals of Desires zijn niet vervuld.
+#  Dit is de trigger voor een Deliberation.
+#  Conform COoDM §3: "the deliberation is triggered by a situation in which
+#  the agent's intentions have not been satisfied."
+###############################################################################
+
+coodm:DecisionSituation
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    gufo:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "DecisionSituation"@en , "Beslissingssituatie"@nl ;
+    rdfs:comment
+        "Een situatie die een agent ervaart als onbevredigend: zijn intentionele
+         toestand (Goals, Desires) is niet vervuld. De DecisionSituation is de
+         trigger voor een Deliberation-event.
+         Conform COoDM §3."@nl ,
+        "A situation in which an agent's intentional state (goals, desires)
+         is not satisfied, triggering a Deliberation event."@en .
+
+
+###############################################################################
+#  §A2 — Deliberation
+#
+#  Het besluitvormingsproces als Event (Action). Conform COoDM §3:
+#  deliberation is triggered by a DecisionSituation, considers one or more
+#  DecisionAlternatives, uses Preferences (ValueAscriptions) to evaluate
+#  them, and results in the creation of a Decision.
+#
+#  Deliberation is een subklasse van gufo:Action omdat het een intentioneel
+#  geïnitieerd event is (de agent delibereert bewust).
+#
+#  Koppeling met Weigand (2024): een Deliberation kan worden begrensd door
+#  een ufol:Policy (via coodm:guidedByPolicy) — dit modelleert
+#  policy-gestuurd beslissen.
+###############################################################################
+
+coodm:Deliberation
+    a owl:Class ;
+    rdf:type gufo:EventType ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:Action ;
+    rdfs:label "Deliberation"@en , "Deliberatie"@nl ;
+    rdfs:comment
+        "Het besluitvormingsproces als intentioneel event. Getriggerd door een
+         DecisionSituation, overweegt één of meer DecisionAlternatives op basis
+         van Preferences (ValueAscriptions), en resulteert in een Decision.
+         Conform COoDM §3. Kan worden begrensd door een ufol:Policy
+         (Weigand 2024 §4.2: 'Procedure'-rol van PolicyDocument in
+         Deliberation). (DD-030, DD-031)"@nl .
+
+
+###############################################################################
+#  §A3 — DecisionAlternative
+#
+#  Een mogelijke uitkomst of handelwijze die door de agent tijdens de
+#  deliberatie wordt overwogen. Gemodelleerd als gufo:Situation: een
+#  mogelijke wereld-toestand (de situatie die zou ontstaan als dit
+#  alternatief wordt gekozen).
+#
+#  Conform COoDM §3: "the decision is aimed at a situation, not at an action
+#  [...] the situation is to be created through the execution of an action."
+###############################################################################
+
+coodm:DecisionAlternative
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    gufo:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "DecisionAlternative"@en , "Beslissingsalternatief"@nl ;
+    rdfs:comment
+        "Een mogelijke toestand (Situation) die zou ontstaan als een bepaalde
+         handelwijze wordt gekozen. De agent vergelijkt alternatieven tijdens
+         Deliberation op basis van Preferences. Conform COoDM §3."@nl .
+
+
+###############################################################################
+#  §A4 — Decision
+#
+#  De uitkomst van een Deliberation: een nieuwe Intention van de agent.
+#  Cruciaal onderscheid (DD-030): Decision is een INTENTIE (IntrinsicMode),
+#  niet een Event. De Decision is het resultaat van de Deliberation-event,
+#  maar is zelf een intentionele toestand van de agent.
+#
+#  "The decision is not aimed at an action but at a situation."
+#  (COoDM §3 / Weigand §2.1)
+#
+#  De propositiële inhoud van de Decision is een DecisionGoal (§A5).
+###############################################################################
+
+coodm:Decision
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Intention ;
+    rdfs:label "Decision"@en , "Beslissing"@nl ;
+    rdfs:comment
+        "De uitkomst van een Deliberation: een nieuwe Intention van de agent,
+         gericht op het realiseren van een DecisionGoal (een gewenste situatie).
+         Decision is een IntrinsicMode (Intention), NIET een Event.
+         De Deliberation creëert de Decision; de Decision wordt vervolgens
+         gemanifesteerd in een Action. (DD-030; COoDM §3)"@nl .
+
+
+###############################################################################
+#  §A5 — DecisionGoal
+#
+#  De propositiële inhoud van een Decision: de gewenste situatie die moet
+#  worden bereikt. DecisionGoal is een subklasse van ufoc:Goal (die zelf
+#  een subklasse is van ufoc:Desire).
+#
+#  Onderscheid van ufoc:Goal: een gewoon Goal is een gestabiliseerde wens;
+#  een DecisionGoal is specifiek de propositiële inhoud van een Decision —
+#  de Agent heeft expliciet besloten dit doel na te streven via deliberatie.
+###############################################################################
+
+coodm:DecisionGoal
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Goal ;
+    rdfs:label "DecisionGoal"@en , "Beslissingsdoel"@nl ;
+    rdfs:comment
+        "De propositiële inhoud van een Decision: de gewenste situatie die
+         de agent heeft besloten na te streven via Deliberation. Subklasse
+         van ufoc:Goal — een expliciet gekozen en gemotiveerd doel.
+         Conform COoDM §3."@nl .
+
+
+###############################################################################
+#  §A6 — COoDM Properties
+###############################################################################
+
+#  Deliberation ──triggeredBy──► DecisionSituation
+coodm:triggeredBy
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "triggering" ;
+    rdfs:subPropertyOf gufo:wasTriggeredBy ;
+    rdfs:label "triggered by"@en ;
+    rdfs:domain coodm:Deliberation ;
+    rdfs:range  coodm:DecisionSituation ;
+    rdfs:comment
+        "De DecisionSituation die de Deliberation heeft getriggerd.
+         Conform UFO-B: elke Action heeft een triggerende Situation.
+         Conform COoDM §3."@nl .
+
+#  Deliberation ──considers──► DecisionAlternative
+coodm:considers
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "considers"@en ;
+    rdfs:domain coodm:Deliberation ;
+    rdfs:range  coodm:DecisionAlternative ;
+    rdfs:comment
+        "De DecisionAlternative(s) die worden overwogen tijdens de Deliberation.
+         Een Deliberation overweegt minimaal één alternatief. Conform COoDM §3."@nl .
+
+#  Deliberation ──resultedIn──► Decision  (creation relation)
+coodm:resultedIn
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "creation" ;
+    rdfs:subPropertyOf gufo:wasCreatedIn ;
+    rdfs:label "resulted in"@en ;
+    rdfs:domain coodm:Deliberation ;
+    rdfs:range  coodm:Decision ;
+    rdfs:comment
+        "De Decision die door de Deliberation is gecreëerd als nieuwe Intention
+         van de agent. Conform UFO-B creation-patroon: de Deliberation brengt
+         de Decision tot stand. Conform COoDM §3."@nl .
+
+#  Decision ──decisionGoal──► DecisionGoal
+coodm:decisionGoal
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:hasPropositionalContent ;
+    rdfs:label "decision goal"@en ;
+    rdfs:domain coodm:Decision ;
+    rdfs:range  coodm:DecisionGoal ;
+    rdfs:comment
+        "De DecisionGoal die de propositiële inhoud vormt van de Decision:
+         de gewenste situatie die de agent nastreeft. Conform COoDM §3."@nl .
+
+#  Decision ──manifestedAs──► gufo:Action
+coodm:manifestedAs
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "manifestation" ;
+    rdfs:label "manifested as"@en ;
+    rdfs:domain coodm:Decision ;
+    rdfs:range  gufo:Action ;
+    rdfs:comment
+        "De Action die de uitvoering is van de Decision. Conform COoDM §3:
+         'the executed action is considered the manifestation of the decision.'
+         De Decision is de intentie; de Action is de realisering ervan."@nl .
+
+#  Deliberation ──guidedByPolicy──► ufol:Policy  (Weigand 2024 koppeling)
+coodm:guidedByPolicy
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "guided by policy"@en ;
+    rdfs:domain coodm:Deliberation ;
+    rdfs:range  ufol:Policy ;
+    rdfs:comment
+        "De ufol:Policy die de Deliberation beperkt of structureert.
+         Conform Weigand (2024) §4.2: een PolicyDocument kan de rol van
+         'Procedure' vervullen in een Deliberation, waarbij de ingebedde
+         beslisregels de ruimte van geldige Decisions beperken.
+         De koppeling loopt via Policy (de normatieve entiteit), niet via
+         het PolicyDocument (het artefact)."@nl .
+
+#  Deliberation ──hasPreference──► Preference  (→ §B3)
+coodm:hasPreference
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "has preference"@en ;
+    rdfs:domain coodm:Deliberation ;
+    rdfs:range  coodm:Preference ;
+    rdfs:comment
+        "De Preference(s) van de delibererende agent die de evaluatie van
+         DecisionAlternatives sturen. Conform COoDM §3: 'preferences are
+         conceptualized as value ascriptions of the agent with respect to
+         some value experience.' (DD-031, DD-034)"@nl .
+
+
+###############################################################################
+
+###############################################################################
+#  §B — COVER: Waarde-ascriptie (VAO conform Sales et al. 2017)
+#
+#  Correcties t.o.v. eerste opzet (DD-036 herziet DD-033 en DD-034):
+#
+#    1. ValueExperience: gufo:Quality → gufo:Event
+#       Sales §4: "value objects are substantials; value experiences are events"
+#
+#    2. ValueAscription: ufoc:Belief → gufo:Relator
+#       Sales Fig. 2: "<<relator>> ValueAscription" met beholder/beneficiary
+#
+#    3. ValueType: gufo:Kind/EndurantType → gufo:EventType
+#       ValueType classificeert ValueExperiences (events), niet Endurants
+#
+#    4. Preference: subklasse van ValueAscription → ufoc:Belief
+#       Preference (Belief) en ValueAscription (Relator) zijn structureel
+#       onderscheiden: Preference is mentaal substraat, ValueAscription is
+#       de relationele uiting. Keten: Preference ──groundsAscription──►
+#       ValueAscription
+#
+#    5. ValueBeholder / ValueBeneficiary toegevoegd als gufo:RoleMixin
+#
+#    6. ValuePerception / ValueAssertion als Phase-subtypen van ValueAscription
+#
+###############################################################################
+
+###############################################################################
+#  §B1 — ValueType
+#
+#  Een EventType dat ValueExperiences (events) classificeert.
+#  Conform Sales §4: value experiences zijn events, hun types zijn EventTypes.
+###############################################################################
+
+cover:ValueType
+    a owl:Class ;
+    rdf:type gufo:EventType ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:EventType ;
+    rdfs:label "ValueType"@en , "Waardetype"@nl ;
+    rdfs:comment
+        "Een EventType dat ValueExperiences (events) classificeert.
+         Voorbeelden: PrivacyExperience, FairnessExperience, AutonomyExperience.
+         Conform Sales et al. (2017) §4: value experiences zijn events,
+         hun types zijn gufo:EventTypes. (DD-036)"@nl .
+
+cover:PrivacyExperience
+    a cover:ValueType ;
+    rdfs:label "PrivacyExperience"@en , "Privacybeleving"@nl .
+
+cover:FairnessExperience
+    a cover:ValueType ;
+    rdfs:label "FairnessExperience"@en , "Rechtvaardigheidsbeleving"@nl .
+
+cover:AutonomyExperience
+    a cover:ValueType ;
+    rdfs:label "AutonomyExperience"@en , "Autonomiebeleving"@nl .
+
+cover:EfficiencyExperience
+    a cover:ValueType ;
+    rdfs:label "EfficiencyExperience"@en , "Efficiëntiebeleving"@nl .
+
+cover:TransparencyExperience
+    a cover:ValueType ;
+    rdfs:label "TransparencyExperience"@en , "Transparantiebeleving"@nl .
+
+cover:SolidarityExperience
+    a cover:ValueType ;
+    rdfs:label "SolidarityExperience"@en , "Solidariteitsbeleving"@nl .
+
+
+###############################################################################
+#  §B2 — ValueExperience
+#
+#  Een waardebeleving als EVENT: de episode waarin een ValueBeneficiary
+#  iets ondergaat en daarin een waarde ervaart.
+#  Conform Sales et al. (2017) §4: "value experiences are events."
+#
+#  Deelnemers:
+#    cover:hasBeneficiary  → de agent die de experience ondergaat
+#  Context:
+#    cover:hasValueContext  → de omringende Situation
+#  Classificatie:
+#    cover:ofType           → het ValueType
+#  Valentie:
+#    cover:hasValence       → cover:ValueScale
+###############################################################################
+
+cover:ValueExperience
+    a owl:Class ;
+    rdf:type gufo:EventType ;
+    gufo:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:Event ;
+    rdfs:label "ValueExperience"@en , "Waardebeleving"@nl ;
+    rdfs:comment
+        "Een waardebeleving als event: de episode waarin een ValueBeneficiary
+         een waarde ervaart bij het ondergaan van een dienst, goed of besluit.
+         Conform Sales et al. (2017) §4: 'value experiences are events.'
+         (DD-036)"@nl .
+
+
+###############################################################################
+#  §B3 — ValueBeholder en ValueBeneficiary  (RoleMixin)
+#
+#  Conform Sales Fig. 2: beide zijn <<roleMixin>> — rollen die agents spelen
+#  in de context van een ValueAscription-Relator.
+#
+#  ValueBeholder  : de agent die het waarde-oordeel velt
+#  ValueBeneficiary: de agent voor wie het oordeel geldt
+###############################################################################
+
+cover:ValueBeholder
+    a owl:Class ;
+    rdf:type gufo:RoleMixin ;
+    gufo:ontoumlStereotype "roleMixin" ;
+    rdfs:subClassOf gufo:RoleMixin ;
+    rdfs:label "ValueBeholder"@en , "Waarde-beoordelaar"@nl ;
+    rdfs:comment
+        "De agent die in een ValueAscription de rol van beoordelaar speelt.
+         RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+
+cover:ValueBeneficiary
+    a owl:Class ;
+    rdf:type gufo:RoleMixin ;
+    gufo:ontoumlStereotype "roleMixin" ;
+    rdfs:subClassOf gufo:RoleMixin ;
+    rdfs:label "ValueBeneficiary"@en , "Waarde-ontvanger"@nl ;
+    rdfs:comment
+        "De agent voor wie het waarde-oordeel geldt in een ValueAscription.
+         RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+
+
+###############################################################################
+#  §B4 — ValueAscription
+#
+#  Een waarde-ascriptie als RELATOR: medieert beholder en beneficiary.
+#  Conform Sales et al. (2017) Fig. 2: "<<relator>> ValueAscription."
+#
+#  Twee Phase-subtypen:
+#    ValuePerception : beholder == beneficiary (zelf-beoordeling)
+#    ValueAssertion  : beholder != beneficiary (VP door organisatie over burger)
+#
+#  Relatie tot Preference (DD-036, herziet DD-034):
+#    Preference (Belief) fundeert ValueAscription (Relator) via groundsAscription.
+#    Belief en Relator zijn structureel onverenigbaar — geen subklasse-relatie.
+###############################################################################
+
+cover:ValueAscription
+    a owl:Class ;
+    rdf:type gufo:RelationshipType ;
+    gufo:ontoumlStereotype "relator" ;
+    rdfs:subClassOf gufo:Relator ;
+    rdfs:label "ValueAscription"@en , "Waarde-ascriptie"@nl ;
+    rdfs:comment
+        "Een waarde-ascriptie als Relator: medieert ValueBeholder en
+         ValueBeneficiary. De ascriptie is een oordeel over een
+         ValueExperience (event). Conform Sales et al. (2017) Fig. 2.
+         (DD-036)"@nl .
+
+cover:ValuePerception
+    a owl:Class ;
+    rdf:type gufo:Phase ;
+    gufo:ontoumlStereotype "phase" ;
+    rdfs:subClassOf cover:ValueAscription ;
+    rdfs:label "ValuePerception"@en , "Waarde-perceptie"@nl ;
+    rdfs:comment
+        "Een ValueAscription waarbij beholder en beneficiary dezelfde agent
+         zijn: zelf-beoordeling. Conform Sales et al. (2017) §4."@nl .
+
+cover:ValueAssertion
+    a owl:Class ;
+    rdf:type gufo:Phase ;
+    gufo:ontoumlStereotype "phase" ;
+    rdfs:subClassOf cover:ValueAscription ;
+    rdfs:label "ValueAssertion"@en , "Waarde-assertie"@nl ;
+    rdfs:comment
+        "Een ValueAscription waarbij beholder en beneficiary verschillende
+         agents zijn. Fundeert Value Propositions (00f).
+         Conform Sales et al. (2017) §4."@nl .
+
+
+###############################################################################
+#  §B5 — Preference  (COoDM ↔ COVER koppeling)
+#
+#  Preference is een ufoc:Belief van de delibererende agent die de grondslag
+#  vormt voor een ValueAscription. Conform COoDM §3 en Sales (2017):
+#  de Preference is het mentale substraat; de ValueAscription is de
+#  relationele uiting. (DD-036 herziet DD-034)
+###############################################################################
+
+coodm:Preference
+    a owl:Class ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Belief ;
+    rdfs:label "Preference"@en , "Preferentie"@nl ;
+    rdfs:comment
+        "Een ufoc:Belief van een delibererende agent die zijn waarde-oordeel
+         uitdrukt over een DecisionAlternative. De Preference is het mentale
+         substraat dat een ValueAscription (Relator) fundeert via
+         coodm:groundsAscription. Conform COoDM §3 en Sales et al. (2017).
+         (DD-036 herziet DD-034)"@nl .
+
+
+###############################################################################
+#  §B6 — ValueTension
+###############################################################################
+
+cover:ValueTension
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    gufo:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "ValueTension"@en , "Waardenspanning"@nl ;
+    rdfs:comment
+        "Een situatie waarin twee of meer ValueExperiences in conflict zijn:
+         het realiseren van de ene waarde ondermijnt de andere.
+         Voorbeeld: Privacybeleving vs. Transparantiebeleving bij
+         gegevensuitwisseling. Fundeert het Axia-perspectief."@nl .
+
+
+###############################################################################
+#  §B7 — ValueScale  (valentie)
+#
+#  Valentie van een ValueExperience. Geen gufo:QualityValue meer want
+#  ValueExperience is nu een Event, geen Quality. (DD-036)
+###############################################################################
+
+cover:ValueScale
+    a owl:Class ;
+    rdfs:label "ValueScale"@en , "Waardeschaal"@nl ;
+    rdfs:comment
+        "De valentie van een ValueExperience: positief, negatief of neutraal.
+         Geen gufo:QualityValue (ValueExperience is een Event). (DD-036)"@nl .
+
+cover:PositiveValence
+    a cover:ValueScale ;
+    rdfs:label "positive valence"@en , "positieve valentie"@nl ;
+    rdfs:comment "De ValueExperience is een positieve waardebeleving."@nl .
+
+cover:NegativeValence
+    a cover:ValueScale ;
+    rdfs:label "negative valence"@en , "negatieve valentie"@nl ;
+    rdfs:comment "De ValueExperience is een negatieve waardebeleving."@nl .
+
+cover:NeutralValence
+    a cover:ValueScale ;
+    rdfs:label "neutral valence"@en , "neutrale valentie"@nl ;
+    rdfs:comment "De ValueExperience heeft geen duidelijke valentie."@nl .
+
+
+###############################################################################
+#  §B8 — COVER Properties
+###############################################################################
+
+#  ValueExperience ──hasBeneficiary──► ufoc:Agent  (participatie)
+cover:hasBeneficiary
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "participational" ;
+    rdfs:subPropertyOf gufo:hasParticipant ;
+    rdfs:label "has beneficiary"@en ;
+    rdfs:domain cover:ValueExperience ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De agent die de ValueExperience ondergaat als ValueBeneficiary.
+         subPropertyOf gufo:hasParticipant (Event → Object).
+         Conform Sales et al. (2017) Fig. 1. (DD-036)"@nl .
+
+#  ValueExperience ──hasValueContext──► gufo:Situation
+cover:hasValueContext
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "has value context"@en ;
+    rdfs:domain cover:ValueExperience ;
+    rdfs:range  gufo:Situation ;
+    rdfs:comment
+        "De situatie (context) waarbinnen de ValueExperience plaatsvindt.
+         Conform Sales et al. (2017) §4: elke ValueExperience heeft een
+         context die bijdraagt aan het waarde-oordeel."@nl .
+
+#  ValueExperience ──ofType──► cover:ValueType
+cover:ofType
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "instantiation" ;
+    rdfs:label "of type"@en ;
+    rdfs:domain cover:ValueExperience ;
+    rdfs:range  cover:ValueType ;
+    rdfs:comment
+        "Het ValueType (EventType) waarvan deze ValueExperience een instantie is.
+         Conform Sales et al. (2017) §4. (DD-036)"@nl .
+
+#  ValueExperience ──hasValence──► cover:ValueScale
+cover:hasValence
+    a owl:ObjectProperty ;
+    rdfs:label "has valence"@en ;
+    rdfs:domain cover:ValueExperience ;
+    rdfs:range  cover:ValueScale ;
+    rdfs:comment
+        "De valentie van de ValueExperience. Geen subPropertyOf
+         gufo:hasQualityValue (ValueExperience is een Event). (DD-036)"@nl .
+
+#  ValueAscription ──hasBeholderAgent──► ufoc:Agent  (mediation)
+cover:hasBeholderAgent
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has beholder agent"@en ;
+    rdfs:domain cover:ValueAscription ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De ValueBeholder: de agent die de beoordelaarsrol speelt in de
+         ValueAscription-Relator. Conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+
+#  ValueAscription ──hasBeneficiaryAgent──► ufoc:Agent  (mediation)
+cover:hasBeneficiaryAgent
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has beneficiary agent"@en ;
+    rdfs:domain cover:ValueAscription ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De ValueBeneficiary: de agent voor wie het oordeel geldt in de
+         ValueAscription-Relator. Conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+
+#  ValueAscription ──ascribesValueTo──► cover:ValueExperience  (mediation)
+cover:ascribesValueTo
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "ascribes value to"@en ;
+    rdfs:domain cover:ValueAscription ;
+    rdfs:range  cover:ValueExperience ;
+    rdfs:comment
+        "De ValueExperience (event) waarover de ValueAscription (Relator)
+         een oordeel uitspreekt. subPropertyOf gufo:mediates.
+         Conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+
+#  Preference ──groundsAscription──► cover:ValueAscription
+coodm:groundsAscription
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "grounds ascription"@en ;
+    rdfs:domain coodm:Preference ;
+    rdfs:range  cover:ValueAscription ;
+    rdfs:comment
+        "De ValueAscription (Relator) die gegrond is in deze Preference (Belief).
+         De Preference is het mentale substraat; de ValueAscription is de
+         relationele uiting. (DD-036)"@nl .
+
+#  ValueTension ──involvesTension──► cover:ValueExperience
+cover:involvesTension
+    a owl:ObjectProperty ;
+    gufo:ontoumlStereotype "mediation" ;
+    rdfs:label "involves tension"@en ;
+    rdfs:domain cover:ValueTension ;
+    rdfs:range  cover:ValueExperience ;
+    rdfs:comment
+        "De ValueExperiences betrokken bij de ValueTension.
+         Vereist minimaal twee ValueExperiences (zie SHACL E8)."@nl .
+
+###############################################################################
+#  Einde module 00e-coodm.ttl
+###############################################################################
