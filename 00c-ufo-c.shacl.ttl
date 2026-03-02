@@ -58,7 +58,7 @@ shc:SocialRelatorShape
     sh:sparql [
         sh:name    "C1d-agents-distinct" ;
         sh:message "C1d: hasCommittedAgent en hasClaimantAgent mogen niet naar dezelfde agent verwijzen." ;
-        sh:prefixes shc ;
+        sh:prefixes shc: ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufoc:hasCommittedAgent ?a .
@@ -99,7 +99,7 @@ shc:SocialCommitmentShape
     sh:sparql [
         sh:name    "C2c-inhere-committed" ;
         sh:message "C2c: SocialCommitment.commitmentInheresIn moet overeenkomen met de hasCommittedAgent van de bijbehorende SocialRelator." ;
-        sh:prefixes shc ;
+        sh:prefixes shc: ;
         sh:select  """
             SELECT $this WHERE {
                 ?relator ufoc:hasCommitmentMoment $this ;
@@ -141,7 +141,7 @@ shc:SocialClaimShape
     sh:sparql [
         sh:name    "C3c-inhere-claimant" ;
         sh:message "C3c: SocialClaim.claimInheresIn moet overeenkomen met de hasClaimantAgent van de bijbehorende SocialRelator." ;
-        sh:prefixes shc ;
+        sh:prefixes shc: ;
         sh:select  """
             SELECT $this WHERE {
                 ?relator ufoc:hasClaimMoment    $this ;
@@ -168,7 +168,7 @@ shc:SocialRoleShape
     sh:sparql [
         sh:name    "C4-role-in-relator" ;
         sh:message "C4: SocialRole heeft geen SocialRelator als committed of claimant agent." ;
-        sh:prefixes shc ;
+        sh:prefixes shc: ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
@@ -248,7 +248,7 @@ shc:DelegatumShape
     sh:sparql [
         sh:name    "C7c-delegator-ne-delegatee" ;
         sh:message "C7c: Delegator en Delegatee moeten van elkaar verschillen." ;
-        sh:prefixes shc ;
+        sh:prefixes shc: ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufoc:hasDelegator ?d1 ;
@@ -284,7 +284,7 @@ shc:NormShape
 # Prefix declarations for SPARQL constraints
 ###############################################################################
 
-shc
+shc:
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;

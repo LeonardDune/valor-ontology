@@ -54,7 +54,7 @@ shl:LegalRelatorShape
     sh:sparql [
         sh:name    "L1c-subjects-distinct" ;
         sh:message "L1c: hasRightHolder en hasDutyBearer mogen niet naar hetzelfde LegalSubject verwijzen." ;
-        sh:prefixes shl ;
+        sh:prefixes shl: ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufol:hasRightHolder ?r .
@@ -129,7 +129,7 @@ shl:DerivationRuleShape
     sh:sparql [
         sh:name    "L4b-output-xor-relator" ;
         sh:message "L4b: DerivationRule vereist ofwel hasOutputVariable ofwel derivesRelator (niet beide, niet geen van beide)." ;
-        sh:prefixes shl ;
+        sh:prefixes shl: ;
         sh:select  """
             SELECT $this WHERE {
                 BIND(
@@ -219,7 +219,7 @@ shl:PolicyDocumentShape
     sh:sparql [
         sh:name    "L7-document-has-policy" ;
         sh:message "L7: PolicyDocument is niet gekoppeld aan een Policy via describedByDocument." ;
-        sh:prefixes shl ;
+        sh:prefixes shl: ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
@@ -245,7 +245,7 @@ shl:TemporalConditionShape
     sh:sparql [
         sh:name    "L8-start-before-end" ;
         sh:message "L8: TemporalCondition.hasStartDate moet ≤ hasEndDate zijn." ;
-        sh:prefixes shl ;
+        sh:prefixes shl: ;
         sh:select  """
             SELECT $this WHERE {
                 $this ufol:hasStartDate ?s .
@@ -277,7 +277,7 @@ shl:DomainVariableShape
     sh:sparql [
         sh:name    "L9b-inhere-in-legal-entity" ;
         sh:message "L9b: DomainVariable moet inheren aan een ufol:LegalSubject of ufol:LegalObject." ;
-        sh:prefixes shl ;
+        sh:prefixes shl: ;
         sh:select  """
             SELECT $this WHERE {
                 $this gufo:inheresIn ?bearer .
@@ -307,7 +307,7 @@ shl:LegalFactShape
     sh:sparql [
         sh:name    "L10-fact-relates-relator" ;
         sh:message "L10: LegalFact heeft geen relatie met een LegalRelator via creates/modifies/terminatesLegalRelation." ;
-        sh:prefixes shl ;
+        sh:prefixes shl: ;
         sh:select  """
             SELECT $this WHERE {
                 FILTER NOT EXISTS {
@@ -367,7 +367,7 @@ shl:ClaimRightRelatorShape
 # Prefix declarations for SPARQL constraints
 ###############################################################################
 
-shl
+shl:
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;

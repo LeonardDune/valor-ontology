@@ -82,7 +82,7 @@ shg:ExtrinsicModeShape
     sh:sparql [
         sh:name    "G1b-drager-ne-extern" ;
         sh:message "G1b: De primaire drager (inheresIn) en het externe object (externallyDependsOn) mogen niet hetzelfde individu zijn." ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this WHERE {
                 $this gufo:inheresIn          ?bearer .
@@ -116,7 +116,7 @@ shg:RelatorShape
     sh:sparql [
         sh:name    "G2b-distinct-mediated" ;
         sh:message "G2b: Een Relator mag niet tweemaal dezelfde Endurant mediëren." ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this
             WHERE {
@@ -163,7 +163,7 @@ shg:EventTemporalShape
     sh:sparql [
         sh:name    "G4-begin-before-end" ;
         sh:message "G4: gufo:hasBeginPoint moet ≤ gufo:hasEndPoint zijn." ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this
             WHERE {
@@ -241,7 +241,7 @@ shg:OntoumlPunningShape
          het vereiste rdf:type '{?vereistType}'.
          Voeg toe: <resource> rdf:type <vereistType> .
          (OWL2 punning — DD-002; gUFO-primitieven uitgesloten — DD-003).""" ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this ?stereotype ?vereistType
             WHERE {
@@ -292,7 +292,7 @@ shg:OntoumlRelationConstraintShape
         sh:message """G8: Property heeft relatie-stereotype maar
          de combinatie (source-stereotype, target-stereotype) is niet geldig
          conform OntoUML 2.0 en VALOR-O-extensies. Zie DD-026.""" ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this ?relStereo ?srcStereo ?tgtStereo
             WHERE {
@@ -1105,7 +1105,7 @@ shg:OntoumlRelationDomainRangeShape
     sh:sparql [
         sh:name    "G9a-domain-aanwezig" ;
         sh:message "G9a (waarschuwing): Property met relatie-stereotype mist rdfs:domain — G8-validatie niet mogelijk." ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this
             WHERE {
@@ -1127,7 +1127,7 @@ shg:OntoumlRelationDomainRangeShape
     sh:sparql [
         sh:name    "G9b-range-aanwezig" ;
         sh:message "G9b (waarschuwing): Property met relatie-stereotype mist rdfs:range — G8-validatie niet mogelijk." ;
-        sh:prefixes shg ;
+        sh:prefixes shg: ;
         sh:select  """
             SELECT $this
             WHERE {
@@ -1151,7 +1151,7 @@ shg:OntoumlRelationDomainRangeShape
 # Prefix declarations for SPARQL constraints
 ###############################################################################
 
-shg
+shg:
     a sh:PrefixDeclaration ;
     sh:declare [
         sh:prefix    "gufo" ;
