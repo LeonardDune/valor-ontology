@@ -42,10 +42,10 @@
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
     owl:versionInfo "0.2" ;
     rdfs:comment
-        "Integreert COoDM (Guizzardi et al. 2020) en een eerste opzet van
+        """Integreert COoDM (Guizzardi et al. 2020) en een eerste opzet van
          COVER (Guizzardi et al. 2022) in VALOR-O. Fundeert het
          Delibera-perspectief (besluitvorming) en het Axia-perspectief
-         (waarden) in VALOR."@nl .
+         (waarden) in VALOR."""@nl .
 
 
 ###############################################################################
@@ -59,9 +59,9 @@ coodm:DecisionSituation
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "DecisionSituation"@en , "Beslissingssituatie"@nl ;
     rdfs:comment
-        "Een situatie die een agent ervaart als onbevredigend: zijn intentionele
+        """Een situatie die een agent ervaart als onbevredigend: zijn intentionele
          toestand (Goals, Desires) is niet vervuld. De DecisionSituation is de
-         trigger voor een Deliberation-event. Conform COoDM §3."@nl .
+         trigger voor een Deliberation-event. Conform COoDM §3."""@nl .
 
 coodm:Deliberation
     a owl:Class ;
@@ -70,10 +70,10 @@ coodm:Deliberation
     rdfs:subClassOf gufo:Action ;
     rdfs:label "Deliberation"@en , "Deliberatie"@nl ;
     rdfs:comment
-        "Het besluitvormingsproces als intentioneel event. Getriggerd door een
+        """Het besluitvormingsproces als intentioneel event. Getriggerd door een
          DecisionSituation, overweegt één of meer DecisionAlternatives op basis
          van Preferences (ValueAscriptions), en resulteert in een Decision.
-         Conform COoDM §3. (DD-030, DD-031)"@nl .
+         Conform COoDM §3. (DD-030, DD-031)"""@nl .
 
 coodm:DecisionAlternative
     a owl:Class ;
@@ -82,8 +82,8 @@ coodm:DecisionAlternative
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "DecisionAlternative"@en , "Beslissingsalternatief"@nl ;
     rdfs:comment
-        "Een mogelijke toestand (Situation) die zou ontstaan als een bepaalde
-         handelwijze wordt gekozen. Conform COoDM §3."@nl .
+        """Een mogelijke toestand (Situation) die zou ontstaan als een bepaalde
+         handelwijze wordt gekozen. Conform COoDM §3."""@nl .
 
 coodm:Decision
     a owl:Class ;
@@ -91,9 +91,9 @@ coodm:Decision
     rdfs:subClassOf ufoc:Intention ;
     rdfs:label "Decision"@en , "Beslissing"@nl ;
     rdfs:comment
-        "De uitkomst van een Deliberation: een nieuwe Intention van de agent.
+        """De uitkomst van een Deliberation: een nieuwe Intention van de agent.
          Decision is een IntrinsicMode (Intention), NIET een Event.
-         [DD-029] Geen rdf:type in Taxonomy of Types. (DD-030; COoDM §3)"@nl .
+         [DD-029] Geen rdf:type in Taxonomy of Types. (DD-030; COoDM §3)"""@nl .
 
 coodm:DecisionGoal
     a owl:Class ;
@@ -101,8 +101,8 @@ coodm:DecisionGoal
     rdfs:subClassOf ufoc:Goal ;
     rdfs:label "DecisionGoal"@en , "Beslissingsdoel"@nl ;
     rdfs:comment
-        "De propositiële inhoud van een Decision: de gewenste situatie die
-         de agent heeft besloten na te streven via Deliberation. (COoDM §3)"@nl .
+        """De propositiële inhoud van een Decision: de gewenste situatie die
+         de agent heeft besloten na te streven via Deliberation. (COoDM §3)"""@nl .
 
 
 ###############################################################################
@@ -177,8 +177,8 @@ cover:ValueType
     rdfs:subClassOf gufo:EventType ;
     rdfs:label "ValueType"@en , "Waardetype"@nl ;
     rdfs:comment
-        "Een EventType dat ValueExperiences (events) classificeert.
-         Conform Sales et al. (2017) §4. (DD-036)"@nl .
+        """Een EventType dat ValueExperiences (events) classificeert.
+         Conform Sales et al. (2017) §4. (DD-036)"""@nl .
 
 cover:PrivacyExperience
     a cover:ValueType ;
@@ -216,8 +216,8 @@ cover:ValueExperience
     rdfs:subClassOf gufo:Event ;
     rdfs:label "ValueExperience"@en , "Waardebeleving"@nl ;
     rdfs:comment
-        "Een waardebeleving als event: de episode waarin een ValueBeneficiary
-         een waarde ervaart. Conform Sales et al. (2017) §4. (DD-036)"@nl .
+        """Een waardebeleving als event: de episode waarin een ValueBeneficiary
+         een waarde ervaart. Conform Sales et al. (2017) §4. (DD-036)"""@nl .
 
 
 ###############################################################################
@@ -231,8 +231,8 @@ cover:ValueBeholder
     rdfs:subClassOf gufo:RoleMixin ;
     rdfs:label "ValueBeholder"@en , "Waarde-beoordelaar"@nl ;
     rdfs:comment
-        "De agent die in een ValueAscription de rol van beoordelaar speelt.
-         RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+        """De agent die in een ValueAscription de rol van beoordelaar speelt.
+         RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"""@nl .
 
 cover:ValueBeneficiary
     a owl:Class ;
@@ -241,8 +241,8 @@ cover:ValueBeneficiary
     rdfs:subClassOf gufo:RoleMixin ;
     rdfs:label "ValueBeneficiary"@en , "Waarde-ontvanger"@nl ;
     rdfs:comment
-        "De agent voor wie het waarde-oordeel geldt in een ValueAscription.
-         RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"@nl .
+        """De agent voor wie het waarde-oordeel geldt in een ValueAscription.
+         RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"""@nl .
 
 
 ###############################################################################
@@ -265,9 +265,9 @@ cover:ValueAscription
     rdfs:subClassOf gufo:Relator ;
     rdfs:label "ValueAscription"@en , "Waarde-ascriptie"@nl ;
     rdfs:comment
-        "Een waarde-ascriptie als Relator: medieert ValueBeholder en
+        """Een waarde-ascriptie als Relator: medieert ValueBeholder en
          ValueBeneficiary. Conform Sales et al. (2017) Fig. 2. (DD-036)
-         [E-001] rdf:type gufo:RelationshipType verwijderd (DD-049)."@nl .
+         [E-001] rdf:type gufo:RelationshipType verwijderd (DD-049)."""@nl .
 
 cover:ValuePerception
     a owl:Class ;
@@ -275,10 +275,10 @@ cover:ValuePerception
     rdfs:subClassOf cover:ValueAscription ;
     rdfs:label "ValuePerception"@en , "Waarde-perceptie"@nl ;
     rdfs:comment
-        "Een ValueAscription waarbij beholder en beneficiary dezelfde agent
+        """Een ValueAscription waarbij beholder en beneficiary dezelfde agent
          zijn: zelf-beoordeling. Conform Sales et al. (2017) §4.
          [E-002] rdf:type gufo:Phase verwijderd (DD-049/DD-050):
-         Phase is voor Endurant-fases; ValueAscription is een Relator."@nl .
+         Phase is voor Endurant-fases; ValueAscription is een Relator."""@nl .
 
 cover:ValueAssertion
     a owl:Class ;
@@ -286,10 +286,10 @@ cover:ValueAssertion
     rdfs:subClassOf cover:ValueAscription ;
     rdfs:label "ValueAssertion"@en , "Waarde-assertie"@nl ;
     rdfs:comment
-        "Een ValueAscription waarbij beholder en beneficiary verschillende
+        """Een ValueAscription waarbij beholder en beneficiary verschillende
          agents zijn. Fundeert Value Propositions (00f).
          Conform Sales et al. (2017) §4.
-         [E-003] rdf:type gufo:Phase verwijderd (DD-049/DD-050)."@nl .
+         [E-003] rdf:type gufo:Phase verwijderd (DD-049/DD-050)."""@nl .
 
 
 ###############################################################################
@@ -302,10 +302,10 @@ coodm:Preference
     rdfs:subClassOf ufoc:Belief ;
     rdfs:label "Preference"@en , "Preferentie"@nl ;
     rdfs:comment
-        "Een ufoc:Belief van een delibererende agent die zijn waarde-oordeel
+        """Een ufoc:Belief van een delibererende agent die zijn waarde-oordeel
          uitdrukt over een DecisionAlternative. Het mentale substraat dat een
          ValueAscription fundeert via coodm:groundsAscription.
-         [DD-029] Geen rdf:type in Taxonomy of Types. (DD-036)"@nl .
+         [DD-029] Geen rdf:type in Taxonomy of Types. (DD-036)"""@nl .
 
 
 ###############################################################################
@@ -330,8 +330,8 @@ cover:ValueScale
     a owl:Class ;
     rdfs:label "ValueScale"@en , "Waardeschaal"@nl ;
     rdfs:comment
-        "De valentie van een ValueExperience: positief, negatief of neutraal.
-         (DD-036)"@nl .
+        """De valentie van een ValueExperience: positief, negatief of neutraal.
+         (DD-036)"""@nl .
 
 cover:PositiveValence
     a cover:ValueScale ;

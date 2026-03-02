@@ -36,9 +36,7 @@ shg:IntrinsicModeShape
     sh:targetClass gufo:IntrinsicMode ;
     sh:name "IntrinsicModeShape" ;
     sh:description
-        "G1: Elke IntrinsicMode moet via gufo:inheresIn inheren aan
-         precies één Endurant (gUFO axioma: modes zijn existentieel
-         afhankelijk van hun drager)." ;
+        "G1: Elke IntrinsicMode moet via gufo:inheresIn inheren aan precies één Endurant (gUFO axioma: modes zijn existentieel afhankelijk van hun drager)." ;
 
     sh:property [
         sh:path     gufo:inheresIn ;
@@ -60,9 +58,9 @@ shg:ExtrinsicModeShape
     sh:targetClass gufo:ExtrinsicMode ;
     sh:name "ExtrinsicModeShape" ;
     sh:description
-        "G1b: Elke ExtrinsicMode moet via gufo:inheresIn inheren aan
+        """G1b: Elke ExtrinsicMode moet via gufo:inheresIn inheren aan
          precies één Endurant (de drager), én via gufo:externallyDependsOn
-         afhankelijk zijn van ten minste één andere Endurant (het externe object)." ;
+         afhankelijk zijn van ten minste één andere Endurant (het externe object).""" ;
 
     sh:property [
         sh:path     gufo:inheresIn ;
@@ -104,8 +102,8 @@ shg:RelatorShape
     sh:targetClass gufo:Relator ;
     sh:name "RelatorShape" ;
     sh:description
-        "G2: Elke Relator moet via gufo:mediates ten minste twee
-         verschillende Endurants mediëren." ;
+        """G2: Elke Relator moet via gufo:mediates ten minste twee
+         verschillende Endurants mediëren.""" ;
 
     sh:property [
         sh:path     gufo:mediates ;

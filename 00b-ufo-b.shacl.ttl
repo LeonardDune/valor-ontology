@@ -36,8 +36,8 @@ shb:EventPartitionShape
     sh:severity sh:Warning ;
     sh:name "EventPartitionShape" ;
     sh:description
-        "B0: Elke gufo:Event-instantie moet óf ufob:AtomicEvent óf
-         ufob:ComplexEvent zijn (UFO-B-2013 M1/M2, disjuncte partitie)." ;
+        """B0: Elke gufo:Event-instantie moet óf ufob:AtomicEvent óf
+         ufob:ComplexEvent zijn (UFO-B-2013 M1/M2, disjuncte partitie).""" ;
     sh:sparql [
         sh:name    "B0-event-partition" ;
         sh:message "B0 (waarschuwing): Event-instantie is geen AtomicEvent of ComplexEvent." ;
@@ -62,8 +62,8 @@ shb:ComplexEventPartsShape
     sh:targetClass ufob:ComplexEvent ;
     sh:name "ComplexEventPartsShape" ;
     sh:description
-        "B1: Een ComplexEvent moet ten minste 2 disjuncte event-delen hebben
-         (UFO-B-2013 M6, Weak Supplementation Principle)." ;
+        """B1: Een ComplexEvent moet ten minste 2 disjuncte event-delen hebben
+         (UFO-B-2013 M6, Weak Supplementation Principle).""" ;
     sh:property [
         sh:path     [ sh:inversePath gufo:isProperPartOf ] ;
         sh:minCount 2 ;
@@ -82,8 +82,8 @@ shb:AtomicEventDependenceShape
     sh:targetClass ufob:AtomicEvent ;
     sh:name "AtomicEventDependenceShape" ;
     sh:description
-        "B2: Een AtomicEvent hangt af van precies één Object via
-         excDependsOn (UFO-B-2013 P1)." ;
+        """B2: Een AtomicEvent hangt af van precies één Object via
+         excDependsOn (UFO-B-2013 P1).""" ;
     sh:property [
         sh:path     ufob:excDependsOn ;
         sh:minCount 1 ;
@@ -212,9 +212,9 @@ shb:HistoricalRoleStereotypeShape
     sh:severity sh:Warning ;
     sh:name "HistoricalRoleStereotypeShape" ;
     sh:description
-        "B8: Klassen met valor:ontoumlStereotype 'historicalRole' moeten
+        """B8: Klassen met valor:ontoumlStereotype 'historicalRole' moeten
          subklasse zijn van gufo:Role (UFO-B-2019 §3.2).
-         [SB-001] v0.2: valor:ontoumlStereotype i.p.v. gufo:ontoumlStereotype." ;
+         [SB-001] v0.2: valor:ontoumlStereotype i.p.v. gufo:ontoumlStereotype.""" ;
     sh:sparql [
         sh:name    "B8-historicalRole-subClassOf-Role" ;
         sh:message "B8 (waarschuwing): Class met 'historicalRole' stereotype is geen subklasse van gufo:Role." ;

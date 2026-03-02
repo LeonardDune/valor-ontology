@@ -15,7 +15,7 @@
 # Constraints C1–C8 as documented in 00b-ufo-c.ttl.
 ###############################################################################
 
-shc
+shc:
     a owl:Ontology ;
     dcterms:title "VALOR-O SHACL — UFO-C Social Entities"@nl ;
     owl:versionInfo "0.1" .
@@ -30,9 +30,9 @@ shc:SocialRelatorShape
     sh:targetClass ufoc:SocialRelator ;
     sh:name "SocialRelatorShape" ;
     sh:description
-        "C1: SocialRelator vereist precies één hasCommittedAgent,
+        """C1: SocialRelator vereist precies één hasCommittedAgent,
          precies één hasClaimantAgent, precies één hasCommitmentContent,
-         en de twee agents moeten van elkaar verschillen." ;
+         en de twee agents moeten van elkaar verschillen.""" ;
 
     sh:property [
         sh:path ufoc:hasCommittedAgent ;
@@ -78,9 +78,9 @@ shc:SocialCommitmentShape
     sh:targetClass ufoc:SocialCommitment ;
     sh:name "SocialCommitmentShape" ;
     sh:description
-        "C2: SocialCommitment moet via commitmentInheresIn inheren aan de
+        """C2: SocialCommitment moet via commitmentInheresIn inheren aan de
          hasCommittedAgent van zijn SocialRelator, en via commitmentDependsOn
-         afhankelijk zijn van de hasClaimantAgent." ;
+         afhankelijk zijn van de hasClaimantAgent.""" ;
 
     sh:property [
         sh:path ufoc:commitmentInheresIn ;
@@ -120,9 +120,9 @@ shc:SocialClaimShape
     sh:targetClass ufoc:SocialClaim ;
     sh:name "SocialClaimShape" ;
     sh:description
-        "C3: SocialClaim moet via claimInheresIn inheren aan de
+        """C3: SocialClaim moet via claimInheresIn inheren aan de
          hasClaimantAgent van zijn SocialRelator, en via claimDependsOn
-         afhankelijk zijn van de hasCommittedAgent." ;
+         afhankelijk zijn van de hasCommittedAgent.""" ;
 
     sh:property [
         sh:path ufoc:claimInheresIn ;
@@ -162,8 +162,8 @@ shc:SocialRoleShape
     sh:targetClass ufoc:SocialRole ;
     sh:name "SocialRoleShape" ;
     sh:description
-        "C4: Een SocialRole moet betrokken zijn bij ten minste één
-         SocialRelator als committed of claimant agent." ;
+        """C4: Een SocialRole moet betrokken zijn bij ten minste één
+         SocialRelator als committed of claimant agent.""" ;
 
     sh:sparql [
         sh:name    "C4-role-in-relator" ;
@@ -190,8 +190,8 @@ shc:IntentionalModeShape
     sh:targetClass ufoc:IntentionalMode ;
     sh:name "IntentionalModeShape" ;
     sh:description
-        "C5: Elke IntentionalMode vereist precies één
-         hasPropositionalContent van type gufo:Situation." ;
+        """C5: Elke IntentionalMode vereist precies één
+         hasPropositionalContent van type gufo:Situation.""" ;
 
     sh:property [
         sh:path gufo:hasPropositionalContent ;
@@ -228,8 +228,8 @@ shc:DelegatumShape
     sh:targetClass ufoc:Delegatum ;
     sh:name "DelegatumShape" ;
     sh:description
-        "C7: Delegatum vereist precies één hasDelegator en één
-         hasDelegatee, en ze moeten verschillen." ;
+        """C7: Delegatum vereist precies één hasDelegator en één
+         hasDelegatee, en ze moeten verschillen.""" ;
 
     sh:property [
         sh:path ufoc:hasDelegator ;
@@ -268,9 +268,9 @@ shc:NormShape
     sh:targetClass ufoc:Norm ;
     sh:name "NormShape" ;
     sh:description
-        "C8: Een Norm is een SocialObject en moet inheren aan een
+        """C8: Een Norm is een SocialObject en moet inheren aan een
          institutionele of collectieve Agent (normen bestaan door
-         collectieve erkenning)." ;
+         collectieve erkenning).""" ;
 
     sh:property [
         sh:path gufo:inheresIn ;

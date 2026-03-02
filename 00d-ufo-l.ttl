@@ -41,9 +41,9 @@ vo:ufo-l
     owl:imports vo:ufo-c ;
     dcterms:title "VALOR-O — UFO-L Legal Relations"@nl ;
     dcterms:description
-        "Ontologie van rechtsbetrekkingen, normen, rechtsfeiten en
+        """Ontologie van rechtsbetrekkingen, normen, rechtsfeiten en
          delegatie. Gebouwd op UFO-L en verrijkt met het juridisch
-         analyseschema (Wetsanalyse) en de beleidsontologie (Weigand)."@nl ;
+         analyseschema (Wetsanalyse) en de beleidsontologie (Weigand)."""@nl ;
     owl:versionInfo "0.2" .
 
 
@@ -58,9 +58,9 @@ ufol:LegalSubject
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "LegalSubject"@en , "Rechtssubject"@nl ;
     rdfs:comment
-        "Een Agent in zijn hoedanigheid als drager van rechten en plichten.
+        """Een Agent in zijn hoedanigheid als drager van rechten en plichten.
          Een rechtssubject speelt deze rol in de context van een
-         LegalRelator (rechtsbetrekking)."@nl .
+         LegalRelator (rechtsbetrekking)."""@nl .
 
 ufol:NaturalPersonSubject
     a owl:Class ;
@@ -69,13 +69,13 @@ ufol:NaturalPersonSubject
     rdfs:subClassOf ufol:LegalSubject ;
     rdfs:label "NaturalPersonSubject"@en , "Natuurlijk persoon"@nl ;
     rdfs:comment
-        "Een rechtssubject dat een fysieke persoon is. Draagt rechten en
+        """Een rechtssubject dat een fysieke persoon is. Draagt rechten en
          plichten vanwege zijn hoedanigheid als natuurlijk persoon in een
          specifieke juridische relatie (bijv. belastingplichtige, burger,
          werknemer).
          [D-001] rdf:type gufo:EventType gecorrigeerd naar gufo:Role (DD-049):
          NaturalPersonSubject is een Endurant (Role), geen Event. EventType
-         is uitsluitend voor Event-subtypen in de Taxonomy of Types."@nl .
+         is uitsluitend voor Event-subtypen in de Taxonomy of Types."""@nl .
 
 ufol:LegalPersonSubject
     a owl:Class ;
@@ -84,9 +84,9 @@ ufol:LegalPersonSubject
     rdfs:subClassOf ufol:LegalSubject ;
     rdfs:label "LegalPersonSubject"@en , "Rechtspersoon"@nl ;
     rdfs:comment
-        "Een rechtssubject dat een institutionele agent is (gemeente,
+        """Een rechtssubject dat een institutionele agent is (gemeente,
          bedrijf, bestuursorgaan). Bestaat door collectieve erkenning
-         en draagt rechten en plichten als rechtspersoon."@nl .
+         en draagt rechten en plichten als rechtspersoon."""@nl .
 
 
 ###############################################################################
@@ -100,9 +100,9 @@ ufol:LegalObject
     rdfs:subClassOf gufo:FunctionalComplex ;
     rdfs:label "LegalObject"@en , "Rechtsobject"@nl ;
     rdfs:comment
-        "Het voorwerp van een rechtsbetrekking: een zaak, dienst,
+        """Het voorwerp van een rechtsbetrekking: een zaak, dienst,
          handeling of informatieobject waarop een LegalRelator betrekking
-         heeft."@nl .
+         heeft."""@nl .
 
 ufol:PhysicalLegalObject
     a owl:Class ;
@@ -119,8 +119,8 @@ ufol:AbstractLegalObject
     rdfs:subClassOf ufol:LegalObject ;
     rdfs:label "AbstractLegalObject"@en , "Abstract rechtsobject"@nl ;
     rdfs:comment
-        "Een niet-fysiek rechtsobject: uitkering, bijdrage, vergunning,
-         recht op studiefinanciering."@nl .
+        """Een niet-fysiek rechtsobject: uitkering, bijdrage, vergunning,
+         recht op studiefinanciering."""@nl .
 
 ufol:InformationLegalObject
     a owl:Class ;
@@ -129,8 +129,8 @@ ufol:InformationLegalObject
     rdfs:subClassOf ufol:LegalObject ;
     rdfs:label "InformationLegalObject"@en , "Informatierechtsobject"@nl ;
     rdfs:comment
-        "Een informatie-object als rechtsobject: aangifte, bezwaarschrift,
-         beschikking, aanvraag."@nl .
+        """Een informatie-object als rechtsobject: aangifte, bezwaarschrift,
+         beschikking, aanvraag."""@nl .
 
 
 ###############################################################################
@@ -144,9 +144,9 @@ ufol:LegalNorm
     rdfs:subClassOf ufoc:Norm ;
     rdfs:label "LegalNorm"@en , "Rechtsnorm"@nl ;
     rdfs:comment
-        "Een sociaal object dat een juridisch geldige norm constitueert.
+        """Een sociaal object dat een juridisch geldige norm constitueert.
          Rechtsnormen zijn in formele of gedelegeerde wetgeving verankerd
-         en worden door institutionele autoriteit gehandhaafd."@nl .
+         en worden door institutionele autoriteit gehandhaafd."""@nl .
 
 ufol:ConductNorm
     a owl:Class ;
@@ -155,8 +155,8 @@ ufol:ConductNorm
     rdfs:subClassOf ufol:LegalNorm ;
     rdfs:label "ConductNorm"@en , "Gedragsregel"@nl ;
     rdfs:comment
-        "Een rechtsnorm die gedrag of handelen gebiedt, verbiedt of
-         toestaat."@nl .
+        """Een rechtsnorm die gedrag of handelen gebiedt, verbiedt of
+         toestaat."""@nl .
 
 ufol:CompetenceNorm
     a owl:Class ;
@@ -165,9 +165,9 @@ ufol:CompetenceNorm
     rdfs:subClassOf ufol:LegalNorm ;
     rdfs:label "CompetenceNorm"@en , "Bevoegdheidsregel"@nl ;
     rdfs:comment
-        "Een rechtsnorm die een bestuursorgaan of rechtssubject de
+        """Een rechtsnorm die een bestuursorgaan of rechtssubject de
          bevoegdheid verleent een bepaalde handeling te verrichten of
-         een bepaalde toestand tot stand te brengen."@nl .
+         een bepaalde toestand tot stand te brengen."""@nl .
 
 ufol:NormativeSituation
     a owl:Class ;
@@ -176,9 +176,9 @@ ufol:NormativeSituation
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "NormativeSituation"@en , "Normatieve situatie"@nl ;
     rdfs:comment
-        "Een situatie die bestaat doordat een LegalNorm van toepassing
+        """Een situatie die bestaat doordat een LegalNorm van toepassing
          is op een of meer LegalSubjects. De NormativeSituation
-         constitueert de LegalRelator (rechtsbetrekking)."@nl .
+         constitueert de LegalRelator (rechtsbetrekking)."""@nl .
 
 ufol:instatesNormativeSituation
     a owl:ObjectProperty ;
@@ -188,8 +188,8 @@ ufol:instatesNormativeSituation
     rdfs:domain ufol:LegalNorm ;
     rdfs:range  ufol:NormativeSituation ;
     rdfs:comment
-        "Relateert een LegalNorm aan de NormativeSituation die zij in
-         het leven roept zodra zij van toepassing is."@nl .
+        """Relateert een LegalNorm aan de NormativeSituation die zij in
+         het leven roept zodra zij van toepassing is."""@nl .
 
 ufol:hasLegalBasis
     a owl:ObjectProperty ;
@@ -199,8 +199,8 @@ ufol:hasLegalBasis
     rdfs:domain ufol:NormativeSituation ;
     rdfs:range  ufol:LegalNorm ;
     rdfs:comment
-        "Relateert een NormativeSituation (of LegalRelator) aan de
-         LegalNorm waarop zij is gebaseerd."@nl .
+        """Relateert een NormativeSituation (of LegalRelator) aan de
+         LegalNorm waarop zij is gebaseerd."""@nl .
 
 
 ###############################################################################
@@ -218,10 +218,10 @@ ufol:LegalRelator
     rdfs:subClassOf ufoc:SocialRelator ;
     rdfs:label "LegalRelator"@en , "Rechtsbetrekking"@nl ;
     rdfs:comment
-        "Een SocialRelator die een juridische verhouding uitdrukt tussen twee
+        """Een SocialRelator die een juridische verhouding uitdrukt tussen twee
          LegalSubjects. Medieert een rechthebbende (right-holder) en een
          plichthebbende (duty-bearer). Specialisatie van SocialRelator.
-         [D-002] rdf:type gufo:Relator verwijderd (DD-049)."@nl .
+         [D-002] rdf:type gufo:Relator verwijderd (DD-049)."""@nl .
 
 ufol:hasRightHolder
     a owl:ObjectProperty ;
@@ -261,8 +261,8 @@ ufol:RightMode
     rdfs:subClassOf ufoc:SocialClaim ;
     rdfs:label "RightMode"@en , "Recht (modus)"@nl ;
     rdfs:comment
-        "De ExtrinsicMode die de rechthebbende draagt als gevolg van de
-         LegalRelator: zijn recht op nakoming door de plichthebbende."@nl .
+        """De ExtrinsicMode die de rechthebbende draagt als gevolg van de
+         LegalRelator: zijn recht op nakoming door de plichthebbende."""@nl .
 
 ufol:DutyMode
     a owl:Class ;
@@ -270,8 +270,8 @@ ufol:DutyMode
     rdfs:subClassOf ufoc:SocialCommitment ;
     rdfs:label "DutyMode"@en , "Plicht (modus)"@nl ;
     rdfs:comment
-        "De ExtrinsicMode die de plichthebbende draagt als gevolg van de
-         LegalRelator: zijn juridische verplichting."@nl .
+        """De ExtrinsicMode die de plichthebbende draagt als gevolg van de
+         LegalRelator: zijn juridische verplichting."""@nl .
 
 ufol:hasRightMode
     a owl:ObjectProperty ;
@@ -301,8 +301,8 @@ ufol:ClaimRightRelator
     rdfs:subClassOf ufol:LegalRelator ;
     rdfs:label "ClaimRightRelator"@en , "Aanspraak–verplichting"@nl ;
     rdfs:comment
-        "Het meest voorkomende type rechtsbetrekking: aanspraak op nakoming
-         en corresponderende verplichting."@nl .
+        """Het meest voorkomende type rechtsbetrekking: aanspraak op nakoming
+         en corresponderende verplichting."""@nl .
 
 ufol:EnforceabilityLevel
     a owl:Class ;
@@ -385,8 +385,8 @@ ufol:LegalFact
     rdfs:subClassOf gufo:Event ;
     rdfs:label "LegalFact"@en , "Rechtsfeit"@nl ;
     rdfs:comment
-        "Een handeling of gebeurtenis, of tijdsverloop dat een wijziging
-         in de juridische toestand teweegbrengt."@nl .
+        """Een handeling of gebeurtenis, of tijdsverloop dat een wijziging
+         in de juridische toestand teweegbrengt."""@nl .
 
 ufol:createsLegalRelation
     a owl:ObjectProperty ;
@@ -477,9 +477,9 @@ ufol:TemporalCondition
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "TemporalCondition"@en , "Tijdsaanduiding"@nl ;
     rdfs:comment
-        "Een tijdsgebonden conditie die de geldigheid van een
+        """Een tijdsgebonden conditie die de geldigheid van een
          rechtsbetrekking of de toepasselijkheid van een afleidingsregel
-         begrenst. [DD-029] Geen rdf:type in Taxonomy of Types."@nl .
+         begrenst. [DD-029] Geen rdf:type in Taxonomy of Types."""@nl .
 
 ufol:DeadlineCondition
     a owl:Class ;
@@ -699,11 +699,11 @@ ufol:Policy
     rdfs:subClassOf gufo:ExtrinsicMode ;
     rdfs:label "Policy"@en , "Beleid (normatief)"@nl ;
     rdfs:comment
-        "Een bundel van rechten en plichten (RightMode en DutyMode) die
+        """Een bundel van rechten en plichten (RightMode en DutyMode) die
          inhereert aan de institutionele agent (organisator/delegator) en
          extern afhankelijk is van de geadresseerde organisatorische agent.
          ExtrinsicMode conform Weigand (2024) §4.1. (DD-032)
-         [DD-029] Geen rdf:type in Taxonomy of Types (geen ModeType in gUFO)."@nl .
+         [DD-029] Geen rdf:type in Taxonomy of Types (geen ModeType in gUFO)."""@nl .
 
 ufol:PolicyDocument
     a owl:Class ;

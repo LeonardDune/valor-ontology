@@ -53,9 +53,9 @@ shcoodm:DeliberationShape
     sh:targetClass coodm:Deliberation ;
     sh:name "DeliberationShape" ;
     sh:description
-        "E1–E3: Een Deliberation moet (a) getriggerd zijn door een
+        """E1–E3: Een Deliberation moet (a) getriggerd zijn door een
          DecisionSituation, (b) minstens één DecisionAlternative overwegen,
-         en (c) precies één Decision produceren." ;
+         en (c) precies één Decision produceren.""" ;
 
     sh:property [
         sh:path coodm:triggeredBy ;
@@ -106,9 +106,9 @@ shcoodm:ValueExperienceShape
     sh:targetClass cover:ValueExperience ;
     sh:name "ValueExperienceShape" ;
     sh:description
-        "E5–E7: Een ValueExperience moet (a) een beneficiary hebben,
+        """E5–E7: Een ValueExperience moet (a) een beneficiary hebben,
          (b) van precies één ValueType zijn, en (c) precies één valentie hebben.
-         Conform Sales et al. (2017) en DD-036." ;
+         Conform Sales et al. (2017) en DD-036.""" ;
 
     sh:property [
         sh:path cover:hasBeneficiary ;
@@ -155,9 +155,9 @@ shcoodm:ValueAscriptionShape
     sh:targetClass cover:ValueAscription ;
     sh:name "ValueAscriptionShape" ;
     sh:description
-        "E9: Een ValueAscription (Relator) moet (a) een beoordelende agent hebben,
+        """E9: Een ValueAscription (Relator) moet (a) een beoordelende agent hebben,
          (b) een begunstigde agent hebben, en (c) een ValueExperience beoordelen.
-         Conform Sales et al. (2017) Fig. 2 en DD-036." ;
+         Conform Sales et al. (2017) Fig. 2 en DD-036.""" ;
 
     sh:property [
         sh:path cover:hasBeholderAgent ;

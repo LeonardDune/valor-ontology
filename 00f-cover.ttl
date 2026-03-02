@@ -40,9 +40,9 @@
     owl:imports <https://valor-ecosystem.nl/ontology/coodm> ;
     owl:versionInfo "0.2" ;
     rdfs:comment
-        "Uitbouw van de VAO conform Sales et al. (2017): ValueObject,
+        """Uitbouw van de VAO conform Sales et al. (2017): ValueObject,
          VAComponent (Benefit/Sacrifice) en ValueProposition.
-         Fundeert het Axia-perspectief in VALOR volledig."@nl .
+         Fundeert het Axia-perspectief in VALOR volledig."""@nl .
 
 
 ###############################################################################
@@ -56,10 +56,10 @@ cover:ValueBearer
     rdfs:subClassOf gufo:RoleMixin ;
     rdfs:label "ValueBearer"@en , "Waarde-drager"@nl ;
     rdfs:comment
-        "Het overkoepelende concept voor entiteiten waaraan waarde kan worden
+        """Het overkoepelende concept voor entiteiten waaraan waarde kan worden
          toegeschreven. Twee subtypen conform Sales et al. (2017) Fig. 1:
          (a) cover:ValueExperience — een event (in 00e);
-         (b) cover:ValueObject — een substantial. (DD-039)"@nl .
+         (b) cover:ValueObject — een substantial. (DD-039)"""@nl .
 
 cover:ValueObject
     a owl:Class ;
@@ -68,8 +68,8 @@ cover:ValueObject
     rdfs:subClassOf gufo:RoleMixin ;
     rdfs:label "ValueObject"@en , "Waardeobject"@nl ;
     rdfs:comment
-        "Een substantial (goed, dienst, besluit) dat de rol van waarde-drager
-         speelt. Conform Sales et al. (2017) §4. (DD-039)"@nl .
+        """Een substantial (goed, dienst, besluit) dat de rol van waarde-drager
+         speelt. Conform Sales et al. (2017) §4. (DD-039)"""@nl .
 
 
 ###############################################################################
@@ -92,10 +92,10 @@ cover:VAComponent
     rdfs:subClassOf gufo:Relator ;
     rdfs:label "VAComponent"@en , "Waarde-ascriptiecomponent"@nl ;
     rdfs:comment
-        "Een component van een ValueAscription: een deelbeoordeling die
+        """Een component van een ValueAscription: een deelbeoordeling die
          focust op één MentalAspect van de ValueBeholder.
          [F-001] rdf:type gufo:RelationshipType verwijderd (DD-049).
-         Conform Sales et al. (2017) §4/Fig. 2. (DD-038)"@nl .
+         Conform Sales et al. (2017) §4/Fig. 2. (DD-038)"""@nl .
 
 cover:Benefit
     a owl:Class ;
@@ -103,11 +103,11 @@ cover:Benefit
     rdfs:subClassOf cover:VAComponent ;
     rdfs:label "Benefit"@en , "Baat"@nl ;
     rdfs:comment
-        "Een positief VAComponent: de ValueExperience voldoet (geheel of
+        """Een positief VAComponent: de ValueExperience voldoet (geheel of
          gedeeltelijk) aan het relevante MentalAspect van de ValueBeholder.
          [F-002] rdf:type gufo:SubKind verwijderd (DD-049/DD-050):
          SubKind vereist een Kind-hiërarchie; VAComponent is een Relator.
-         Conform Sales et al. (2017) §4. (DD-038)"@nl .
+         Conform Sales et al. (2017) §4. (DD-038)"""@nl .
 
 cover:Sacrifice
     a owl:Class ;
@@ -115,10 +115,10 @@ cover:Sacrifice
     rdfs:subClassOf cover:VAComponent ;
     rdfs:label "Sacrifice"@en , "Offer"@nl ;
     rdfs:comment
-        "Een negatief VAComponent: de ValueExperience vereist een opoffering
+        """Een negatief VAComponent: de ValueExperience vereist een opoffering
          van de ValueBeholder/ValueBeneficiary.
          [F-003] rdf:type gufo:SubKind verwijderd (DD-049/DD-050).
-         Conform Sales et al. (2017) §3. (DD-038)"@nl .
+         Conform Sales et al. (2017) §3. (DD-038)"""@nl .
 
 
 ###############################################################################
@@ -138,12 +138,12 @@ cover:ValueProposition
     rdfs:subClassOf cover:ValueAssertion ;
     rdfs:label "ValueProposition"@en , "Waardepropositie"@nl ;
     rdfs:comment
-        "Een ValueAssertion waarbij een organisatie (ValueBeholder) stelt
+        """Een ValueAssertion waarbij een organisatie (ValueBeholder) stelt
          dat een doelgroep (ValueBeneficiary) een bepaalde waarde zal toekennen
          aan de ervaringen die een dienst mogelijk maakt.
          In VALOR: de expliciete waardeclaim van een publieke organisatie
          over haar dienstverlening — brug tussen Axia en Acta. (DD-037)
-         [F-004] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."@nl .
+         [F-004] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."""@nl .
 
 cover:BusinessValueProposition
     a owl:Class ;
@@ -151,9 +151,9 @@ cover:BusinessValueProposition
     rdfs:subClassOf cover:ValueProposition ;
     rdfs:label "BusinessValueProposition"@en , "Organisatiewaardepropositie"@nl ;
     rdfs:comment
-        "Een ValueProposition op het niveau van de totale portefeuille van
+        """Een ValueProposition op het niveau van de totale portefeuille van
          een organisatie voor een breed marktsegment. (DD-037)
-         [F-005] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."@nl .
+         [F-005] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."""@nl .
 
 cover:OfferingValueProposition
     a owl:Class ;
@@ -161,9 +161,9 @@ cover:OfferingValueProposition
     rdfs:subClassOf cover:ValueProposition ;
     rdfs:label "OfferingValueProposition"@en , "Dienstwaardepropositie"@nl ;
     rdfs:comment
-        "Een ValueProposition op het niveau van één specifieke dienst of
+        """Een ValueProposition op het niveau van één specifieke dienst of
          regeling. (DD-037)
-         [F-006] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."@nl .
+         [F-006] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."""@nl .
 
 
 ###############################################################################

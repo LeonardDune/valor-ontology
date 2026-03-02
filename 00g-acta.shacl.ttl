@@ -63,9 +63,9 @@ shacta:TransactionShape
     sh:targetClass acta:Transaction ;
     sh:name "TransactionShape" ;
     sh:description
-        "G1–G3: Een transactie vereist precies één Initiator, één Executor
+        """G1–G3: Een transactie vereist precies één Initiator, één Executor
          en precies één TransactionResult. Conform DEMO CTP en
-         Almeida et al. (2013)." ;
+         Almeida et al. (2013).""" ;
 
     sh:property [
         sh:path acta:hasInitiator ;
@@ -101,8 +101,8 @@ shacta:PublicServiceTransactionShape
     sh:targetClass acta:PublicServiceTransaction ;
     sh:name "PublicServiceTransactionShape" ;
     sh:description
-        "G4: In een PublicServiceTransaction moeten de Initiator en
-         Executor verschillende agents zijn." ;
+        """G4: In een PublicServiceTransaction moeten de Initiator en
+         Executor verschillende agents zijn.""" ;
 
     sh:sparql [
         sh:message "G4: PublicServiceTransaction.hasInitiator en hasExecutor mogen niet dezelfde Agent zijn." ;
@@ -132,8 +132,8 @@ shacta:ProductionActShape
     sh:targetClass acta:ProductionAct ;
     sh:name "ProductionActShape" ;
     sh:description
-        "G5–G6: Een ProductionAct behoort tot precies één Transaction
-         en heeft precies één performer (de Executor)." ;
+        """G5–G6: Een ProductionAct behoort tot precies één Transaction
+         en heeft precies één performer (de Executor).""" ;
 
     sh:property [
         sh:path acta:isProductionActOf ;
@@ -180,8 +180,8 @@ shacta:PositiveResultShape
     sh:targetClass acta:PositiveResult ;
     sh:name "PositiveResultShape" ;
     sh:description
-        "G8: Een PositiveResult wordt aanbevolen gekoppeld te zijn aan
-         een nieuwe LegalRelator via createsLegalRelator op de ProductionAct." ;
+        """G8: Een PositiveResult wordt aanbevolen gekoppeld te zijn aan
+         een nieuwe LegalRelator via createsLegalRelator op de ProductionAct.""" ;
 
     sh:sparql [
         sh:message "G8: Dit PositiveResult is niet gekoppeld aan een nieuwe LegalRelator via de ProductionAct — overweeg acta:createsLegalRelator toe te voegen." ;
@@ -360,9 +360,9 @@ shacta:TransactionKindStepShape
     sh:targetClass acta:TransactionKindStep ;
     sh:name "TransactionKindStepShape" ;
     sh:description
-        "G-TS1–G-TS2: Een TransactionKindStep verbindt precies één
+        """G-TS1–G-TS2: Een TransactionKindStep verbindt precies één
          Transaction (inTransaction) en precies één CoordinationFact-type
-         (ofFactKind)." ;
+         (ofFactKind).""" ;
 
     sh:property [
         sh:path     acta:inTransaction ;
@@ -390,8 +390,8 @@ shacta:ResponseLinkShape
     sh:targetClass acta:ResponseLink ;
     sh:name "ResponseLinkShape" ;
     sh:description
-        "G-RL1–G-RL3: ResponseLink vereist fromStep en toStep
-         (beide verplicht, precies 1), en fromStep ≠ toStep." ;
+        """G-RL1–G-RL3: ResponseLink vereist fromStep en toStep
+         (beide verplicht, precies 1), en fromStep ≠ toStep.""" ;
 
     sh:property [
         sh:path     acta:fromStep ;
@@ -454,8 +454,8 @@ shacta:TransactorRoleShape
     sh:targetClass acta:TransactorRole ;
     sh:name "TransactorRoleShape" ;
     sh:description
-        "G-TAR1–G-TAR2: TransactorRole verbindt precies één ActorRole
-         en precies één Transaction." ;
+        """G-TAR1–G-TAR2: TransactorRole verbindt precies één ActorRole
+         en precies één Transaction.""" ;
 
     sh:property [
         sh:path     acta:transactorActorRole ;
@@ -478,8 +478,8 @@ shacta:TransactionHasTransactorShape
     sh:targetClass acta:Transaction ;
     sh:name "TransactionHasTransactorShape" ;
     sh:description
-        "G-TAR3: Aanbeveling dat elke Transaction gekoppeld is aan
-         minimaal één TransactorRole (Warning)." ;
+        """G-TAR3: Aanbeveling dat elke Transaction gekoppeld is aan
+         minimaal één TransactorRole (Warning).""" ;
 
     sh:sparql [
         sh:message  "G-TAR3: Deze Transaction heeft geen geassocieerde TransactorRole — overweeg acta:transactorTransaction toe te voegen." ;
@@ -504,10 +504,10 @@ shacta:CompositeTransactorRoleShape
     sh:targetClass acta:CompositeTransactorRole ;
     sh:name "CompositeTransactorRoleShape" ;
     sh:description
-        "G-CTAR (v0.4): CompositeTransactorRole is een gufo:RoleMixin —
+        """G-CTAR (v0.4): CompositeTransactorRole is een gufo:RoleMixin —
          perspectief-afhankelijk SoI-boundary-concept (DD-051).
          Aggregatieconstraint zit op acta:TransactorNetwork (G-TN).
-         Warning als CTAR per ongeluk als Collection is geclassificeerd." ;
+         Warning als CTAR per ongeluk als Collection is geclassificeerd.""" ;
 
     sh:sparql [
         sh:message  "G-CTAR: CompositeTransactorRole mag niet als gufo:Collection zijn geclassificeerd — gebruik acta:TransactorNetwork voor de aggregatie (DD-051)." ;
@@ -534,8 +534,8 @@ shacta:TransactorNetworkShape
     sh:targetClass acta:TransactorNetwork ;
     sh:name "TransactorNetworkShape" ;
     sh:description
-        "G-TN: Een TransactorNetwork bevat minimaal 2 TransactorRole-leden
-         (Weak Supplementation voor gufo:Collection, DD-051)." ;
+        """G-TN: Een TransactorNetwork bevat minimaal 2 TransactorRole-leden
+         (Weak Supplementation voor gufo:Collection, DD-051).""" ;
 
     sh:property [
         sh:path     acta:networkHasTransactorRole ;
@@ -602,9 +602,9 @@ shacta:TransactionAlphaLayerShape
     sh:targetClass acta:Transaction ;
     sh:name "TransactionAlphaLayerShape" ;
     sh:description
-        "G-OID1: Aanbeveling dat elke Transaction is geclassificeerd als
+        """G-OID1: Aanbeveling dat elke Transaction is geclassificeerd als
          OriginalTransaction, InformationalTransaction of
-         DocumentalTransaction (DEMO ALPHA-theorie, DD-048)." ;
+         DocumentalTransaction (DEMO ALPHA-theorie, DD-048).""" ;
     sh:sparql [
         sh:message  "G-OID1: Deze Transaction heeft geen ALPHA-laagclassificatie (O/I/D) — overweeg acta:OriginalTransaction, acta:InformationalTransaction of acta:DocumentalTransaction toe te voegen." ;
         sh:severity sh:Warning ;

@@ -34,8 +34,8 @@ shl:LegalRelatorShape
     sh:targetClass ufol:LegalRelator ;
     sh:name "LegalRelatorShape" ;
     sh:description
-        "L1: Elke LegalRelator vereist precies één hasRightHolder en
-         precies één hasDutyBearer, en beide moeten van elkaar verschillen." ;
+        """L1: Elke LegalRelator vereist precies één hasRightHolder en
+         precies één hasDutyBearer, en beide moeten van elkaar verschillen.""" ;
 
     sh:property [
         sh:path ufol:hasRightHolder ;
@@ -93,8 +93,8 @@ shl:LegalRelatorBasisShape
     sh:targetClass ufol:LegalRelator ;
     sh:name "LegalRelatorBasisShape" ;
     sh:description
-        "L3: Elke LegalRelator moet via hasLegalBasis terug te herleiden
-         zijn naar een LegalNorm (traceerbaarheid Wetsanalyse)." ;
+        """L3: Elke LegalRelator moet via hasLegalBasis terug te herleiden
+         zijn naar een LegalNorm (traceerbaarheid Wetsanalyse).""" ;
 
     sh:property [
         sh:path ufol:hasLegalBasis ;
@@ -113,10 +113,10 @@ shl:DerivationRuleShape
     sh:targetClass ufol:DerivationRule ;
     sh:name "DerivationRuleShape" ;
     sh:description
-        "L4: Een DerivationRule vereist:
+        """L4: Een DerivationRule vereist:
          (a) ten minste één hasInputVariable;
          (b) ofwel een hasOutputVariable ofwel een derivesRelator
-             (maar niet beide tegelijk)." ;
+             (maar niet beide tegelijk).""" ;
 
     sh:property [
         sh:path ufol:hasInputVariable ;
@@ -153,9 +153,9 @@ shl:DelegationFulfillmentShape
     sh:targetClass ufol:DelegationFulfillment ;
     sh:name "DelegationFulfillmentShape" ;
     sh:description
-        "L5: Elke DelegationFulfillment (delegatie-invulling) moet via
+        """L5: Elke DelegationFulfillment (delegatie-invulling) moet via
          fulfillsDelegation verwijzen naar een DelegationAuthority
-         (delegatiegrondslag)." ;
+         (delegatiegrondslag).""" ;
 
     sh:property [
         sh:path ufol:fulfillsDelegation ;
@@ -175,11 +175,11 @@ shl:PolicyShape
     sh:targetClass ufol:Policy ;
     sh:name "PolicyShape" ;
     sh:description
-        "L6: Een Policy (ExtrinsicMode, Weigand 2024) moet:
+        """L6: Een Policy (ExtrinsicMode, Weigand 2024) moet:
          (a) inheren aan een InstitutionalAgent via policyInheresIn;
          (b) extern afhankelijk zijn van een Agent via policyDependsOn;
          (c) gegrond zijn in een DelegationAuthority via policyGroundedIn;
-         (d) de bearer en de geadresseerde moeten van elkaar verschillen." ;
+         (d) de bearer en de geadresseerde moeten van elkaar verschillen.""" ;
 
     sh:property [
         sh:path ufol:policyInheresIn ;
@@ -212,9 +212,9 @@ shl:PolicyDocumentShape
     sh:targetClass ufol:PolicyDocument ;
     sh:name "PolicyDocumentShape" ;
     sh:description
-        "L7: Een PolicyDocument (artefact) moet beschreven zijn door
+        """L7: Een PolicyDocument (artefact) moet beschreven zijn door
          (d.w.z. de inverse van describedByDocument hebben voor)
-         ten minste één Policy." ;
+         ten minste één Policy.""" ;
 
     sh:sparql [
         sh:name    "L7-document-has-policy" ;
@@ -239,8 +239,8 @@ shl:TemporalConditionShape
     sh:targetClass ufol:TemporalCondition ;
     sh:name "TemporalConditionShape" ;
     sh:description
-        "L8: Als een TemporalCondition zowel hasStartDate als hasEndDate
-         heeft, moet het startpunt voor of gelijk zijn aan het eindpunt." ;
+        """L8: Als een TemporalCondition zowel hasStartDate als hasEndDate
+         heeft, moet het startpunt voor of gelijk zijn aan het eindpunt.""" ;
 
     sh:sparql [
         sh:name    "L8-start-before-end" ;
@@ -265,8 +265,8 @@ shl:DomainVariableShape
     sh:targetClass ufol:DomainVariable ;
     sh:name "DomainVariableShape" ;
     sh:description
-        "L9: Een DomainVariable (variabele) moet inheren aan een
-         LegalSubject of een LegalObject." ;
+        """L9: Een DomainVariable (variabele) moet inheren aan een
+         LegalSubject of een LegalObject.""" ;
 
     sh:property [
         sh:path gufo:inheresIn ;
@@ -300,9 +300,9 @@ shl:LegalFactShape
     sh:targetClass ufol:LegalFact ;
     sh:name "LegalFactShape" ;
     sh:description
-        "L10: Elk LegalFact (rechtsfeit) moet via createsLegalRelation,
+        """L10: Elk LegalFact (rechtsfeit) moet via createsLegalRelation,
          modifiesLegalRelation of terminatesLegalRelation betrekking
-         hebben op ten minste één LegalRelator." ;
+         hebben op ten minste één LegalRelator.""" ;
 
     sh:sparql [
         sh:name    "L10-fact-relates-relator" ;
@@ -331,8 +331,8 @@ shl:NormativeSituationShape
     sh:targetClass ufol:NormativeSituation ;
     sh:name "NormativeSituationShape" ;
     sh:description
-        "L11: Elke NormativeSituation moet gegrond zijn in een LegalNorm
-         via hasLegalBasis." ;
+        """L11: Elke NormativeSituation moet gegrond zijn in een LegalNorm
+         via hasLegalBasis.""" ;
 
     sh:property [
         sh:path ufol:hasLegalBasis ;
@@ -351,9 +351,9 @@ shl:ClaimRightRelatorShape
     sh:targetClass ufol:ClaimRightRelator ;
     sh:name "ClaimRightRelatorShape" ;
     sh:description
-        "L12: Elke ClaimRightRelator (aanspraak–verplichting) moet een
+        """L12: Elke ClaimRightRelator (aanspraak–verplichting) moet een
          hasEnforceability hebben (krachtig, na ingebrekestelling,
-         of zwak — Wetsanalyse §4.3.3)." ;
+         of zwak — Wetsanalyse §4.3.3).""" ;
 
     sh:property [
         sh:path ufol:hasEnforceability ;

@@ -49,8 +49,8 @@ shcover:ValueExperienceEnablerShape
     sh:targetClass cover:ValueExperience ;
     sh:name "ValueExperienceEnablerShape" ;
     sh:description
-        "F1: Als een ValueExperience een enabledBy-relatie heeft, dan moet
-         het bereik een cover:ValueObject zijn." ;
+        """F1: Als een ValueExperience een enabledBy-relatie heeft, dan moet
+         het bereik een cover:ValueObject zijn.""" ;
 
     sh:property [
         sh:path cover:enabledBy ;
@@ -69,9 +69,9 @@ shcover:VAComponentShape
     sh:targetClass cover:VAComponent ;
     sh:name "VAComponentShape" ;
     sh:description
-        "F2–F3: Een VAComponent moet (a) focussen op precies één
+        """F2–F3: Een VAComponent moet (a) focussen op precies één
          IntentionalMode en (b) betrekking hebben op precies één
-         ValueExperience. Conform Sales et al. (2017) Fig. 2." ;
+         ValueExperience. Conform Sales et al. (2017) Fig. 2.""" ;
 
     sh:property [
         sh:path cover:isFocusOf ;
@@ -95,8 +95,8 @@ shcover:ValueAscriptionComponentShape
     sh:targetClass cover:ValueAscription ;
     sh:name "ValueAscriptionComponentShape" ;
     sh:description
-        "F4: Een ValueAscription wordt aanbevolen minimaal één VAComponent
-         te hebben (Warning)." ;
+        """F4: Een ValueAscription wordt aanbevolen minimaal één VAComponent
+         te hebben (Warning).""" ;
 
     sh:property [
         sh:path cover:hasComponent ;
@@ -116,8 +116,8 @@ shcover:ValuePropositionShape
     sh:targetClass cover:ValueProposition ;
     sh:name "ValuePropositionShape" ;
     sh:description
-        "F5: Een ValueProposition moet altijd een doelgroep hebben via
-         cover:targetsSegment. Conform Sales et al. (2017) §5.1." ;
+        """F5: Een ValueProposition moet altijd een doelgroep hebben via
+         cover:targetsSegment. Conform Sales et al. (2017) §5.1.""" ;
 
     sh:property [
         sh:path cover:targetsSegment ;
@@ -133,8 +133,8 @@ shcover:OfferingVPShape
     sh:targetClass cover:OfferingValueProposition ;
     sh:name "OfferingVPShape" ;
     sh:description
-        "F6: Een OfferingValueProposition moet conformeren aan precies één
-         BusinessValueProposition. Conform Sales et al. (2017) §5.2." ;
+        """F6: Een OfferingValueProposition moet conformeren aan precies één
+         BusinessValueProposition. Conform Sales et al. (2017) §5.2.""" ;
 
     sh:property [
         sh:path cover:conformsTo ;

@@ -97,8 +97,8 @@ gufo:IntrinsicMode
     rdfs:subClassOf gufo:IntrinsicAspect ;
     rdfs:label "IntrinsicMode"@en ;
     rdfs:comment
-        "An intrinsic aspect not directly associated with a quality structure
-         (e.g. a belief, a disposition, an intention, a skill)."@en .
+        """An intrinsic aspect not directly associated with a quality structure
+         (e.g. a belief, a disposition, an intention, a skill)."""@en .
 
 gufo:Quality
     a owl:Class ;
@@ -124,8 +124,8 @@ gufo:ExtrinsicMode
     rdfs:subClassOf gufo:ExtrinsicAspect ;
     rdfs:label "ExtrinsicMode"@en ;
     rdfs:comment
-        "An aspect that inheres in exactly one individual (its bearer) but is also
-         externally dependent on another individual (the extrinsic object)."@en .
+        """An aspect that inheres in exactly one individual (its bearer) but is also
+         externally dependent on another individual (the extrinsic object)."""@en .
 
 gufo:Event
     a owl:Class ;
@@ -401,17 +401,17 @@ gufo:stereotype
     a owl:AnnotationProperty ;
     rdfs:label "stereotype"@en ;
     rdfs:comment
-        "OntoUML stereotype van de geannoteerde klasse of property.
-         Lokale declaratie in VALOR-O curated subset (niet in officiële gUFO)."@en .
+        """OntoUML stereotype van de geannoteerde klasse of property.
+         Lokale declaratie in VALOR-O curated subset (niet in officiële gUFO)."""@en .
 
 valor:ontoumlStereotype
     a owl:AnnotationProperty ;
     rdfs:subPropertyOf gufo:stereotype ;
     rdfs:label "ontouml stereotype"@en ;
     rdfs:comment
-        "[A-001] valor:ontoumlStereotype (v0.2): gedeclareerd in de valor:-namespace
+        """[A-001] valor:ontoumlStereotype (v0.2): gedeclareerd in de valor:-namespace
          omdat gufo:ontoumlStereotype niet bestaat in de officiële gUFO-spec.
-         Vervangt gufo:ontoumlStereotype uit v0.1. (DD-002)"@en .
+         Vervangt gufo:ontoumlStereotype uit v0.1. (DD-002)"""@en .
 
 
 ###############################################################################
