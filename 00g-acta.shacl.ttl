@@ -1,7 +1,7 @@
 ###############################################################################
 #  VALOR-O — Module 00g SHACL: ACTA Transactieontologie
 #
-#  Versie : 0.4 (maart 2026)
+#  Versie : 0.5 (maart 2026)
 #
 #  Constraints:
 #    §A  Transaction
@@ -37,9 +37,8 @@
 #      G-IL2  initiatorLinkTransaction — precies 1 Transaction
 #      G-AL1  accessRole        — ≥1 ActorRole
 #      G-AL2  accessTransaction — ≥1 Transaction
-#    §I  O/I/D-lagen en MultipleTransactionKind (v0.3)
+#    §I  O/I/D-lagen (v0.5)
 #      G-OID1 Transaction is in precies één ALPHA-laag (O, I of D) (Warning)
-#      G-MTK  MultipleTransactionKind — minimaal 2 leden
 ###############################################################################
 
 @prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
@@ -591,7 +590,7 @@ shacta:AccessLinkShape
     ] .
 
 ###############################################################################
-#  §I — O/I/D-lagen en MultipleTransactionKind (v0.3)
+#  §I — O/I/D-lagen (v0.5)
 ###############################################################################
 
 #  G-OID1: Aanbeveling dat elke Transaction in precies één ALPHA-laag zit.
@@ -623,24 +622,6 @@ shacta:TransactionAlphaLayerShape
             }"""
     ] .
 
-#  G-MTK: MultipleTransactionKind bevat minimaal 2 Transaction-leden.
-#  Weak Supplementation Principle voor gufo:Collection — analoog aan
-#  G-CTAR (CompositeTransactorRole) en DD-007 (ComplexEvent).
-shacta:MultipleTransactionKindShape
-    a sh:NodeShape ;
-    sh:targetClass acta:MultipleTransactionKind ;
-    sh:name "MultipleTransactionKindShape" ;
-    sh:description
-        "G-MTK: Een MultipleTransactionKind bevat minimaal 2 Transaction-leden
-         (Weak Supplementation voor gufo:Collection, DD-047)." ;
-    sh:property [
-        sh:path     acta:mtkHasTransaction ;
-        sh:minCount 2 ;
-        sh:class    acta:Transaction ;
-        sh:severity sh:Violation ;
-        sh:message  "G-MTK: MultipleTransactionKind vereist minimaal 2 acta:Transaction-leden."
-    ] .
-
 ###############################################################################
-#  Einde 00g-acta.shacl.ttl (v0.3)
+#  Einde 00g-acta.shacl.ttl (v0.5)
 ###############################################################################

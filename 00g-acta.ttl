@@ -275,7 +275,7 @@ acta:TransactorNetwork
 acta:networkHasTransactorRole
     a owl:ObjectProperty ;
     valor:ontoumlStereotype "memberOf" ;
-    rdfs:subPropertyOf gufo:isProperPartOf ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
     rdfs:label "network has transactor role"@en , "netwerk heeft transactorrol"@nl ;
     rdfs:domain acta:TransactorNetwork ;
     rdfs:range  acta:TransactorRole ;
