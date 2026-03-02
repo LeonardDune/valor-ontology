@@ -1,18 +1,4 @@
-###############################################################################
-#  VALOR-O — Module 00f SHACL: COVER Value Ascription Ontology (uitbouw)
-#
-#  Constraints:
-#    §A  ValueObject
-#      F1  ValueExperience.enabledBy       — optioneel, maar als aanwezig: ValueObject
-#    §B  VAComponent
-#      F2  VAComponent.isFocusOf           — vereist precies 1 IntentionalMode
-#      F3  VAComponent.concernsExperience  — vereist precies 1 ValueExperience
-#      F4  ValueAscription.hasComponent    — aanbevolen: ≥1 VAComponent
-#    §C  ValueProposition
-#      F5  ValueProposition: targetsSegment verplicht
-#      F6  OfferingValueProposition.conformsTo — vereist precies 1 BusinessVP
-###############################################################################
-
+@prefix shcover: <https://valor-ecosystem.nl/shacl/cover#> .
 @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
 @prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
@@ -22,17 +8,43 @@
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  VALOR-O — Module 00f SHACL: COVER Value Ascription Ontology (uitbouw)
+#  Versie 0.2 — shcover: namespace + @prefix + owl:Ontology header (DD-002)
+#
+#  Correcties t.o.v. v0.1:
+#    [SF-001] cover:ValueExperienceEnablerShape etc. → shcover:XShape
+#             Shapes horen in de SHACL-namespace, niet in de ontologie-namespace.
+#    [SF-002] @prefix declaraties toegevoegd (ontbraken in v0.1)
+#    [SF-003] owl:Ontology header toegevoegd
+#    [SF-004] sh:PrefixDeclaration toegevoegd
+#
+#  Constraints:
+#    §A  ValueObject
+#      F1  ValueExperience.enabledBy     — bereik moet ValueObject zijn
+#    §B  VAComponent
+#      F2  VAComponent.isFocusOf         — vereist precies 1 IntentionalMode
+#      F3  VAComponent.concernsExperience — vereist precies 1 ValueExperience
+#      F4  ValueAscription.hasComponent  — aanbevolen ≥1 VAComponent (Warning)
+#    §C  ValueProposition
+#      F5  ValueProposition.targetsSegment — verplicht
+#      F6  OfferingValueProposition.conformsTo — vereist precies 1 BusinessVP
+###############################################################################
+
+shcover:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — COVER Value Ascription"@nl ;
+    owl:versionInfo "0.2" .
 
 
 ###############################################################################
 #  §A — ValueObject
 ###############################################################################
 
-###############################################################################
-#  F1 — enabledBy moet verwijzen naar een ValueObject (als aanwezig)
-###############################################################################
-
-cover:ValueExperienceEnablerShape
+shcover:ValueExperienceEnablerShape
     a sh:NodeShape ;
     sh:targetClass cover:ValueExperience ;
     sh:name "ValueExperienceEnablerShape" ;
@@ -52,11 +64,7 @@ cover:ValueExperienceEnablerShape
 #  §B — VAComponent
 ###############################################################################
 
-###############################################################################
-#  F2–F3 — VAComponent: MentalAspect en ValueExperience verplicht
-###############################################################################
-
-cover:VAComponentShape
+shcover:VAComponentShape
     a sh:NodeShape ;
     sh:targetClass cover:VAComponent ;
     sh:name "VAComponentShape" ;
@@ -82,20 +90,13 @@ cover:VAComponentShape
     ] .
 
 
-###############################################################################
-#  F4 — ValueAscription: aanbeveling voor ≥1 VAComponent
-#  (Warning, niet Violation: een ascriptie zonder components is onvolledig
-#   maar niet per se ongeldig in vroege modelleerstadia)
-###############################################################################
-
-cover:ValueAscriptionComponentShape
+shcover:ValueAscriptionComponentShape
     a sh:NodeShape ;
     sh:targetClass cover:ValueAscription ;
     sh:name "ValueAscriptionComponentShape" ;
     sh:description
         "F4: Een ValueAscription wordt aanbevolen minimaal één VAComponent
-         te hebben. Zonder components is de ascriptie inhoudsloos
-         (Warning-niveau)." ;
+         te hebben (Warning)." ;
 
     sh:property [
         sh:path cover:hasComponent ;
@@ -110,18 +111,13 @@ cover:ValueAscriptionComponentShape
 #  §C — ValueProposition
 ###############################################################################
 
-###############################################################################
-#  F5 — ValueProposition: doelgroep (targetsSegment) verplicht
-###############################################################################
-
-cover:ValuePropositionShape
+shcover:ValuePropositionShape
     a sh:NodeShape ;
     sh:targetClass cover:ValueProposition ;
     sh:name "ValuePropositionShape" ;
     sh:description
         "F5: Een ValueProposition moet altijd een doelgroep hebben via
-         cover:targetsSegment. Een waardepropositie zonder doelgroep
-         is per definitie onvolledig. Conform Sales et al. (2017) §5.1." ;
+         cover:targetsSegment. Conform Sales et al. (2017) §5.1." ;
 
     sh:property [
         sh:path cover:targetsSegment ;
@@ -132,19 +128,13 @@ cover:ValuePropositionShape
     ] .
 
 
-###############################################################################
-#  F6 — OfferingValueProposition: conformsTo BusinessValueProposition verplicht
-###############################################################################
-
-cover:OfferingVPShape
+shcover:OfferingVPShape
     a sh:NodeShape ;
     sh:targetClass cover:OfferingValueProposition ;
     sh:name "OfferingVPShape" ;
     sh:description
         "F6: Een OfferingValueProposition moet conformeren aan precies één
-         BusinessValueProposition. Conform Sales et al. (2017) §5.2:
-         'OVPs conform to the former [BVP] and should not violate its
-         assumptions.'" ;
+         BusinessValueProposition. Conform Sales et al. (2017) §5.2." ;
 
     sh:property [
         sh:path cover:conformsTo ;
@@ -154,6 +144,38 @@ cover:OfferingVPShape
         sh:message "F6: OfferingValueProposition.conformsTo vereist precies één cover:BusinessValueProposition."
     ] .
 
+
 ###############################################################################
-#  Einde 00f-cover.shacl.ttl
+#  Prefix declarations voor SPARQL constraints
+###############################################################################
+
+shcover:
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "cover" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/cover#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "coodm" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/coodm#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufoc" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdf" ;
+        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdfs" ;
+        sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+#  END OF SHACL — COVER Value Ascription  (v0.2)
 ###############################################################################

@@ -880,3 +880,94 @@ cover:ValueExperience → ascribesValueTo ← cover:ValueAscription [= VP]
 ---
 
 *Dit document wordt bijgewerkt bij elke nieuwe module. Versie-history via Git-commits.*
+
+
+---
+
+## Module 00c–00f — gUFO-typefouten gecorrigeerd (v0.2, DD-049 verbreed)
+
+### DD-049-ext · Systematische correcties modules 00c–00f
+
+**Besluit:** Onderstaande `rdf:type`-asserties zijn verwijderd of gecorrigeerd in modules 00c t/m 00f, conform het principe dat de gUFO Taxonomy of Types uitsluitend toepasselijk is op de in DD-049 genoemde type-classificatoren.
+
+---
+
+#### Module 00c-ufo-c.ttl  (v0.2)
+
+**[C-001] `ufoc:SocialRelator`: `rdf:type gufo:Relator` verwijderd**
+
+`gufo:Relator` is een klasse in de *Taxonomy of Individuals* — het beschrijft wat SocialRelator-instanties *zijn* (via `rdfs:subClassOf gufo:Relator`). In de *Taxonomy of Types* heeft `gufo:Relator` geen rol: het is geen Kind, SubKind, Role, Phase, Category, EventType of SituationType. Het patroon `rdf:type gufo:Relator` op een klasse is semantisch onjuist (Taxonomy of Types kent geen "RelatorType"). `rdfs:subClassOf gufo:Relator` volstaat volledig.
+
+**[C-002] `ufoc:Delegatum`: `rdf:type gufo:Relator` verwijderd** — zelfde reden.
+
+---
+
+#### Module 00d-ufo-l.ttl  (v0.2)
+
+**[D-001] `ufol:NaturalPersonSubject`: `rdf:type gufo:EventType` → `rdf:type gufo:Role`**
+
+`NaturalPersonSubject` is een subklasse van `ufol:LegalSubject`, die zelf een `gufo:Role` is (anti-rigide, relationeel: een persoon speelt de rol van rechtssubject in de context van een LegalRelator). `EventType` is uitsluitend voor Event-subtypen. `NaturalPersonSubject` is een Endurant (FunctionalComplex-afstammeling via Agent). De correcte classificatie is `gufo:Role` — dezelfde als zijn superklasse `LegalSubject`.
+
+**[D-002] `ufol:LegalRelator`: `rdf:type gufo:Relator` verwijderd** — zelfde reden als C-001.
+
+---
+
+#### Module 00e-coodm.ttl  (v0.2)
+
+**[E-001] `cover:ValueAscription`: `rdf:type gufo:RelationshipType` verwijderd**
+
+`gufo:RelationshipType` is, conform de officiële gUFO-spec, een type-classificator voor *object-properties* (relaties), niet voor klassen (entiteitstypen). Het is het second-order equivalent van een relatie, vergelijkbaar met hoe `gufo:Kind` het second-order equivalent van een klasse is. Het op een klasse plaatsen van `rdf:type gufo:RelationshipType` is een categorieverwisseling.
+
+**[E-002] `cover:ValuePerception`: `rdf:type gufo:Phase` verwijderd**  
+**[E-003] `cover:ValueAssertion`: `rdf:type gufo:Phase` verwijderd**
+
+`gufo:Phase` is een anti-rigide sortal in de Taxonomy of Types, bedoeld voor fases van *Endurant-sortalen* (bijv. een persoon die de fase "student" doorloopt). `ValueAscription` is een `gufo:Relator` (ExtrinsicAspect), geen Endurant-sortal. Relators hebben geen fases in de gUFO-zin: ze worden gecreëerd en beëindigd, niet gefaseerd. De subklasse-relatie (`ValuePerception rdfs:subClassOf ValueAscription`) drukt de specialisatie al adequaat uit.
+
+**[E-004] `cover:VAComponent`: `rdf:type gufo:RelationshipType` verwijderd** — zelfde reden als E-001.
+
+---
+
+#### Module 00f-cover.ttl  (v0.2)
+
+**[F-001] `cover:VAComponent`: `rdf:type gufo:RelationshipType` verwijderd** — zelfde reden als E-001/E-004.
+
+**[F-002] `cover:Benefit`: `rdf:type gufo:SubKind` verwijderd**  
+**[F-003] `cover:Sacrifice`: `rdf:type gufo:SubKind` verwijderd**  
+**[F-004] `cover:ValueProposition`: `rdf:type gufo:SubKind` verwijderd**  
+**[F-005] `cover:BusinessValueProposition`: `rdf:type gufo:SubKind` verwijderd**  
+**[F-006] `cover:OfferingValueProposition`: `rdf:type gufo:SubKind` verwijderd**
+
+`gufo:SubKind` vereist dat er een `gufo:Kind` boven in de hiërarchie aanwezig is die het identiteitsprincipe draagt. De genoemde klassen zijn (transitief) subklassen van `gufo:Relator` (via VAComponent resp. ValueAscription/ValueAssertion). `gufo:Relator` is een ExtrinsicAspect, geen Kind — het biedt geen identiteitsprincipe in de zin van `gufo:Kind`. Er is geen valide SubKind-classificatie mogelijk voor Relator-subklassen.
+
+**Consequentie:** Benefit/Sacrifice/ValueProposition en subklassen behouden hun `gufo:ontoumlStereotype "subkind"` als annotatieve hint naar het OntoUML-diagram, maar krijgen geen corresponderende `rdf:type`-assertie in de Taxonomy of Types.
+
+---
+
+### DD-052 · Geen ModeType/QualityType in gUFO Taxonomy of Types
+
+**Besluit:** Klassen met `gufo:ontoumlStereotype "mode"` of `"quality"` (IntentionalMode-subklassen, TemporalCondition, DomainVariable, Policy, etc.) krijgen **geen** `rdf:type`-assertie in de Taxonomy of Types.
+
+**Rationale:** De gUFO Taxonomy of Types (gUFO-spec §4) omvat:
+
+| gUFO-type | Toepassingsgebied |
+|-----------|------------------|
+| `gufo:Kind` | Rigide ultime sortal (Endurant) |
+| `gufo:SubKind` | Rigide specialisatie van Kind |
+| `gufo:Role` | Anti-rigide sortal (relationeel) |
+| `gufo:Phase` | Anti-rigide sortal (intrinsiek) |
+| `gufo:Category` | Rigide non-sortal |
+| `gufo:Mixin` | Non-rigide non-sortal |
+| `gufo:RoleMixin` | Non-rigide non-sortal (relationeel) |
+| `gufo:EventType` | Type van Events |
+| `gufo:SituationType` | Type van Situations |
+
+Er is **geen** `gufo:ModeType`, `gufo:QualityType` of `gufo:RelatorType` in de Taxonomy of Types. Modes en Qualities worden in de Taxonomy of Individuals gepositioneerd via `rdfs:subClassOf gufo:IntrinsicMode`, `rdfs:subClassOf gufo:Quality` etc. — dat is voldoende.
+
+**Eerder foutief gedocumenteerd:** DD-002 bevatte een mapping `"mode" → gufo:NonQualitativeIntrinsicAspect` als zou dat een punning-type zijn. Dit is incorrect: `gufo:NonQualitativeIntrinsicAspect` is een synoniem voor `gufo:IntrinsicMode` in de *Taxonomy of Individuals*, niet een type-classificator.
+
+**Correctie van DD-002:** De punning-tabel in DD-002 wordt aangevuld met de uitzonderingsbepaling: `"mode"` en `"quality"` ontoumlStereotypes leiden **niet** tot een `rdf:type`-assertie in de Taxonomy of Types. De `rdfs:subClassOf`-assertie naar de juiste Individual-taxonomieklasse volstaat.
+
+**Bron:** gUFO-spec §4 (Taxonomy of Types); gUFO-spec §3 (Taxonomy of Individuals).
+
+---
+

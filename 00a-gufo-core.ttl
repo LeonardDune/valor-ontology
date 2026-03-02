@@ -1,4 +1,5 @@
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
@@ -8,21 +9,15 @@
 
 ###############################################################################
 # VALOR-O — Module 00a: gUFO Core
+# Versie 0.2 — valor:ontoumlStereotype correctie (DD-002)
 #
-# Purpose : Declare the subset of gUFO 1.0 that VALOR-O actually uses.
-#           This is NOT a full re-publication of gUFO; it is a curated
-#           import that makes VALOR-O self-contained for documentation
-#           and tooling purposes.
-#
-# Source  : Almeida et al. (2019), gUFO v1.0.0
-#           https://nemo-ufes.github.io/gufo/
-#           URI: https://nemo-ufes.github.io/gufo/gufo.ttl
-#
-# Module structuur (na invoeging UFO-B als aparte module):
-#   00a-gufo-core.ttl      ← dit bestand: gUFO-primitieven
-#   00b-ufo-b.ttl          ← UFO-B events en causaliteit (nieuw)
-#   00c-ufo-c.ttl          ← UFO-C sociale entiteiten
-#   00d-ufo-l.ttl          ← UFO-L rechtsbetrekkingen
+# Correctie t.o.v. v0.1:
+#   [A-001] gufo:ontoumlStereotype → valor:ontoumlStereotype (DD-002)
+#           gufo:ontoumlStereotype bestaat NIET in de officiële gUFO-namespace
+#           (https://nemo-ufes.github.io/gufo/gufo.ttl). De property wordt
+#           voortaan gedeclareerd in de valor:-namespace en daar ook gebruikt.
+#           De gufo:stereotype property blijft lokaal gedeclareerd als basis
+#           (ook niet in officiële gUFO maar nodig als superProperty).
 #
 # DESIGN DECISIONS (zie DESIGN-DECISIONS.md voor volledige rationale):
 #   DD-001 · Curated subset i.p.v. owl:imports
@@ -30,10 +25,7 @@
 #   DD-003 · gUFO-primitieven uitgesloten van punning-verplichting
 #   DD-004 · gufo:Participation — terminologisch conflict met UFO-B
 #   DD-005 · Allen-relaties als SPARQL-queries, niet als OWL-properties
-#
-# In production: replace body of each class/property with
-#   owl:imports <https://nemo-ufes.github.io/gufo/gufo.ttl>
-# and remove the local declarations.
+#   DD-052 · Mode/Quality-klassen krijgen GEEN rdf:type in Taxonomy of Types
 ###############################################################################
 
 vo:gufo-core
@@ -41,40 +33,16 @@ vo:gufo-core
     dcterms:title "VALOR-O — gUFO Core subset"@nl ;
     dcterms:description
         "Curated subset of gUFO used as the foundational layer of VALOR-O."@nl ;
-    owl:versionInfo "0.1" .
+    owl:versionInfo "0.2" .
 
 
 ###############################################################################
 # ── TAXONOMY OF INDIVIDUALS ──────────────────────────────────────────────────
-#
-#  ConcreteIndividual
-#  ├── Endurant                  (wholly present at each instant)
-#  │   ├── Object                (independent endurant)
-#  │   │   └── FunctionalComplex
-#  │   ├── Aspect                (existentially dependent)
-#  │   │   ├── IntrinsicAspect
-#  │   │   │   ├── IntrinsicMode   (unshareable, e.g. a belief)
-#  │   │   │   └── Quality         (value-bearing intrinsic aspect)
-#  │   │   └── ExtrinsicAspect
-#  │   │       ├── Relator         (mediates a material relation)
-#  │   │       └── ExtrinsicMode   (inheres in one; also depends on another)
-#  │   └── Collection
-#  └── Event                     (partially present / perdurant)
-#      ├── Action
-#      └── Participation
-#  AbstractIndividual
-#  └── QualityValue
-#  Situation                      (a state of affairs)
 ###############################################################################
-
-# ── Top ──────────────────────────────────────────────────────────────────────
 
 gufo:Individual
     a owl:Class ;
-    rdfs:label "Individual"@en ;
-    rdfs:comment
-        "Top of the taxonomy of individuals. Everything that exists as a
-         particular (token) is an Individual."@en .
+    rdfs:label "Individual"@en .
 
 gufo:ConcreteIndividual
     a owl:Class ;
@@ -86,51 +54,37 @@ gufo:AbstractIndividual
     rdfs:subClassOf gufo:Individual ;
     rdfs:label "AbstractIndividual"@en ;
     rdfs:comment
-        "Individuals that are neither in space nor time, e.g. quality values,
-         propositions."@en .
-
-# ── Endurant branch ──────────────────────────────────────────────────────────
+        "Individuals that are neither in space nor time, e.g. quality values."@en .
 
 gufo:Endurant
     a owl:Class ;
     rdfs:subClassOf gufo:ConcreteIndividual ;
     rdfs:label "Endurant"@en ;
-    rdfs:comment
-        "A concrete individual that is wholly present whenever it exists.
-         Endurants persist through time while potentially changing."@en .
+    rdfs:comment "A concrete individual that is wholly present whenever it exists."@en .
 
 gufo:Object
     a owl:Class ;
     rdfs:subClassOf gufo:Endurant ;
     rdfs:label "Object"@en ;
-    rdfs:comment
-        "An endurant that exists independently: its existence does not
-         depend on the existence of any other particular endurant."@en .
+    rdfs:comment "An endurant that exists independently."@en .
 
 gufo:FunctionalComplex
     a owl:Class ;
     rdfs:subClassOf gufo:Object ;
     rdfs:label "FunctionalComplex"@en ;
-    rdfs:comment
-        "An object whose parts play different functional roles, e.g. a
-         person, an organisation, a car."@en .
+    rdfs:comment "An object whose parts play different functional roles."@en .
 
 gufo:Collection
     a owl:Class ;
     rdfs:subClassOf gufo:Endurant ;
     rdfs:label "Collection"@en ;
-    rdfs:comment
-        "An endurant whose parts play the same member role."@en .
-
-# ── Aspect branch ─────────────────────────────────────────────────────────────
+    rdfs:comment "An endurant whose parts play the same member role."@en .
 
 gufo:Aspect
     a owl:Class ;
     rdfs:subClassOf gufo:Endurant ;
     rdfs:label "Aspect"@en ;
-    rdfs:comment
-        "An existentially dependent endurant: it inheres in (or mediates
-         between) other individuals."@en .
+    rdfs:comment "An existentially dependent endurant."@en .
 
 gufo:IntrinsicAspect
     a owl:Class ;
@@ -143,131 +97,76 @@ gufo:IntrinsicMode
     rdfs:subClassOf gufo:IntrinsicAspect ;
     rdfs:label "IntrinsicMode"@en ;
     rdfs:comment
-        "An intrinsic aspect that is not directly associated with a quality
-         structure (e.g. a belief, a disposition, an intention, a skill)."@en .
+        "An intrinsic aspect not directly associated with a quality structure
+         (e.g. a belief, a disposition, an intention, a skill)."@en .
 
 gufo:Quality
     a owl:Class ;
     rdfs:subClassOf gufo:IntrinsicAspect ;
     rdfs:label "Quality"@en ;
-    rdfs:comment
-        "An intrinsic aspect associated with a quality structure/dimension
-         (e.g. temperature, mass, colour). Its value is a QualityValue."@en .
+    rdfs:comment "An intrinsic aspect associated with a quality structure/dimension."@en .
 
 gufo:ExtrinsicAspect
     a owl:Class ;
     rdfs:subClassOf gufo:Aspect ;
     rdfs:label "ExtrinsicAspect"@en ;
-    rdfs:comment
-        "An aspect that depends on more than one individual."@en .
+    rdfs:comment "An aspect that depends on more than one individual."@en .
 
 gufo:Relator
     a owl:Class ;
     rdfs:subClassOf gufo:ExtrinsicAspect ;
     rdfs:label "Relator"@en ;
     rdfs:comment
-        "An extrinsic aspect that mediates a material relation between two
-         or more objects. A relator unifies the relata into a nexus
-         (e.g. a marriage, a contract, an employment)."@en .
+        "An extrinsic aspect that mediates a material relation between two or more objects."@en .
 
 gufo:ExtrinsicMode
     a owl:Class ;
     rdfs:subClassOf gufo:ExtrinsicAspect ;
     rdfs:label "ExtrinsicMode"@en ;
     rdfs:comment
-        "An aspect that inheres in exactly one individual (its bearer) but
-         is also externally dependent on another individual (the extrinsic
-         object). Unlike a Relator, the dependence is asymmetric: there is
-         one primary bearer and one external object.
-         Examples: a social commitment (inheres in the committed agent,
-         depends on the claimant); a belief about a person (inheres in the
-         believer, depends on the believed-about individual).
-         Source: gUFO 1.0 §2.7; UFO-C (Guizzardi et al. 2013)."@en .
-
-# ── Event branch ──────────────────────────────────────────────────────────────
+        "An aspect that inheres in exactly one individual (its bearer) but is also
+         externally dependent on another individual (the extrinsic object)."@en .
 
 gufo:Event
     a owl:Class ;
     rdfs:subClassOf gufo:ConcreteIndividual ;
     rdfs:label "Event"@en ;
-    rdfs:comment
-        "A concrete individual that is spread across time and is only
-         partially present at any given instant (perdurant)."@en .
+    rdfs:comment "A concrete individual that is spread across time (perdurant)."@en .
 
 gufo:Action
     a owl:Class ;
     rdfs:subClassOf gufo:Event ;
     rdfs:label "Action"@en ;
-    rdfs:comment
-        "An intentional event performed by an agent. The agent's intention
-         is a constitutive aspect of the action."@en .
+    rdfs:comment "An intentional event performed by an agent."@en .
 
 gufo:Participation
     a owl:Class ;
     rdfs:subClassOf gufo:Event ;
     rdfs:label "Participation"@en ;
     rdfs:comment
-        """An event that represents the participation of an endurant in
-         another event.
-
-         [DD-004] TERMINOLOGISCH CONFLICT MET UFO-B:
-         gUFO's gufo:Participation (subklasse van Event) is NIET identiek
-         aan UFO-B 'Participation' (§3.2, axioma P4). UFO-B definieert
-         Participation als afgeleide klasse: het maximale deel van een
-         ComplexEvent dat exclusief afhangt van precies één Object:
-           P4: ∀e:Event Participation(e) ↔ ∃!o:Object excDepends(e,o)
-         Dit is een derivatie op event-mereologie, geen zelfstandige klasse.
-         gUFO maakt er pragmatisch een concrete klasse van voor
-         GraphDB/SPARQL-compatibiliteit.
-         VALOR-O volgt gUFO hier. Zie 00b-ufo-b.ttl voor het mereologische
-         patroon dat UFO-B Participation simuleert via SPARQL.
-         Bron: UFO-B-2013 §3.2 (P1-P5); gUFO-spec §3.3."""@en .
-
-# ── Situation ──────────────────────────────────────────────────────────────────
+        """An event that represents the participation of an endurant in another event.
+         [DD-004] TERMINOLOGISCH CONFLICT MET UFO-B — zie 00a v0.1 voor volledige toelichting."""@en .
 
 gufo:Situation
     a owl:Class ;
     rdfs:subClassOf gufo:ConcreteIndividual ;
     rdfs:label "Situation"@en ;
-    rdfs:comment
-        "A state of affairs: a (possibly complex) fact about the world at
-         some time. Situations are neither endurants nor events."@en .
-
-# ── AbstractIndividual subtypes ───────────────────────────────────────────────
+    rdfs:comment "A state of affairs at some time."@en .
 
 gufo:QualityValue
     a owl:Class ;
     rdfs:subClassOf gufo:AbstractIndividual ;
-    rdfs:label "QualityValue"@en ;
-    rdfs:comment
-        "The value of a quality in a quality dimension/structure
-         (e.g. 36.6°C, red, 70 kg)."@en .
+    rdfs:label "QualityValue"@en .
 
 
 ###############################################################################
 # ── TAXONOMY OF TYPES ────────────────────────────────────────────────────────
-#
-#  Type (second-order entities — types of individuals)
-#  ├── EndurantType
-#  │   ├── Sortal               (provides identity)
-#  │   │   ├── Kind             (rigid identity principle)
-#  │   │   ├── SubKind
-#  │   │   ├── Role             (anti-rigid, relational)
-#  │   │   └── Phase            (anti-rigid, intrinsic)
-#  │   └── NonSortal            (no identity principle of its own)
-#  │       ├── Category         (rigid)
-#  │       ├── Mixin            (non-rigid)
-#  │       └── RoleMixin
-#  ├── EventType
-#  └── SituationType
 ###############################################################################
 
 gufo:Type
     a owl:Class ;
     rdfs:label "Type"@en ;
-    rdfs:comment
-        "A second-order entity: a type of individual. Types classify
-         individuals."@en .
+    rdfs:comment "A second-order entity: a type of individual."@en .
 
 gufo:EndurantType
     a owl:Class ;
@@ -278,51 +177,36 @@ gufo:Sortal
     a owl:Class ;
     rdfs:subClassOf gufo:EndurantType ;
     rdfs:label "Sortal"@en ;
-    rdfs:comment
-        "An EndurantType that provides or carries an identity principle for
-         its instances."@en .
+    rdfs:comment "An EndurantType that provides or carries an identity principle."@en .
 
 gufo:Kind
     a owl:Class ;
     rdfs:subClassOf gufo:Sortal ;
     rdfs:label "Kind"@en ;
-    rdfs:comment
-        "A rigid, ultimate sortal: provides an identity principle and every
-         instance is necessarily an instance (rigid). A Kind cannot
-         specialise another Kind."@en .
+    rdfs:comment "A rigid, ultimate sortal."@en .
 
 gufo:SubKind
     a owl:Class ;
     rdfs:subClassOf gufo:Sortal ;
     rdfs:label "SubKind"@en ;
-    rdfs:comment
-        "A rigid specialisation of a Kind. Instances are necessarily
-         instances."@en .
+    rdfs:comment "A rigid specialisation of a Kind."@en .
 
 gufo:Role
     a owl:Class ;
     rdfs:subClassOf gufo:Sortal ;
     rdfs:label "Role"@en ;
-    rdfs:comment
-        "An anti-rigid sortal: an individual plays a Role contingently,
-         depending on participation in a relational context (Relator)."@en .
+    rdfs:comment "An anti-rigid sortal contingent on relational context."@en .
 
 gufo:Phase
     a owl:Class ;
     rdfs:subClassOf gufo:Sortal ;
     rdfs:label "Phase"@en ;
-    rdfs:comment
-        "An anti-rigid sortal: an individual is in a Phase contingently,
-         depending on intrinsic conditions. Phases of the same Kind must
-         partition the population."@en .
+    rdfs:comment "An anti-rigid sortal contingent on intrinsic conditions."@en .
 
 gufo:NonSortal
     a owl:Class ;
     rdfs:subClassOf gufo:EndurantType ;
-    rdfs:label "NonSortal"@en ;
-    rdfs:comment
-        "An EndurantType that aggregates properties from multiple Kinds
-         without providing an identity principle."@en .
+    rdfs:label "NonSortal"@en .
 
 gufo:Category
     a owl:Class ;
@@ -339,10 +223,7 @@ gufo:Mixin
 gufo:RoleMixin
     a owl:Class ;
     rdfs:subClassOf gufo:NonSortal ;
-    rdfs:label "RoleMixin"@en ;
-    rdfs:comment
-        "A non-sortal whose instances are always playing some role
-         in a relational context."@en .
+    rdfs:label "RoleMixin"@en .
 
 gufo:EventType
     a owl:Class ;
@@ -356,37 +237,14 @@ gufo:SituationType
 
 
 ###############################################################################
-# ── OWL 2 PUNNING PATTERN ─────────────────────────────────────────────────────
-#
-#  In gUFO, a domain concept like "Person" is BOTH:
-#    (a) an owl:Class  — so it can appear in subClassOf hierarchies and
-#        restrictions (first-order use)
-#    (b) an individual of type gufo:Kind — so it can appear as a value in
-#        object-property assertions (second-order use)
-#
-#  OWL 2 allows a URI to denote both a class and an individual in the same
-#  ontology (punning). VALOR-O uses this pattern throughout.
-#
-#  Convention:
-#    :Person  a owl:Class, gufo:Kind .
-#    :Person  rdfs:subClassOf gufo:FunctionalComplex .
-###############################################################################
-
-
-###############################################################################
 # ── FOUNDATIONAL RELATIONS ────────────────────────────────────────────────────
 ###############################################################################
-
-# ── Inherence ─────────────────────────────────────────────────────────────────
 
 gufo:inheresIn
     a owl:ObjectProperty ;
     rdfs:label "inheres in"@en ;
     rdfs:domain gufo:Aspect ;
-    rdfs:range  gufo:Endurant ;
-    rdfs:comment
-        "Relates an Aspect to the endurant it intrinsically depends upon.
-         An Aspect cannot exist without its bearer."@en .
+    rdfs:range  gufo:Endurant .
 
 gufo:hasQuality
     a owl:ObjectProperty ;
@@ -395,28 +253,16 @@ gufo:hasQuality
     rdfs:domain gufo:Endurant ;
     rdfs:range  gufo:Aspect .
 
-# ── Mediation (Relator → Object) ──────────────────────────────────────────────
-
 gufo:mediates
     a owl:ObjectProperty ;
     rdfs:subPropertyOf gufo:inheresIn ;
     rdfs:label "mediates"@en ;
     rdfs:domain gufo:Relator ;
-    rdfs:range  gufo:Object ;
-    rdfs:comment
-        "Relates a Relator to one of the objects it connects. A Relator
-         must mediate at least two distinct objects."@en .
-
-# ── Material relation (derived from Relator) ──────────────────────────────────
+    rdfs:range  gufo:Object .
 
 gufo:isMaterialRelationBetween
     a owl:ObjectProperty ;
-    rdfs:label "is material relation between"@en ;
-    rdfs:comment
-        "The material (non-reified) relation that is derived from a Relator.
-         Typically expressed as a subproperty with specific domain/range."@en .
-
-# ── Characterisation (IntrinsicMode → Object) ─────────────────────────────────
+    rdfs:label "is material relation between"@en .
 
 gufo:characterizes
     a owl:ObjectProperty ;
@@ -425,15 +271,11 @@ gufo:characterizes
     rdfs:domain gufo:IntrinsicAspect ;
     rdfs:range  gufo:Object .
 
-# ── Quality value ─────────────────────────────────────────────────────────────
-
 gufo:hasQualityValue
     a owl:ObjectProperty ;
     rdfs:label "has quality value"@en ;
     rdfs:domain gufo:Quality ;
     rdfs:range  gufo:QualityValue .
-
-# ── Events ────────────────────────────────────────────────────────────────────
 
 gufo:participatedIn
     a owl:ObjectProperty ;
@@ -452,19 +294,13 @@ gufo:broughtAbout
     a owl:ObjectProperty ;
     rdfs:label "brought about"@en ;
     rdfs:domain gufo:Event ;
-    rdfs:range  gufo:Situation ;
-    rdfs:comment
-        "Relates an event to the situation it produced. The situation begins
-         to hold after the event concludes."@en .
+    rdfs:range  gufo:Situation .
 
 gufo:contributedToTrigger
     a owl:ObjectProperty ;
     rdfs:label "contributed to trigger"@en ;
     rdfs:domain gufo:Situation ;
-    rdfs:range  gufo:Event ;
-    rdfs:comment
-        "Relates a situation (the triggering condition) to an event it
-         causally contributed to triggering."@en .
+    rdfs:range  gufo:Event .
 
 gufo:wasTriggeredBy
     a owl:ObjectProperty ;
@@ -477,90 +313,48 @@ gufo:manifestedIn
     a owl:ObjectProperty ;
     rdfs:label "manifested in"@en ;
     rdfs:domain gufo:IntrinsicMode ;
-    rdfs:range  gufo:Event ;
-    rdfs:comment
-        "An intrinsic mode (e.g. a capability, a disposition) that is
-         realised or manifested in a particular event."@en .
-
-# ── Situations ────────────────────────────────────────────────────────────────
+    rdfs:range  gufo:Event .
 
 gufo:isAspectOf
     a owl:ObjectProperty ;
-    rdfs:label "is aspect of"@en ;
-    rdfs:comment
-        "Relates a Situation to an individual it is about or that it
-         involves."@en .
-
-# ── Parthood ──────────────────────────────────────────────────────────────────
+    rdfs:label "is aspect of"@en .
 
 gufo:isProperPartOf
-    a owl:ObjectProperty ;
-    a owl:TransitiveProperty ;
-    a owl:AsymmetricProperty ;
-    a owl:IrreflexiveProperty ;
+    a owl:ObjectProperty, owl:TransitiveProperty, owl:AsymmetricProperty, owl:IrreflexiveProperty ;
     rdfs:label "is proper part of"@en .
 
 gufo:isPartOf
-    a owl:ObjectProperty ;
-    a owl:TransitiveProperty ;
-    rdfs:label "is part of"@en ;
-    rdfs:comment "Reflexive closure of isProperPartOf."@en .
+    a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "is part of"@en .
 
 gufo:hasProperPart
     a owl:ObjectProperty ;
     owl:inverseOf gufo:isProperPartOf ;
     rdfs:label "has proper part"@en .
 
-# ── Historical dependence ─────────────────────────────────────────────────────
-
 gufo:historicallyDependsOn
     a owl:ObjectProperty ;
-    rdfs:label "historically depends on"@en ;
-    rdfs:comment
-        "Relates an individual to another individual whose prior existence
-         was necessary for the first individual to come into existence."@en .
-
-# ── External dependence (ExtrinsicMode) ──────────────────────────────────────
+    rdfs:label "historically depends on"@en .
 
 gufo:externallyDependsOn
     a owl:ObjectProperty ;
     rdfs:label "externally depends on"@en ;
     rdfs:domain gufo:ExtrinsicAspect ;
-    rdfs:range  gufo:Endurant ;
-    rdfs:comment
-        "Relates an ExtrinsicMode to the external individual it depends on
-         (the extrinsic object — not the bearer). An ExtrinsicMode both
-         inheres in its bearer (via gufo:inheresIn) and externally depends
-         on another individual (via this property).
-         Example: a social commitment inheres in the committed agent and
-         externally depends on the claimant agent.
-         Source: gUFO 1.0 §2.7; OntoUML «externalDependence»."@en .
-
-# ── Creation and Termination of Endurants ────────────────────────────────────
+    rdfs:range  gufo:Endurant .
 
 gufo:wasCreatedIn
     a owl:ObjectProperty ;
     rdfs:label "was created in"@en ;
     rdfs:domain gufo:Endurant ;
     rdfs:range  gufo:Event ;
-    rdfs:comment
-        "Relates an endurant to the event in which it came into existence.
-         Inverse direction of the OntoUML «creation» stereotype relation
-         (Event → Endurant). Used as the gUFO anchor for «creation»
-         properties in VALOR-O (DD-025)."@en .
+    rdfs:comment "DD-025: anchor for «creation» properties."@en .
 
 gufo:wasTerminatedIn
     a owl:ObjectProperty ;
     rdfs:label "was terminated in"@en ;
     rdfs:domain gufo:Endurant ;
     rdfs:range  gufo:Event ;
-    rdfs:comment
-        "Relates an endurant to the event in which it ceased to exist.
-         Inverse direction of the OntoUML «termination» stereotype relation
-         (Event → Endurant). Used as the gUFO anchor for «termination»
-         properties in VALOR-O (DD-025)."@en .
-
-# ── Temporal ──────────────────────────────────────────────────────────────────
+    rdfs:comment "DD-025: anchor for «termination» properties."@en .
 
 gufo:hasBeginPoint
     a owl:DatatypeProperty ;
@@ -574,46 +368,71 @@ gufo:hasEndPoint
 
 
 ###############################################################################
-# ── INTENTIONAL STATES (used in UFO-C, COoDM) ────────────────────────────────
-#
-#  Intentional states are IntrinsicModes with a propositional content.
-#  gUFO defines the abstract taxonomy; UFO-C fills in the specifics.
+# ── INTENTIONAL STATES ────────────────────────────────────────────────────────
 ###############################################################################
 
 gufo:IntentionalMode
     a owl:Class ;
     rdfs:subClassOf gufo:IntrinsicMode ;
     rdfs:label "IntentionalMode"@en ;
-    rdfs:comment
-        "An IntrinsicMode with propositional content: beliefs, desires,
-         intentions, goals, commitments as mental states."@en .
+    rdfs:comment "An IntrinsicMode with propositional content."@en .
 
 gufo:hasPropositionalContent
     a owl:ObjectProperty ;
     rdfs:label "has propositional content"@en ;
     rdfs:domain gufo:IntentionalMode ;
-    rdfs:range  gufo:Situation ;
-    rdfs:comment
-        "Relates an intentional mode to the situation that constitutes its
-         propositional content (the state of affairs it is about)."@en .
+    rdfs:range  gufo:Situation .
 
 
 ###############################################################################
 # ── ANNOTATION PROPERTIES ─────────────────────────────────────────────────────
+#
+# [A-001] valor:ontoumlStereotype (v0.2, DD-002):
+#   Gedeclareerd in de valor:-namespace. gufo:ontoumlStereotype bestaat NIET
+#   in de officiële gUFO-namespace (https://nemo-ufes.github.io/gufo/gufo.ttl).
+#   VALOR-O declareert de property hier zelf in de correcte namespace.
+#   Alle modules 00b–00g gebruiken valor:ontoumlStereotype.
+#
+# gufo:stereotype: lokale declaratie als superProperty (ook niet in officiële
+#   gUFO — bewuste keuze voor VALOR-O documentatie-doeleinden, DD-001).
 ###############################################################################
 
 gufo:stereotype
     a owl:AnnotationProperty ;
     rdfs:label "stereotype"@en ;
     rdfs:comment
-        "OntoUML stereotype of the annotated class or property
-         (e.g. «kind», «role», «relator», «mode»)."@en .
+        "OntoUML stereotype van de geannoteerde klasse of property.
+         Lokale declaratie in VALOR-O curated subset (niet in officiële gUFO)."@en .
 
-gufo:ontoumlStereotype
+valor:ontoumlStereotype
     a owl:AnnotationProperty ;
     rdfs:subPropertyOf gufo:stereotype ;
-    rdfs:label "ontouml stereotype"@en .
+    rdfs:label "ontouml stereotype"@en ;
+    rdfs:comment
+        "[A-001] valor:ontoumlStereotype (v0.2): gedeclareerd in de valor:-namespace
+         omdat gufo:ontoumlStereotype niet bestaat in de officiële gUFO-spec.
+         Vervangt gufo:ontoumlStereotype uit v0.1. (DD-002)"@en .
+
 
 ###############################################################################
-# END OF MODULE 00a — gUFO Core
+# ── TAXONOMY OF TYPES: Higher-Order Type properties ──────────────────────────
+#
+# Conform gUFO-spec §4: types kunnen partities en categorisaties uitdrukken.
+###############################################################################
+
+gufo:partitions
+    a owl:ObjectProperty ;
+    rdfs:label "partitions"@en ;
+    rdfs:comment
+        "Relates a higher-order type to the type it partitions into disjoint subtypes."@en .
+
+gufo:categorizes
+    a owl:ObjectProperty ;
+    rdfs:label "categorizes"@en ;
+    rdfs:comment
+        "Relates a Category-type to the type whose instances it categorizes."@en .
+
+
+###############################################################################
+# END OF MODULE 00a — gUFO Core  (v0.2)
 ###############################################################################

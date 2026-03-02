@@ -6,7 +6,7 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix shc:  <https://valor-ecosystem.nl/shacl/ufo-c> .
+@prefix shc:  <https://valor-ecosystem.nl/shacl/ufo-c#> .
 @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
@@ -25,7 +25,7 @@ shc
 # C1 — SocialRelator mediates exactly 2 distinct Agents
 ###############################################################################
 
-ufoc:SocialRelatorShape
+shc:SocialRelatorShape
     a sh:NodeShape ;
     sh:targetClass ufoc:SocialRelator ;
     sh:name "SocialRelatorShape" ;
@@ -73,7 +73,7 @@ ufoc:SocialRelatorShape
 # C2 — SocialCommitment: inhereert in committed agent, afhankelijk van claimant
 ###############################################################################
 
-ufoc:SocialCommitmentShape
+shc:SocialCommitmentShape
     a sh:NodeShape ;
     sh:targetClass ufoc:SocialCommitment ;
     sh:name "SocialCommitmentShape" ;
@@ -104,7 +104,7 @@ ufoc:SocialCommitmentShape
             SELECT $this WHERE {
                 ?relator ufoc:hasCommitmentMoment $this ;
                          ufoc:hasCommittedAgent   ?committed .
-                $this ufoc:commitmentInheresIn ?bearer .
+                $this shc:commitmentInheresIn ?bearer .
                 FILTER (?bearer != ?committed)
             }
         """
@@ -115,7 +115,7 @@ ufoc:SocialCommitmentShape
 # C3 — SocialClaim: inhereert in claimant agent, afhankelijk van committed
 ###############################################################################
 
-ufoc:SocialClaimShape
+shc:SocialClaimShape
     a sh:NodeShape ;
     sh:targetClass ufoc:SocialClaim ;
     sh:name "SocialClaimShape" ;
@@ -157,7 +157,7 @@ ufoc:SocialClaimShape
 # C4 — SocialRole participates in at least one SocialRelator
 ###############################################################################
 
-ufoc:SocialRoleShape
+shc:SocialRoleShape
     a sh:NodeShape ;
     sh:targetClass ufoc:SocialRole ;
     sh:name "SocialRoleShape" ;
@@ -185,7 +185,7 @@ ufoc:SocialRoleShape
 # C5 — IntentionalMode has exactly one propositional content (Situation)
 ###############################################################################
 
-ufoc:IntentionalModeShape
+shc:IntentionalModeShape
     a sh:NodeShape ;
     sh:targetClass ufoc:IntentionalMode ;
     sh:name "IntentionalModeShape" ;
@@ -205,7 +205,7 @@ ufoc:IntentionalModeShape
 # C6 — Agent partition: must be PhysicalAgent or InstitutionalAgent
 ###############################################################################
 
-ufoc:AgentPartitionShape
+shc:AgentPartitionShape
     a sh:NodeShape ;
     sh:targetClass ufoc:Agent ;
     sh:name "AgentPartitionShape" ;
@@ -223,7 +223,7 @@ ufoc:AgentPartitionShape
 # C7 — Delegatum: delegator ≠ delegatee, both required
 ###############################################################################
 
-ufoc:DelegatumShape
+shc:DelegatumShape
     a sh:NodeShape ;
     sh:targetClass ufoc:Delegatum ;
     sh:name "DelegatumShape" ;
@@ -263,7 +263,7 @@ ufoc:DelegatumShape
 # C8 — Norm is a SocialObject: must inhere in a collective Agent
 ###############################################################################
 
-ufoc:NormShape
+shc:NormShape
     a sh:NodeShape ;
     sh:targetClass ufoc:Norm ;
     sh:name "NormShape" ;

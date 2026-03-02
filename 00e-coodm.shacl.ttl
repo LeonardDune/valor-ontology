@@ -1,20 +1,4 @@
-###############################################################################
-#  VALOR-O — Module 00e SHACL: COoDM Decision Ontology + COVER Value Ascription
-#
-#  Constraints:
-#    §A  COoDM
-#      E1  Deliberation.triggeredBy      — vereist DecisionSituation
-#      E2  Deliberation.considers        — vereist ≥1 DecisionAlternative
-#      E3  Deliberation.resultedIn       — vereist precies 1 Decision
-#      E4  Decision.decisionGoal         — vereist precies 1 DecisionGoal
-#    §B  COVER
-#      E5  ValueExperience.hasBeneficiary    — vereist ≥1 Agent (participatie)
-#      E6  ValueExperience.ofType           — vereist precies 1 ValueType
-#      E7  ValueExperience.hasValence       — vereist precies 1 ValueScale
-#      E8  ValueTension.involvesTension    — vereist ≥2 ValueExperiences
-#      E9  ValueAscription: beholder, beneficiary en experience verplicht
-###############################################################################
-
+@prefix shcoodm: <https://valor-ecosystem.nl/shacl/coodm#> .
 @prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
 @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
@@ -25,16 +9,46 @@
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  VALOR-O — Module 00e SHACL: COoDM Decision Ontology + COVER Value Ascription
+#  Versie 0.2 — shcoodm: namespace + @prefix + owl:Ontology header (DD-002)
+#
+#  Correcties t.o.v. v0.1:
+#    [SE-001] coodm:DeliberationShape etc. → shcoodm:DeliberationShape
+#             cover:ValueExperienceShape etc. → shcoodm:ValueExperienceShape
+#             Shapes horen in de SHACL-namespace, niet in de ontologie-namespace.
+#    [SE-002] @prefix declaraties toegevoegd (ontbraken in v0.1)
+#    [SE-003] owl:Ontology header toegevoegd
+#    [SE-004] sh:PrefixDeclaration toegevoegd voor SPARQL-queries
+#
+#  Constraints:
+#    §A  COoDM
+#      E1  Deliberation.triggeredBy      — vereist DecisionSituation
+#      E2  Deliberation.considers        — vereist ≥1 DecisionAlternative
+#      E3  Deliberation.resultedIn       — vereist precies 1 Decision
+#      E4  Decision.decisionGoal         — vereist precies 1 DecisionGoal
+#    §B  COVER
+#      E5  ValueExperience.hasBeneficiary    — vereist ≥1 Agent
+#      E6  ValueExperience.ofType            — vereist precies 1 ValueType
+#      E7  ValueExperience.hasValence        — vereist precies 1 ValueScale
+#      E8  ValueTension.involvesTension      — vereist ≥2 ValueExperiences
+#      E9  ValueAscription: beholder, beneficiary en experience verplicht
+###############################################################################
+
+shcoodm:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — COoDM + COVER"@nl ;
+    owl:versionInfo "0.2" .
+
 
 ###############################################################################
 #  §A — COoDM Constraints
 ###############################################################################
 
-###############################################################################
-#  E1 — Deliberation moet getriggerd zijn door een DecisionSituation
-###############################################################################
-
-coodm:DeliberationShape
+shcoodm:DeliberationShape
     a sh:NodeShape ;
     sh:targetClass coodm:Deliberation ;
     sh:name "DeliberationShape" ;
@@ -68,17 +82,11 @@ coodm:DeliberationShape
     ] .
 
 
-###############################################################################
-#  E4 — Decision moet precies één DecisionGoal hebben
-###############################################################################
-
-coodm:DecisionShape
+shcoodm:DecisionShape
     a sh:NodeShape ;
     sh:targetClass coodm:Decision ;
     sh:name "DecisionShape" ;
-    sh:description
-        "E4: Een Decision moet precies één DecisionGoal hebben als
-         propositiële inhoud." ;
+    sh:description "E4: Een Decision moet precies één DecisionGoal hebben." ;
 
     sh:property [
         sh:path coodm:decisionGoal ;
@@ -93,19 +101,12 @@ coodm:DecisionShape
 #  §B — COVER Constraints
 ###############################################################################
 
-###############################################################################
-
-###############################################################################
-#  E5–E7 — ValueExperience: beneficiary, type en valentie verplicht
-#  (DD-036: ValueExperience is nu een Event, niet een Quality)
-###############################################################################
-
-cover:ValueExperienceShape
+shcoodm:ValueExperienceShape
     a sh:NodeShape ;
     sh:targetClass cover:ValueExperience ;
     sh:name "ValueExperienceShape" ;
     sh:description
-        "E5–E7: Een ValueExperience (event) moet (a) een ValueBeneficiary hebben,
+        "E5–E7: Een ValueExperience moet (a) een beneficiary hebben,
          (b) van precies één ValueType zijn, en (c) precies één valentie hebben.
          Conform Sales et al. (2017) en DD-036." ;
 
@@ -134,11 +135,7 @@ cover:ValueExperienceShape
     ] .
 
 
-###############################################################################
-#  E8 — ValueTension vereist minimaal twee betrokken ValueExperiences
-###############################################################################
-
-cover:ValueTensionShape
+shcoodm:ValueTensionShape
     a sh:NodeShape ;
     sh:targetClass cover:ValueTension ;
     sh:name "ValueTensionShape" ;
@@ -153,12 +150,7 @@ cover:ValueTensionShape
     ] .
 
 
-###############################################################################
-#  E9 — ValueAscription: beholder, beneficiary en experience verplicht
-#  (DD-036: ValueAscription is een Relator met twee mediatie-partijen)
-###############################################################################
-
-cover:ValueAscriptionShape
+shcoodm:ValueAscriptionShape
     a sh:NodeShape ;
     sh:targetClass cover:ValueAscription ;
     sh:name "ValueAscriptionShape" ;
@@ -191,6 +183,38 @@ cover:ValueAscriptionShape
         sh:message "E9c: ValueAscription.ascribesValueTo vereist ten minste één cover:ValueExperience."
     ] .
 
+
 ###############################################################################
-#  Einde 00e-coodm.shacl.ttl
+#  Prefix declarations voor SPARQL constraints
+###############################################################################
+
+shcoodm:
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "coodm" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/coodm#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "cover" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/cover#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufoc" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdf" ;
+        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdfs" ;
+        sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+#  END OF SHACL — COoDM + COVER  (v0.2)
 ###############################################################################

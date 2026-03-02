@@ -1,32 +1,37 @@
 @prefix sh:    <http://www.w3.org/ns/shacl#> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix shg:  <https://valor-ecosystem.nl/shacl/gufo-core> .
+@prefix shg:  <https://valor-ecosystem.nl/shacl/gufo-core#> .
 @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 # VALOR-O — SHACL Shapes: gUFO Core (Module 00a)
+# Versie 0.2 — valor:ontoumlStereotype correctie (DD-002)
 #
-# Validates structural constraints on gUFO primitives as used in VALOR-O.
-# gUFO itself is an external ontology; these shapes guard how VALOR-O
-# domain classes may extend it.
+# Correctie t.o.v. v0.1:
+#   [SA-001] gufo:ontoumlStereotype → valor:ontoumlStereotype in alle shapes
+#            die sh:targetSubjectsOf of SPARQL-queries gebruiken.
+#            Reden: de ontologie-modules gebruiken valor:ontoumlStereotype;
+#            SHACL moet naar dezelfde property kijken anders vindt G7/G8/G9/G10
+#            niets in de data.
 ###############################################################################
 
-shg
+shg:
     a owl:Ontology ;
     dcterms:title "VALOR-O SHACL — gUFO Core"@nl ;
-    owl:versionInfo "0.1" .
+    owl:versionInfo "0.2" .
 
 
 ###############################################################################
 # G1 — Every IntrinsicMode must inhere in exactly one Endurant
 ###############################################################################
 
-gufo:IntrinsicModeShape
+shg:IntrinsicModeShape
     a sh:NodeShape ;
     sh:targetClass gufo:IntrinsicMode ;
     sh:name "IntrinsicModeShape" ;
@@ -50,15 +55,14 @@ gufo:IntrinsicModeShape
 #        and at least one external dependent (externallyDependsOn)
 ###############################################################################
 
-gufo:ExtrinsicModeShape
+shg:ExtrinsicModeShape
     a sh:NodeShape ;
     sh:targetClass gufo:ExtrinsicMode ;
     sh:name "ExtrinsicModeShape" ;
     sh:description
         "G1b: Elke ExtrinsicMode moet via gufo:inheresIn inheren aan
          precies één Endurant (de drager), én via gufo:externallyDependsOn
-         afhankelijk zijn van ten minste één andere Endurant (het externe object).
-         gUFO axioma: ExtrinsicMode heeft asymmetrische dubbele afhankelijkheid." ;
+         afhankelijk zijn van ten minste één andere Endurant (het externe object)." ;
 
     sh:property [
         sh:path     gufo:inheresIn ;
@@ -95,14 +99,13 @@ gufo:ExtrinsicModeShape
 # G2 — Every Relator must mediate at least two distinct Endurants
 ###############################################################################
 
-gufo:RelatorShape
+shg:RelatorShape
     a sh:NodeShape ;
     sh:targetClass gufo:Relator ;
     sh:name "RelatorShape" ;
     sh:description
         "G2: Elke Relator moet via gufo:mediates ten minste twee
-         verschillende Endurants mediëren (gUFO: Relators zijn
-         existentieel afhankelijk van meerdere individuen)." ;
+         verschillende Endurants mediëren." ;
 
     sh:property [
         sh:path     gufo:mediates ;
@@ -135,13 +138,11 @@ gufo:RelatorShape
 # G3 — Quality must have at most one hasQualityValue
 ###############################################################################
 
-gufo:QualityShape
+shg:QualityShape
     a sh:NodeShape ;
     sh:targetClass gufo:Quality ;
     sh:name "QualityShape" ;
-    sh:description
-        "G3: Een Quality mag maximaal één hasQualityValue hebben
-         (een kwaliteitsdimensie heeft één actuele waarde)." ;
+    sh:description "G3: Een Quality mag maximaal één hasQualityValue hebben." ;
 
     sh:property [
         sh:path     gufo:hasQualityValue ;
@@ -155,13 +156,11 @@ gufo:QualityShape
 # G4 — Event must have hasBeginPoint ≤ hasEndPoint when both present
 ###############################################################################
 
-gufo:EventTemporalShape
+shg:EventTemporalShape
     a sh:NodeShape ;
     sh:targetClass gufo:Event ;
     sh:name "EventTemporalShape" ;
-    sh:description
-        "G4: Als een Event zowel hasBeginPoint als hasEndPoint heeft,
-         moet het beginpunt voor of gelijk zijn aan het eindpunt." ;
+    sh:description "G4: hasBeginPoint ≤ hasEndPoint wanneer beide aanwezig." ;
 
     sh:sparql [
         sh:name    "G4-begin-before-end" ;
@@ -179,18 +178,14 @@ gufo:EventTemporalShape
 
 
 ###############################################################################
-# G5 — Situation must have at least one participanting Endurant
-#       (via gufo:manifestedIn inverse or direct participation)
+# G5 — Situation: ten minste één betrokken Endurant (waarschuwing)
 ###############################################################################
 
-gufo:SituationShape
+shg:SituationShape
     a sh:NodeShape ;
     sh:targetClass gufo:Situation ;
     sh:name "SituationShape" ;
-    sh:description
-        "G5: Een Situation die als NormativeSituation of DesignSituation
-         wordt gebruikt, moet via gufo:manifestedIn ten minste één
-         Endurant betrekken. (Waarschuwing, geen hard error.)" ;
+    sh:description "G5 (waarschuwing): Situation zonder Endurant via gufo:manifestedIn." ;
 
     sh:severity sh:Warning ;
     sh:property [
@@ -203,16 +198,13 @@ gufo:SituationShape
 
 ###############################################################################
 # G6 — IntentionalMode.hasPropositionalContent → Situation
-#       (defined here at gUFO level; specialisations in UFO-C extend this)
 ###############################################################################
 
-gufo:IntentionalModeContentShape
+shg:IntentionalModeContentShape
     a sh:NodeShape ;
     sh:targetClass gufo:IntentionalMode ;
     sh:name "IntentionalModeContentShape" ;
-    sh:description
-        "G6: Een IntentionalMode moet precies één hasPropositionalContent
-         hebben van type gufo:Situation." ;
+    sh:description "G6: IntentionalMode vereist precies één hasPropositionalContent (Situation)." ;
 
     sh:property [
         sh:path     gufo:hasPropositionalContent ;
@@ -225,91 +217,57 @@ gufo:IntentionalModeContentShape
 
 
 ###############################################################################
-# G7 — OWL Punning: elke resource met gufo:ontoumlStereotype moet ook
-#       rdf:type hebben naar het corresponderende gUFO-type-hiërarchietype
+# G7 — OWL Punning: elke resource met valor:ontoumlStereotype moet ook
+#       rdf:type hebben naar het corresponderende gUFO-type
 #
-# DD-002: het punning-patroon geldt voor ALLE stereotypen, niet alleen
-# voor «kind». De volledige stereotype → gUFO-type mapping:
+# [SA-001] sh:targetSubjectsOf: gufo:ontoumlStereotype → valor:ontoumlStereotype
+# [SA-001] SPARQL-query: gufo:ontoumlStereotype → valor:ontoumlStereotype
 #
-#   Stereotype       → gUFO instantietype
-#   ─────────────────────────────────────────────────────
-#   kind             → gufo:Kind
-#   subkind          → gufo:SubKind
-#   role             → gufo:Role
-#   historicalRole   → gufo:Role  (UFO-B-2019, geen apart type)
-#   phase            → gufo:Phase
-#   category         → gufo:Category
-#   mixin            → gufo:Mixin
-#   roleMixin        → gufo:RoleMixin
-#   relator          → gufo:Relator
-#   event            → gufo:EventType
-#   situation        → gufo:SituationType
-#
-# Stereotypen ZONDER punning-verplichting — gUFO 1.0 definieert hiervoor
-# geen Type in de Taxonomy of Types:
-#   mode    → geen gUFO-Type (gUFO 1.0 heeft geen ModeType o.i.d.)
-#   quality → geen gUFO-Type (gUFO 1.0 heeft geen QualityType o.i.d.)
-#
-# Verificatie: https://nemo-ufes.github.io/gufo/gufo.ttl (geraadpleegd 2026-02-27)
-# Noot: gufo:NonQualitativeIntrinsicAspect en gufo:QualitativeIntrinsicAspect
-# bestaan NIET in de echte gUFO TTL. Zie DD-029.
-#
-# Stereotypen ook zonder punning-verplichting:
-#   collective, quantity (zeldzaam in VALOR), type, abstract,
-#   datatype, enumeration (technisch/meta — niet in VALOR-O gebruikt).
-#
-# Implementatie: één SPARQL-constraint met VALUES-blok voor de volledige
-# mapping. Eén violation per resource die de vereiste rdf:type mist.
-#
-# gUFO-primitieven (namespace http://purl.org/nemo/gufo#) zijn
-# uitgesloten: zij ZIJN de type-hiërarchie, niet instanties ervan (DD-003).
+# DD-002: stereotype → gUFO-type mapping (inclusief DD-052 correctie):
+#   mode / quality → GEEN punning-verplichting (geen ModeType/QualityType in gUFO)
 ###############################################################################
 
-gufo:OntoumlPunningShape
+shg:OntoumlPunningShape
     a sh:NodeShape ;
-    sh:targetSubjectsOf gufo:ontoumlStereotype ;
+    sh:targetSubjectsOf valor:ontoumlStereotype ;        # [SA-001]
     sh:name "OntoumlPunningShape" ;
     sh:description
-        """G7: Elke resource met gufo:ontoumlStereotype moet via rdf:type
+        """G7: Elke resource met valor:ontoumlStereotype moet via rdf:type
          het corresponderende gUFO-type-hiërarchietype dragen
          (OWL2 punning-conventie, DD-002).
-         Geldt voor alle stereotypen met een gUFO-tegenhanger.
-         gUFO-primitieven zijn uitgesloten (DD-003).""" ;
+         [SA-001] v0.2: valor:ontoumlStereotype i.p.v. gufo:ontoumlStereotype.""" ;
 
     sh:sparql [
         sh:name    "G7-punning-volledig" ;
         sh:message """G7: Resource met ontoumlStereotype '{?stereotype}' mist
          het vereiste rdf:type '{?vereistType}'.
          Voeg toe: <resource> rdf:type <vereistType> .
-         (OWL2 punning — DD-002; gUFO-primitieven zijn uitgesloten — DD-003).""" ;
-        sh:prefixes shg: ;
+         (OWL2 punning — DD-002; gUFO-primitieven uitgesloten — DD-003).""" ;
+        sh:prefixes shg ;
         sh:select  """
             SELECT $this ?stereotype ?vereistType
             WHERE {
-                $this gufo:ontoumlStereotype ?stereotype .
+                $this valor:ontoumlStereotype ?stereotype .
 
-                # Volledige stereotype → gUFO-type mapping (DD-002)
                 VALUES (?stereotype ?vereistType) {
-                    ( "kind"           gufo:Kind                              )
-                    ( "subkind"        gufo:SubKind                           )
-                    ( "role"           gufo:Role                              )
-                    ( "historicalRole" gufo:Role                              )
-                    ( "phase"          gufo:Phase                             )
-                    ( "category"       gufo:Category                          )
-                    ( "mixin"          gufo:Mixin                             )
-                    ( "roleMixin"      gufo:RoleMixin                         )
-                    ( "relator"        gufo:Relator                           )
-                    ( "event"          gufo:EventType                         )
-                    ( "situation"      gufo:SituationType                     )
+                    ( "kind"           gufo:Kind          )
+                    ( "subkind"        gufo:SubKind       )
+                    ( "role"           gufo:Role          )
+                    ( "historicalRole" gufo:Role          )
+                    ( "phase"          gufo:Phase         )
+                    ( "category"       gufo:Category      )
+                    ( "mixin"          gufo:Mixin         )
+                    ( "roleMixin"      gufo:RoleMixin     )
+                    ( "relator"        gufo:Relator       )
+                    ( "event"          gufo:EventType     )
+                    ( "situation"      gufo:SituationType )
                 }
-                # NB: "mode" en "quality" zijn NIET opgenomen omdat gUFO 1.0
-                # geen ModeType of QualityType definieert in de Taxonomy of Types.
-                # Verificatie: https://nemo-ufes.github.io/gufo/gufo.ttl (DD-029).
+                # NB: "mode" en "quality" zijn NIET opgenomen —
+                # gUFO 1.0 definieert geen ModeType of QualityType (DD-052).
 
-                # De vereiste rdf:type ontbreekt
                 FILTER NOT EXISTS { $this rdf:type ?vereistType }
 
-                # Sluit gUFO-primitieven uit: zij ZIJN de type-hiërarchie (DD-003)
+                # Sluit gUFO-primitieven uit (DD-003)
                 FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
             }
         """
@@ -317,102 +275,32 @@ gufo:OntoumlPunningShape
 
 
 ###############################################################################
-# Prefix declarations for SPARQL constraints
-###############################################################################
-
-shg
-    a sh:PrefixDeclaration ;
-    sh:declare [
-        sh:prefix    "gufo" ;
-        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
-    ] ;
-    sh:declare [
-        sh:prefix    "rdf" ;
-        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
-    ] ;
-    sh:declare [
-        sh:prefix    "rdfs" ;
-        sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI
-    ] ;
-    sh:declare [
-        sh:prefix    "owl" ;
-        sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI
-    ] ;
-    sh:declare [
-        sh:prefix    "ufoc" ;
-        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
-    ] ;
-    sh:declare [
-        sh:prefix    "ufol" ;
-        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-l#"^^xsd:anyURI
-    ] ;
-    sh:declare [
-        sh:prefix    "xsd" ;
-        sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI
-    ] .
-
-
-
-###############################################################################
 # G8 — OntoUML Stereotype Combinatie Constraints (DD-026)
-#
-#  Valideert dat elke owl:ObjectProperty met een relatie-stereotype
-#  een source-klasse (rdfs:domain) en target-klasse (rdfs:range) heeft
-#  waarvan de stereotypen een geldige combinatie vormen conform
-#  OntoUML 2.0 (Fonseca et al. 2019, Table 1).
-#
-#  Geldige relatie-stereotypen:
-#    characterization, mediation, externalDependence, material,
-#    comparative, participation, creation, termination, bringsAbout,
-#    triggers, manifestation, historicalDependence, componentOf,
-#    subCollectionOf, subQuantityOf, memberOf
-#
-#  Uitsluitingen:
-#   - gUFO-namespace properties (zijn de primitieven zelf)
-#   - Properties zonder ontoumlStereotype
-#   - Klasse-stereotypen (kind, subkind, role, etc.)
-#
-#  Klasse-stereotypen worden opgezocht via gufo:ontoumlStereotype op de
-#  domain- en range-klassen van de property. Ontbrekende domain of range
-#  levert een G9-waarschuwing, geen error.
-#
-#  VALOR-O-afwijkingen gedocumenteerd in DD-026:
-#   - hasCommitmentContent / hasDelegatedGoal: geen stereotype (Relator→Situation
-#     valt buiten OntoUML 2.0; gUFO hasPropositionalContent-subproperty)
-#   - excDependsOn: geen stereotype (UFO-B P1-axioma; Event→Object
-#     valt buiten OntoUML 2.0 externalDependence-bereik)
-#   - historicalDependence uitgebreid met Situation→Situation voor
-#     FeedbackLoop-patroon in VALOR-B
+# [SA-001] sh:targetSubjectsOf en SPARQL: gufo:ontoumlStereotype → valor:ontoumlStereotype
 ###############################################################################
 
-gufo:OntoumlRelationConstraintShape
+shg:OntoumlRelationConstraintShape
     a sh:NodeShape ;
-    sh:targetSubjectsOf gufo:ontoumlStereotype ;
+    sh:targetSubjectsOf valor:ontoumlStereotype ;        # [SA-001]
     sh:name "OntoumlRelationConstraintShape" ;
     sh:description
         """G8: Elke owl:ObjectProperty met een relatie-stereotype moet een
          geldige combinatie van source- en target-stereotypen hebben conform
-         OntoUML 2.0 (Fonseca et al. 2019, Table 1) en VALOR-O-extensies
-         (DD-026). Zie DESIGN-DECISIONS.md DD-026 voor de volledige tabel
-         met 518 geldige combinaties.""" ;
+         OntoUML 2.0 (DD-026).
+         [SA-001] v0.2: valor:ontoumlStereotype i.p.v. gufo:ontoumlStereotype.""" ;
 
     sh:sparql [
         sh:name    "G8-stereotypecombinatie" ;
         sh:message """G8: Property heeft relatie-stereotype maar
          de combinatie (source-stereotype, target-stereotype) is niet geldig
-         conform OntoUML 2.0 (Fonseca et al. 2019) en VALOR-O-extensies.
-         Zie DESIGN-DECISIONS.md DD-026.""" ;
+         conform OntoUML 2.0 en VALOR-O-extensies. Zie DD-026.""" ;
         sh:prefixes shg ;
         sh:select  """
             SELECT $this ?relStereo ?srcStereo ?tgtStereo
             WHERE {
-                # Alleen owl:ObjectProperty
                 $this a owl:ObjectProperty .
+                $this valor:ontoumlStereotype ?relStereo .
 
-                # Property heeft een relatie-stereotype
-                $this gufo:ontoumlStereotype ?relStereo .
-
-                # Alleen relatie-stereotypen (niet klasse-stereotypen)
                 VALUES ?relStereo {
                     "characterization" "mediation" "externalDependence"
                     "material" "comparative" "participation"
@@ -421,18 +309,14 @@ gufo:OntoumlRelationConstraintShape
                     "componentOf" "subCollectionOf" "subQuantityOf" "memberOf"
                 }
 
-                # Sluit gUFO-namespace properties uit
                 FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
 
-                # Haal source-stereotype op via rdfs:domain van de property
                 $this rdfs:domain ?srcClass .
-                ?srcClass gufo:ontoumlStereotype ?srcStereo .
+                ?srcClass valor:ontoumlStereotype ?srcStereo .
 
-                # Haal target-stereotype op via rdfs:range van de property
                 $this rdfs:range ?tgtClass .
-                ?tgtClass gufo:ontoumlStereotype ?tgtStereo .
+                ?tgtClass valor:ontoumlStereotype ?tgtStereo .
 
-                # Combinatie ontbreekt in de geldige-combinaties-tabel
                 FILTER NOT EXISTS {
                     VALUES (?relStereo ?srcStereo ?tgtStereo) {
                     ( "bringsAbout" "event" "situation" )
@@ -1205,17 +1089,18 @@ gufo:OntoumlRelationConstraintShape
 
 ###############################################################################
 # G9 — Properties met relatie-stereotype maar zonder domain of range
+# [SA-001] sh:targetSubjectsOf en SPARQL: gufo:ontoumlStereotype → valor:ontoumlStereotype
 ###############################################################################
 
-gufo:OntoumlRelationDomainRangeShape
+shg:OntoumlRelationDomainRangeShape
     a sh:NodeShape ;
-    sh:targetSubjectsOf gufo:ontoumlStereotype ;
+    sh:targetSubjectsOf valor:ontoumlStereotype ;        # [SA-001]
     sh:name "OntoumlRelationDomainRangeShape" ;
     sh:description
         """G9 (waarschuwing): Een owl:ObjectProperty met relatie-stereotype
-         hoort een rdfs:domain en rdfs:range te hebben zodat de
-         stereotype-combinatieconstraint G8 kan worden gecontroleerd.
-         Ontbrekende domain of range maakt G8-validatie onmogelijk (DD-026).""" ;
+         hoort een rdfs:domain en rdfs:range te hebben zodat G8 kan worden
+         gecontroleerd (DD-026).
+         [SA-001] v0.2: valor:ontoumlStereotype.""" ;
 
     sh:severity sh:Warning ;
 
@@ -1227,7 +1112,7 @@ gufo:OntoumlRelationDomainRangeShape
             SELECT $this
             WHERE {
                 $this a owl:ObjectProperty .
-                $this gufo:ontoumlStereotype ?relStereo .
+                $this valor:ontoumlStereotype ?relStereo .
                 VALUES ?relStereo {
                     "characterization" "mediation" "externalDependence"
                     "material" "comparative" "participation"
@@ -1249,7 +1134,7 @@ gufo:OntoumlRelationDomainRangeShape
             SELECT $this
             WHERE {
                 $this a owl:ObjectProperty .
-                $this gufo:ontoumlStereotype ?relStereo .
+                $this valor:ontoumlStereotype ?relStereo .
                 VALUES ?relStereo {
                     "characterization" "mediation" "externalDependence"
                     "material" "comparative" "participation"
@@ -1265,6 +1150,44 @@ gufo:OntoumlRelationDomainRangeShape
 
 
 ###############################################################################
-# G10 — Superklasse-stereotype-consistentie (DD-026 aanvulling)
-#
-#  G7 controleert: heeft dit stereotype het ju
+# Prefix declarations for SPARQL constraints
+###############################################################################
+
+shg
+    a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix    "gufo" ;
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "valor" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdf" ;
+        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "rdfs" ;
+        sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "owl" ;
+        sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufoc" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "ufol" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-l#"^^xsd:anyURI
+    ] ;
+    sh:declare [
+        sh:prefix    "xsd" ;
+        sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI
+    ] .
+
+###############################################################################
+# END OF SHACL — gUFO Core  (v0.2)
+###############################################################################

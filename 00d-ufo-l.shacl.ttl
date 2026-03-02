@@ -7,7 +7,7 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix shl:  <https://valor-ecosystem.nl/shacl/ufo-l> .
+@prefix shl:  <https://valor-ecosystem.nl/shacl/ufo-l#> .
 @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
@@ -19,7 +19,7 @@
 #   DomainVariable, SourceDefinition.
 ###############################################################################
 
-shl
+shl:
     a owl:Ontology ;
     dcterms:title "VALOR-O SHACL — UFO-L Legal Relations"@nl ;
     owl:versionInfo "0.1" .
@@ -29,7 +29,7 @@ shl
 # L1 — LegalRelator mediates exactly 2 distinct LegalSubjects
 ###############################################################################
 
-ufol:LegalRelatorShape
+shl:LegalRelatorShape
     a sh:NodeShape ;
     sh:targetClass ufol:LegalRelator ;
     sh:name "LegalRelatorShape" ;
@@ -69,7 +69,7 @@ ufol:LegalRelatorShape
 # L2 — LegalRelator has exactly one LegalObject
 ###############################################################################
 
-ufol:LegalRelatorObjectShape
+shl:LegalRelatorObjectShape
     a sh:NodeShape ;
     sh:targetClass ufol:LegalRelator ;
     sh:name "LegalRelatorObjectShape" ;
@@ -88,7 +88,7 @@ ufol:LegalRelatorObjectShape
 # L3 — LegalRelator has a legal basis (NormativeSituation or LegalNorm)
 ###############################################################################
 
-ufol:LegalRelatorBasisShape
+shl:LegalRelatorBasisShape
     a sh:NodeShape ;
     sh:targetClass ufol:LegalRelator ;
     sh:name "LegalRelatorBasisShape" ;
@@ -108,7 +108,7 @@ ufol:LegalRelatorBasisShape
 # L4 — DerivationRule: input + (output variable XOR derives relator)
 ###############################################################################
 
-ufol:DerivationRuleShape
+shl:DerivationRuleShape
     a sh:NodeShape ;
     sh:targetClass ufol:DerivationRule ;
     sh:name "DerivationRuleShape" ;
@@ -148,7 +148,7 @@ ufol:DerivationRuleShape
 # L5 — DelegationFulfillment must reference a DelegationAuthority
 ###############################################################################
 
-ufol:DelegationFulfillmentShape
+shl:DelegationFulfillmentShape
     a sh:NodeShape ;
     sh:targetClass ufol:DelegationFulfillment ;
     sh:name "DelegationFulfillmentShape" ;
@@ -170,7 +170,7 @@ ufol:DelegationFulfillmentShape
 #              grounded in DelegationAuthority
 ###############################################################################
 
-ufol:PolicyShape
+shl:PolicyShape
     a sh:NodeShape ;
     sh:targetClass ufol:Policy ;
     sh:name "PolicyShape" ;
@@ -207,7 +207,7 @@ ufol:PolicyShape
 # L7 — PolicyDocument described by at least one Policy
 ###############################################################################
 
-ufol:PolicyDocumentShape
+shl:PolicyDocumentShape
     a sh:NodeShape ;
     sh:targetClass ufol:PolicyDocument ;
     sh:name "PolicyDocumentShape" ;
@@ -234,7 +234,7 @@ ufol:PolicyDocumentShape
 # L8 — TemporalCondition: hasStartDate ≤ hasEndDate when both present
 ###############################################################################
 
-ufol:TemporalConditionShape
+shl:TemporalConditionShape
     a sh:NodeShape ;
     sh:targetClass ufol:TemporalCondition ;
     sh:name "TemporalConditionShape" ;
@@ -260,7 +260,7 @@ ufol:TemporalConditionShape
 # L9 — DomainVariable inheres in LegalSubject or LegalObject
 ###############################################################################
 
-ufol:DomainVariableShape
+shl:DomainVariableShape
     a sh:NodeShape ;
     sh:targetClass ufol:DomainVariable ;
     sh:name "DomainVariableShape" ;
@@ -295,7 +295,7 @@ ufol:DomainVariableShape
 # L10 — LegalFact relates to at least one LegalRelator
 ###############################################################################
 
-ufol:LegalFactShape
+shl:LegalFactShape
     a sh:NodeShape ;
     sh:targetClass ufol:LegalFact ;
     sh:name "LegalFactShape" ;
@@ -326,7 +326,7 @@ ufol:LegalFactShape
 # L11 — NormativeSituation has a legal basis (LegalNorm)
 ###############################################################################
 
-ufol:NormativeSituationShape
+shl:NormativeSituationShape
     a sh:NodeShape ;
     sh:targetClass ufol:NormativeSituation ;
     sh:name "NormativeSituationShape" ;
@@ -346,7 +346,7 @@ ufol:NormativeSituationShape
 # L12 — ClaimRightRelator has an EnforceabilityLevel
 ###############################################################################
 
-ufol:ClaimRightRelatorShape
+shl:ClaimRightRelatorShape
     a sh:NodeShape ;
     sh:targetClass ufol:ClaimRightRelator ;
     sh:name "ClaimRightRelatorShape" ;

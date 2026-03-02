@@ -1,7 +1,7 @@
 ###############################################################################
 #  VALOR-O — Module 00g SHACL: ACTA Transactieontologie
 #
-#  Versie : 0.2 (maart 2026)
+#  Versie : 0.3 (maart 2026)
 #
 #  Constraints:
 #    §A  Transaction
@@ -36,9 +36,13 @@
 #      G-IL2  initiatorLinkTransaction — precies 1 Transaction
 #      G-AL1  accessRole        — ≥1 ActorRole
 #      G-AL2  accessTransaction — ≥1 Transaction
+#    §I  O/I/D-lagen en MultipleTransactionKind (v0.3)
+#      G-OID1 Transaction is in precies één ALPHA-laag (O, I of D) (Warning)
+#      G-MTK  MultipleTransactionKind — minimaal 2 leden
 ###############################################################################
 
 @prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix shacta: <https://valor-ecosystem.nl/shacl/acta#> .
 @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
@@ -50,11 +54,16 @@
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
 
+shacta:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — ACTA Transactieontologie"@nl ;
+    owl:versionInfo "0.2" .
+
 ###############################################################################
 #  §A — Transaction constraints
 ###############################################################################
 
-acta:TransactionShape
+shacta:TransactionShape
     a sh:NodeShape ;
     sh:targetClass acta:Transaction ;
     sh:name "TransactionShape" ;
@@ -92,7 +101,7 @@ acta:TransactionShape
 #  G4 — PublicServiceTransaction: Initiator ≠ Executor
 ###############################################################################
 
-acta:PublicServiceTransactionShape
+shacta:PublicServiceTransactionShape
     a sh:NodeShape ;
     sh:targetClass acta:PublicServiceTransaction ;
     sh:name "PublicServiceTransactionShape" ;
@@ -123,7 +132,7 @@ acta:PublicServiceTransactionShape
 #  §B — ProductionAct constraints
 ###############################################################################
 
-acta:ProductionActShape
+shacta:ProductionActShape
     a sh:NodeShape ;
     sh:targetClass acta:ProductionAct ;
     sh:name "ProductionActShape" ;
@@ -152,7 +161,7 @@ acta:ProductionActShape
 #  §C — CoordinationAct constraints
 ###############################################################################
 
-acta:CoordinationActShape
+shacta:CoordinationActShape
     a sh:NodeShape ;
     sh:targetClass acta:CoordinationAct ;
     sh:name "CoordinationActShape" ;
@@ -171,7 +180,7 @@ acta:CoordinationActShape
 #  §D — Juridische koppelingen
 ###############################################################################
 
-acta:PositiveResultShape
+shacta:PositiveResultShape
     a sh:NodeShape ;
     sh:targetClass acta:PositiveResult ;
     sh:name "PositiveResultShape" ;
@@ -199,14 +208,30 @@ acta:PositiveResultShape
 
 
 ###############################################################################
-#  §E — CoordinationFact type-consistentie (v0.2)
+#  §E — CoordinationFact fase-disjointheid en type-consistentie
+#
+#  G-F1 (documentatief): De negen CoordinationFact-fases zijn OWL-disjunct
+#  verklaard via owl:AllDisjointClasses in 00g-acta.ttl. Operationele
+#  handhaving op instantieniveau: een TransactionKindStep heeft precies één
+#  ofFactKind (G-TS2 maxCount 1). Een aparte SPARQL-query is redundant
+#  door de OWL-disjointness.
+shacta:CoordFactDisjointnessNote
+    a sh:NodeShape ;
+    sh:name "G-F1-documentation" ;
+    sh:description
+        """G-F1: CoordinationFact-fases zijn disjunct (owl:AllDisjointClasses
+         in 00g-acta.ttl). Instantieniveau-handhaving via G-TS2 (maxCount 1
+         op ofFactKind). Geen extra SPARQL-constraint nodig.""" .
+
+
+#  G-F2: Type-consistentie act → fact (v0.2)
 #
 #  G-F2: Elke CoordinationAct brengt via broughtAboutFact uitsluitend
 #  het corresponderende CoordinationFact-subtype voort.
 #  Negen SPARQL-checks — één per type-paar.
 ###############################################################################
 
-acta:ActFactTypeConsistencyShape
+shacta:ActFactTypeConsistencyShape
     a sh:NodeShape ;
     sh:targetClass acta:CoordinationAct ;
     sh:name "ActFactTypeConsistencyShape" ;
@@ -335,7 +360,7 @@ acta:ActFactTypeConsistencyShape
 #  §F — TransactionKindStep constraints (v0.2)
 ###############################################################################
 
-acta:TransactionKindStepShape
+shacta:TransactionKindStepShape
     a sh:NodeShape ;
     sh:targetClass acta:TransactionKindStep ;
     sh:name "TransactionKindStepShape" ;
@@ -365,7 +390,7 @@ acta:TransactionKindStepShape
 #  §G — ResponseLink en WaitLink constraints (v0.2)
 ###############################################################################
 
-acta:ResponseLinkShape
+shacta:ResponseLinkShape
     a sh:NodeShape ;
     sh:targetClass acta:ResponseLink ;
     sh:name "ResponseLinkShape" ;
@@ -402,7 +427,7 @@ acta:ResponseLinkShape
             }"""
     ] .
 
-acta:WaitLinkShape
+shacta:WaitLinkShape
     a sh:NodeShape ;
     sh:targetClass acta:WaitLink ;
     sh:name "WaitLinkShape" ;
@@ -429,7 +454,7 @@ acta:WaitLinkShape
 #  §H — TransactorRole en CSD-structuur constraints (v0.2)
 ###############################################################################
 
-acta:TransactorRoleShape
+shacta:TransactorRoleShape
     a sh:NodeShape ;
     sh:targetClass acta:TransactorRole ;
     sh:name "TransactorRoleShape" ;
@@ -453,7 +478,7 @@ acta:TransactorRoleShape
         sh:message  "G-TAR2: TransactorRole.transactorTransaction vereist precies één acta:Transaction."
     ] .
 
-acta:TransactionHasTransactorShape
+shacta:TransactionHasTransactorShape
     a sh:NodeShape ;
     sh:targetClass acta:Transaction ;
     sh:name "TransactionHasTransactorShape" ;
@@ -474,7 +499,7 @@ acta:TransactionHasTransactorShape
             }"""
     ] .
 
-acta:CompositeTransactorRoleShape
+shacta:CompositeTransactorRoleShape
     a sh:NodeShape ;
     sh:targetClass acta:CompositeTransactorRole ;
     sh:name "CompositeTransactorRoleShape" ;
@@ -490,7 +515,7 @@ acta:CompositeTransactorRoleShape
         sh:message  "G-CTAR: CompositeTransactorRole vereist minimaal 2 acta:TransactorRole-leden."
     ] .
 
-acta:InitiatorLinkShape
+shacta:InitiatorLinkShape
     a sh:NodeShape ;
     sh:targetClass acta:InitiatorLink ;
     sh:name "InitiatorLinkShape" ;
@@ -512,7 +537,7 @@ acta:InitiatorLinkShape
         sh:message  "G-IL2: InitiatorLink.initiatorLinkTransaction vereist precies één acta:Transaction."
     ] .
 
-acta:AccessLinkShape
+shacta:AccessLinkShape
     a sh:NodeShape ;
     sh:targetClass acta:AccessLink ;
     sh:name "AccessLinkShape" ;
@@ -535,5 +560,56 @@ acta:AccessLinkShape
     ] .
 
 ###############################################################################
-#  Einde 00g-acta.shacl.ttl (v0.2)
+#  §I — O/I/D-lagen en MultipleTransactionKind (v0.3)
+###############################################################################
+
+#  G-OID1: Aanbeveling dat elke Transaction in precies één ALPHA-laag zit.
+#  Warning (geen Violation): een partieel model mag de laag weglaten.
+#  De OWL owl:AllDisjointClasses in 00g-acta.ttl bewaakt de exclusiviteit
+#  als de laag WEL is opgegeven.
+shacta:TransactionAlphaLayerShape
+    a sh:NodeShape ;
+    sh:targetClass acta:Transaction ;
+    sh:name "TransactionAlphaLayerShape" ;
+    sh:description
+        "G-OID1: Aanbeveling dat elke Transaction is geclassificeerd als
+         OriginalTransaction, InformationalTransaction of
+         DocumentalTransaction (DEMO ALPHA-theorie, DD-048)." ;
+    sh:sparql [
+        sh:message  "G-OID1: Deze Transaction heeft geen ALPHA-laagclassificatie (O/I/D) — overweeg acta:OriginalTransaction, acta:InformationalTransaction of acta:DocumentalTransaction toe te voegen." ;
+        sh:severity sh:Warning ;
+        sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+            sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+        sh:select """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS {
+                    { $this a acta:OriginalTransaction }
+                    UNION
+                    { $this a acta:InformationalTransaction }
+                    UNION
+                    { $this a acta:DocumentalTransaction }
+                }
+            }"""
+    ] .
+
+#  G-MTK: MultipleTransactionKind bevat minimaal 2 Transaction-leden.
+#  Weak Supplementation Principle voor gufo:Collection — analoog aan
+#  G-CTAR (CompositeTransactorRole) en DD-007 (ComplexEvent).
+shacta:MultipleTransactionKindShape
+    a sh:NodeShape ;
+    sh:targetClass acta:MultipleTransactionKind ;
+    sh:name "MultipleTransactionKindShape" ;
+    sh:description
+        "G-MTK: Een MultipleTransactionKind bevat minimaal 2 Transaction-leden
+         (Weak Supplementation voor gufo:Collection, DD-047)." ;
+    sh:property [
+        sh:path     acta:mtkHasTransaction ;
+        sh:minCount 2 ;
+        sh:class    acta:Transaction ;
+        sh:severity sh:Violation ;
+        sh:message  "G-MTK: MultipleTransactionKind vereist minimaal 2 acta:Transaction-leden."
+    ] .
+
+###############################################################################
+#  Einde 00g-acta.shacl.ttl (v0.3)
 ###############################################################################
