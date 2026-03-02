@@ -2,7 +2,7 @@
 #  VALOR-O — Module 00g: ACTA Transactieontologie
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/acta#  (prefix acta:)
-#  Versie     : 0.4  (maart 2026)
+#  Versie     : 0.5  (maart 2026)
 #  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00d-ufo-l, 00f-cover
 #
 #  Bron:
@@ -12,44 +12,49 @@
 #    Enterprise Ontology: The DEMO Methodology. Springer.
 #
 #  Correcties v0.3:
-#    (1) gufo:ontoumlStereotype → valor:ontoumlStereotype (DD-002 correctie)
-#    (2) rdf:type gufo:RelationshipType verwijderd van acta:TransactorRole,
-#        acta:Transaction, acta:TransactionKindStep — gufo:RelationshipType
-#        is een second-order type voor object-properties, niet voor klassen (DD-049)
-#    (3) CoordinationAct-subtypen: rdf:type gufo:SubKind → gufo:EventType
-#        (SubKind uitsluitend voor Endurant-sortalen; acts zijn Events) (DD-049)
+#    (1) gufo:ontoumlStereotype -> valor:ontoumlStereotype (DD-002)
+#    (2) rdf:type gufo:RelationshipType verwijderd van TransactorRole,
+#        Transaction, TransactionKindStep (DD-049)
+#    (3) CoordinationAct-subtypen: rdf:type gufo:SubKind -> gufo:EventType (DD-049)
 #    (4) CoordinationFact-subtypen + PositiveResult/NegativeResult:
-#        rdf:type gufo:Phase → gufo:SituationType
-#        (Phase uitsluitend voor Endurant-fases; Situations zijn geen Endurants) (DD-050)
+#        rdf:type gufo:Phase -> gufo:SituationType (DD-050)
 #    (5) PublicServiceTransaction, InternalTransaction:
-#        rdf:type gufo:SubKind → rdf:type acta:TransactionCategory (DD-047 rev.)
-#    (6) Higher-Order Types toegevoegd: acta:TransactionType, acta:TransactionCategory
-#    (7) O/I/D-lagen toegevoegd: OriginalTransaction, InformationalTransaction,
-#        DocumentalTransaction als instanties van acta:TransactionType (DD-048)
+#        rdf:type gufo:SubKind -> rdf:type acta:TransactionCategory (DD-047 rev.)
+#    (6) Higher-Order Types toegevoegd: TransactionType, TransactionCategory
+#    (7) O/I/D-lagen toegevoegd (DD-048)
 #
 #  Correcties v0.4:
-#    (8) @prefix valor: namespace gecorrigeerd: <https://valor-ecosystem.nl/ontology/>
-#        (was foutief <https://valor-ecosystem.nl/ontology/valor#>) (DD-002)
-#    (9) acta:TransactionRole, acta:ActorRole: rdfs:subClassOf gufo:RoleMixin
-#        → rdfs:subClassOf ufoc:Agent (correct RoleMixin-patroon: subClassOf
-#        van substantiële basisklasse, niet van het metaconcept) (DD-049)
-#   (10) acta:stepPrecedes: rdfs:subPropertyOf gufo:contributedToTrigger verwijderd;
-#        gufo:contributedToTrigger vereist domain Situation + range Event,
-#        TransactionKindStep is een Relator (DD-044)
+#    (8) @prefix valor: namespace gecorrigeerd (DD-002)
+#    (9) ActorRole, TransactionRole: rdfs:subClassOf ufoc:Agent (DD-049)
+#   (10) stepPrecedes: rdfs:subPropertyOf gufo:contributedToTrigger verwijderd (DD-044)
+#
+#  Correcties v0.5:
+#   (11) CompositeTransactorRole: gufo:Collection + gufo:SubKind ->
+#        gufo:RoleMixin + rdfs:subClassOf ufoc:Agent. (DD-051 resolved)
+#        Rationale: CTAR is een perspectief-afhankelijk SoI-boundary-concept;
+#        anti-rigide en relationally dependent -> RoleMixin is het correcte type.
+#        Mereologisch conflict (Collection-van-Relators) is hiermee opgelost.
+#   (12) acta:TransactorNetwork toegevoegd als gufo:Collection van TransactorRoles.
+#        Scheiding van concerns: CTAR = SoI-perspectief; TransactorNetwork =
+#        context-onafhankelijke interne aggregatie. (DD-051)
+#   (13) acta:compositeHasTransactorRole verwijderd (was op CTAR; ongeldig).
+#        Vervangen door acta:representsNetwork (CTAR -> TransactorNetwork) en
+#        acta:networkHasTransactorRole (TransactorNetwork -> TransactorRole). (DD-051)
 #
 #  Structuur:
-#    §A  Transactierollen (RoleMixin)
-#    §A+ TransactorRole, InitiatorLink, AccessLink, CTAR
-#    §B  Transaction (SocialRelator) + Higher-Order Types + O/I/D
-#    §C  Acts: CoordinationAct en ProductionAct
-#    §C2 CoordinationAct subtypen (alle 9 DEMO SL C-acts)
-#    §C3 ProductionAct
-#    §C4 CoordinationFact (C-fact model)
-#    §C5 TransactionKindStep, stepPrecedes
-#    §C6 ResponseLink en WaitLink
-#    §D  TransactionResult en juridische uitkomsten
-#    §E  Properties
-#    §F  Geneste transacties
+#    §A   Transactierollen (RoleMixin)
+#    §A+  TransactorRole, InitiatorLink, AccessLink
+#    §A++ CompositeTransactorRole (RoleMixin) en TransactorNetwork (Collection)
+#    §B   Transaction + Higher-Order Types + O/I/D
+#    §C   Acts: CoordinationAct en ProductionAct
+#    §C2  CoordinationAct subtypen
+#    §C3  ProductionAct
+#    §C4  CoordinationFact
+#    §C5  TransactionKindStep
+#    §C6  ResponseLink en WaitLink
+#    §D   TransactionResult
+#    §E   Properties
+#    §F   Geneste transacties
 ###############################################################################
 
 @prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
@@ -63,10 +68,6 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-###############################################################################
-#  Ontologie-declaratie
-###############################################################################
-
 <https://valor-ecosystem.nl/ontology/acta>
     a owl:Ontology ;
     rdfs:label "VALOR-O Module 00g — ACTA Transactieontologie"@nl ;
@@ -75,12 +76,9 @@
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
     owl:imports <https://valor-ecosystem.nl/ontology/cover> ;
-    owl:versionInfo "0.4" ;
+    owl:versionInfo "0.5" ;
     rdfs:comment
-        """Formaliseert het DEMO Complete Transaction Pattern in UFO,
-         conform Almeida et al. (EEWC 2013). v0.4: namespace-fix valor:,
-         RoleMixin-subClassOf gecorrigeerd, stepPrecedes superproperty verwijderd
-         (zie versiehistorie in module-header)."""@nl .
+        "Formaliseert het DEMO Complete Transaction Pattern in UFO, conform Almeida et al. (EEWC 2013). v0.5: CTAR als RoleMixin; TransactorNetwork als Collection (zie versiehistorie)."@nl .
 
 
 ###############################################################################
@@ -93,10 +91,7 @@ acta:TransactionRole
     valor:ontoumlStereotype "roleMixin" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "TransactionRole"@en , "Transactierol"@nl ;
-    rdfs:comment
-        """De overkoepelende RoleMixin voor agents die deelnemen aan een
-         transactie. Twee subtypen: acta:Initiator en acta:Executor.
-         Conform Almeida et al. (2013). (DD-040)"""@nl .
+    rdfs:comment "Overkoepelende RoleMixin voor deelnemers aan een transactie. Conform Almeida et al. (2013). (DD-040)"@nl .
 
 acta:ActorRole
     a owl:Class ;
@@ -104,9 +99,7 @@ acta:ActorRole
     valor:ontoumlStereotype "roleMixin" ;
     rdfs:subClassOf ufoc:Agent ;
     rdfs:label "ActorRole"@en , "Actorrol"@nl ;
-    rdfs:comment
-        """De transactie-onafhankelijke rol die een agent kan spelen in een
-         organisatie. DEMO SL §3.1: 'actor role id = AR{digit}'. (DD-045)"""@nl .
+    rdfs:comment "De transactie-onafhankelijke rol van een agent in de organisatie. DEMO SL §3.1: AR{digit}. (DD-045)"@nl .
 
 acta:Initiator
     a owl:Class ;
@@ -115,10 +108,7 @@ acta:Initiator
     rdfs:subClassOf acta:TransactionRole ;
     rdfs:subClassOf acta:ActorRole ;
     rdfs:label "Initiator"@en , "Initiator"@nl ;
-    rdfs:comment
-        """De agent die de transactie initieert door een RequestAct uit te
-         voeren. Performer van: rq, ac, rj, rv(rq/ac).
-         Conform DEMO: 'de actor die de transactie start.' (DD-040)"""@nl .
+    rdfs:comment "Performer van: rq, ac, rj, rv(rq/ac). Conform DEMO. (DD-040)"@nl .
 
 acta:Executor
     a owl:Class ;
@@ -127,21 +117,11 @@ acta:Executor
     rdfs:subClassOf acta:TransactionRole ;
     rdfs:subClassOf acta:ActorRole ;
     rdfs:label "Executor"@en , "Uitvoerder"@nl ;
-    rdfs:comment
-        """De agent die de productie-act uitvoert en het transactionele
-         resultaat voortbrengt. Performer van: pm, da, dc, rv(pm/da).
-         Conform DEMO: 'de actor die de transactie uitvoert.' (DD-040)"""@nl .
+    rdfs:comment "Performer van: pm, da, dc, rv(pm/da). Conform DEMO. (DD-040)"@nl .
 
 
 ###############################################################################
 #  §A+ — TransactorRole (normatieve executor-koppeling)
-#
-#  CORRECTIE v0.3: rdf:type gufo:RelationshipType verwijderd.
-#  gufo:RelationshipType is een second-order type voor object-properties,
-#  niet voor klassen/Endurants. TransactorRole is een ufoc:SocialRelator
-#  (Taxonomy of Individuals: Relator). Relators krijgen geen apart rdf:type
-#  uit de Taxonomy of Types tenzij ze deelnemen aan een SubKind/Kind-hiërarchie.
-#  Hier is geen TransactorRoleKind — TransactorRole is de Relator zelf. (DD-049)
 ###############################################################################
 
 acta:TransactorRole
@@ -149,11 +129,7 @@ acta:TransactorRole
     valor:ontoumlStereotype "relator" ;
     rdfs:subClassOf ufoc:SocialRelator ;
     rdfs:label "TransactorRole"@en , "Transactorrol"@nl ;
-    rdfs:comment
-        """De normatieve koppeling tussen een ActorRole en een Transaction
-         in de positie van executor. DEMO SL §3.1: TAR{digit}.
-         ufoc:SocialRelator: de executor-koppeling is een normatieve
-         verantwoordelijkheidsband. (DD-045, DD-049)"""@nl .
+    rdfs:comment "Normatieve koppeling ActorRole ↔ Transaction (executor-positie). DEMO SL §3.1: TAR{digit}. (DD-045, DD-049)"@nl .
 
 acta:transactorActorRole
     a owl:ObjectProperty ;
@@ -171,11 +147,11 @@ acta:transactorTransaction
     rdfs:label "transactor transaction"@en ;
     rdfs:domain acta:TransactorRole ;
     rdfs:range  acta:Transaction ;
-    rdfs:comment "De Transaction waarvan de actor via deze TransactorRole executor is. (DD-045)"@nl .
+    rdfs:comment "De Transaction waarvan deze actor via de TAR executor is. (DD-045)"@nl .
 
 
 ###############################################################################
-#  §A+ — InitiatorLink en AccessLink (CSD-structuur)
+#  §A+ — InitiatorLink en AccessLink
 ###############################################################################
 
 acta:InitiatorLink
@@ -184,10 +160,7 @@ acta:InitiatorLink
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "InitiatorLink"@en , "Initiatorkoppeling"@nl ;
-    rdfs:comment
-        """Een Situation die uitdrukt dat een ActorRole de initiator is van
-         een bepaalde Transaction. DEMO SL §3.1. Initiator heeft het RECHT
-         te starten — geen verplichting. (DD-045)"""@nl .
+    rdfs:comment "Situation: ActorRole is initiator van een Transaction. DEMO SL §3.1. (DD-045)"@nl .
 
 acta:initiatorLinkRole
     a owl:ObjectProperty ;
@@ -211,9 +184,7 @@ acta:AccessLink
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "AccessLink"@en , "Toegangskoppeling"@nl ;
-    rdfs:comment
-        """Een Situation die uitdrukt dat actoren in een ActorRole leestoegang
-         hebben tot een Transaction-bank. DEMO SL §3.1. (DD-045)"""@nl .
+    rdfs:comment "Situation: ActorRole heeft leestoegang tot een Transaction-bank. DEMO SL §3.1. (DD-045)"@nl .
 
 acta:accessRole
     a owl:ObjectProperty ;
@@ -233,48 +204,86 @@ acta:accessTransaction
 
 
 ###############################################################################
-#  §A+ — CompositeTransactorRole (CTAR)
+#  §A++ — CompositeTransactorRole (CTAR) en TransactorNetwork
 #
-#  NOTE v0.3: rdf:type gufo:SubKind + rdfs:subClassOf gufo:Collection behouden.
-#  Open kwestie (DD-051): Collection is een Object-subklasse (Endurant); leden
-#  zijn Relators. De mereologische grondslag vereist nader onderzoek.
+#  CORRECTIE v0.5: CTAR hergemodelleerd als gufo:RoleMixin (DD-051 resolved).
+#
+#  Probleemstelling (was DD-051 open):
+#    v0.4: CTAR als gufo:Collection + gufo:SubKind. Conflict:
+#      (a) gufo:Collection is subklasse van gufo:Object (independent endurant)
+#      (b) leden zijn TransactorRoles (gufo:Relator = existentially dependent)
+#      -> Collection van existentieel-afhankelijke entiteiten is mereologisch
+#         inconsistent als Object.
+#
+#  Oplossing: scheiding van twee concerns:
+#
+#  CTAR (RoleMixin) — het SoI-boundary-perspectief
+#    Anti-rigide: hetzelfde extern netwerk is een CTAR uitsluitend vanuit
+#    deze SoI; vanuit de externe organisatie zijn het gewone TransactorRoles.
+#    Relationally dependent: de classificatie vereist een relationele context
+#    (de interne transacties van de SoI).
+#    Conform DEMO SL §3.1: "the cut-off upper part is represented by a
+#    composite transactor role" — expliciete representatiekeuze, niet absolute
+#    aggregatie.
+#
+#  TransactorNetwork (Collection) — de context-onafhankelijke aggregatie
+#    Het concrete netwerk van TransactorRoles als gufo:Collection.
+#    Context-onafhankelijk: toegankelijk vanuit andere contexten (externe
+#    organisatie) zonder afhankelijkheid van de CTAR-classificatie.
+#    Weak Supplementation: minimaal 2 leden (SHACL G-TN).
 ###############################################################################
 
 acta:CompositeTransactorRole
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    valor:ontoumlStereotype "subkind" ;
-    rdfs:subClassOf gufo:Collection ;
+    rdf:type gufo:RoleMixin ;
+    valor:ontoumlStereotype "roleMixin" ;
+    rdfs:subClassOf ufoc:Agent ;
     rdfs:label "CompositeTransactorRole"@en , "Samengestelde transactorrol"@nl ;
     rdfs:comment
-        """Een verzameling van onderling verbonden TransactorRoles die als
-         één samengestelde actorrol functioneert. DEMO SL §3.1: CTAR{digit}.
-         OPEN KWESTIE DD-051: Collection als Object vs. leden als Relators. (DD-045)"""@nl .
+        """Vanuit de SoI-grens: de rol die een extern netwerk van gelinkte
+         transactorrollen speelt t.o.v. de interne transacties.
+         DEMO SL §3.1: CTAR{digit}. Anti-rigide (perspectief-afhankelijk):
+         hetzelfde netwerk is in een andere SoI-context afzonderlijke rollen.
+         Intern detail optioneel via acta:representsNetwork -> acta:TransactorNetwork.
+         (DD-051)"""@nl .
 
-acta:compositeHasTransactorRole
+acta:representsNetwork
     a owl:ObjectProperty ;
-    valor:ontoumlStereotype "componentOf" ;
-    rdfs:subPropertyOf gufo:hasProperPart ;
-    rdfs:label "composite has transactor role"@en ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "represents network"@en , "vertegenwoordigt netwerk"@nl ;
     rdfs:domain acta:CompositeTransactorRole ;
+    rdfs:range  acta:TransactorNetwork ;
+    rdfs:comment
+        """Optionele koppeling CTAR -> TransactorNetwork. Wanneer de externe
+         organisatiecontext relevant is, bereikbaar via het TransactorNetwork.
+         Niet verplicht: een CTAR is geldig zonder intern detail. (DD-051)"""@nl .
+
+
+acta:TransactorNetwork
+    a owl:Class ;
+    rdf:type gufo:CollectionType ;
+    valor:ontoumlStereotype "collective" ;
+    rdfs:subClassOf gufo:Collection ;
+    rdfs:label "TransactorNetwork"@en , "Transactornetwerk"@nl ;
+    rdfs:comment
+        """Context-onafhankelijke aggregatie van onderling verbonden
+         TransactorRoles. gufo:Collection: leden spelen dezelfde
+         lidmaatschapsrol. Weak Supplementation: minimaal 2 leden (SHACL G-TN).
+         Bruikbaar zonder CTAR-classificatie vanuit externe organisatiecontext.
+         (DD-051)"""@nl .
+
+acta:networkHasTransactorRole
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "memberOf" ;
+    rdfs:subPropertyOf gufo:isProperPartOf ;
+    rdfs:label "network has transactor role"@en , "netwerk heeft transactorrol"@nl ;
+    rdfs:domain acta:TransactorNetwork ;
     rdfs:range  acta:TransactorRole ;
-    rdfs:comment "De TransactorRoles die deel uitmaken van deze CTAR. (DD-045)"@nl .
+    rdfs:comment "Lidmaatschap van TransactorRoles in dit netwerk. Minimaal 2 via SHACL G-TN. (DD-051)"@nl .
 
 
 ###############################################################################
 #  §B — Transaction (SocialRelator) + Higher-Order Types + O/I/D-lagen
-#
-#  CORRECTIES v0.3:
-#  (a) rdf:type gufo:RelationshipType verwijderd van acta:Transaction (DD-049)
-#  (b) Higher-Order Types:
-#      - acta:TransactionType  (rdfs:subClassOf gufo:SubKind + gufo:partitions)
-#        voor sortale O/I/D-classificatie
-#      - acta:TransactionCategory (rdfs:subClassOf gufo:Category + gufo:categorizes)
-#        voor non-sortale categorisatie
-#  (c) OriginalTransaction, InformationalTransaction, DocumentalTransaction
-#      als instanties van acta:TransactionType (DD-048)
-#  (d) PublicServiceTransaction, InternalTransaction
-#      als instanties van acta:TransactionCategory (DD-047)
 ###############################################################################
 
 acta:Transaction
@@ -283,25 +292,15 @@ acta:Transaction
     rdfs:subClassOf ufoc:SocialRelator ;
     rdfs:label "Transaction"@en , "Transactie"@nl ;
     rdfs:comment
-        """Een normatieve interactiestructuur tussen een Initiator en een
-         Executor, gemodelleerd als ufoc:SocialRelator. Conform Almeida et al.
-         (2013): 'a transaction is a Social Relator mediating initiator and
-         executor.' (DD-040, DD-049)"""@nl .
-
-# ── Higher-Order Type voor sortale O/I/D-classificatie ─────────────────────
+        """Normatieve interactiestructuur Initiator <-> Executor als ufoc:SocialRelator.
+         Conform Almeida et al. (2013). (DD-040, DD-049)"""@nl .
 
 acta:TransactionType
     a owl:Class ;
     rdfs:subClassOf gufo:SubKind ;
     gufo:partitions acta:Transaction ;
     rdfs:label "TransactionType"@en , "Transactietype (O/I/D)"@nl ;
-    rdfs:comment
-        """Higher-Order Type voor de sortale O/I/D-classificatie van transacties.
-         Conform gUFO Higher-Order Type patroon (scenario 4):
-           acta:TransactionType rdfs:subClassOf gufo:SubKind
-           acta:TransactionType gufo:partitions acta:Transaction
-         Instanties: OriginalTransaction, InformationalTransaction, DocumentalTransaction.
-         (DD-048)"""@nl .
+    rdfs:comment "Higher-Order Type voor sortale O/I/D-classificatie. (DD-048)"@nl .
 
 acta:OriginalTransaction
     a owl:Class ;
@@ -309,12 +308,7 @@ acta:OriginalTransaction
     rdfs:subClassOf acta:Transaction ;
     rdfs:label "OriginalTransaction"@en , "Originele transactie"@nl ;
     owl:disjointWith acta:InformationalTransaction , acta:DocumentalTransaction ;
-    rdfs:comment
-        """DEMO O-organisatielaag: transacties die het primaire resultaat van
-         het bedrijfsproces voortbrengen.
-         rdf:type acta:TransactionType: Higher-Order Type patroon —
-         OriginalTransaction is instantie van TransactionType (SubKind-classificator)
-         én subklasse van Transaction. (DD-048)"""@nl .
+    rdfs:comment "DEMO O-laag: primair resultaat. (DD-048)"@nl .
 
 acta:InformationalTransaction
     a owl:Class ;
@@ -322,9 +316,7 @@ acta:InformationalTransaction
     rdfs:subClassOf acta:Transaction ;
     rdfs:label "InformationalTransaction"@en , "Informationele transactie"@nl ;
     owl:disjointWith acta:OriginalTransaction , acta:DocumentalTransaction ;
-    rdfs:comment
-        """DEMO I-organisatielaag: transacties die informatie voortbrengen
-         ter ondersteuning van de O-laag. (DD-048)"""@nl .
+    rdfs:comment "DEMO I-laag: informatie t.o.v. O-laag. (DD-048)"@nl .
 
 acta:DocumentalTransaction
     a owl:Class ;
@@ -332,46 +324,32 @@ acta:DocumentalTransaction
     rdfs:subClassOf acta:Transaction ;
     rdfs:label "DocumentalTransaction"@en , "Documentale transactie"@nl ;
     owl:disjointWith acta:OriginalTransaction , acta:InformationalTransaction ;
-    rdfs:comment
-        """DEMO D-organisatielaag: transacties die documenten/registraties
-         voortbrengen ter ondersteuning van de O- en I-laag. (DD-048)"""@nl .
-
-# ── Higher-Order Type voor non-sortale categorisatie ───────────────────────
+    rdfs:comment "DEMO D-laag: documenten/registraties. (DD-048)"@nl .
 
 acta:TransactionCategory
     a owl:Class ;
     rdfs:subClassOf gufo:Category ;
     gufo:categorizes acta:Transaction ;
     rdfs:label "TransactionCategory"@en , "Transactiecategorie"@nl ;
-    rdfs:comment
-        """Higher-Order Type voor non-sortale categorisaties van transacties.
-         Rigide maar non-sortaal: het identiteitsprincipe van de transactie
-         komt niet van deze classificatie.
-         Instanties: PublicServiceTransaction, InternalTransaction.
-         (DD-047)"""@nl .
+    rdfs:comment "Higher-Order Type voor non-sortale categorisatie. (DD-047)"@nl .
 
 acta:PublicServiceTransaction
     a owl:Class ;
     rdf:type acta:TransactionCategory ;
     rdfs:subClassOf acta:Transaction ;
     rdfs:label "PublicServiceTransaction"@en , "Publieke-diensttransactie"@nl ;
-    rdfs:comment
-        """Een transactie waarbij een burger (Initiator) een publieke dienst
-         aanvraagt bij een overheidsorganisatie (Executor). rdf:type
-         acta:TransactionCategory: non-sortale categorisatie. (DD-040, DD-047)"""@nl .
+    rdfs:comment "Burger (Initiator) -> overheid (Executor). (DD-040, DD-047)"@nl .
 
 acta:InternalTransaction
     a owl:Class ;
     rdf:type acta:TransactionCategory ;
     rdfs:subClassOf acta:Transaction ;
     rdfs:label "InternalTransaction"@en , "Interne transactie"@nl ;
-    rdfs:comment
-        """Een transactie tussen twee actoren binnen dezelfde organisatie.
-         Conform DEMO B-organisatie. rdf:type acta:TransactionCategory. (DD-040, DD-047)"""@nl .
+    rdfs:comment "Transactie binnen dezelfde organisatie. DEMO B-organisatie. (DD-040, DD-047)"@nl .
 
 
 ###############################################################################
-#  §C — CoordinationAct (overkoepelend)
+#  §C — CoordinationAct
 ###############################################################################
 
 acta:CoordinationAct
@@ -379,20 +357,13 @@ acta:CoordinationAct
     rdf:type gufo:EventType ;
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf gufo:Action ;
-    rdfs:label "CoordinationAct"@en , "Coördinatie-act"@nl ;
-    rdfs:comment
-        """Een intentionele actie in de coördinatiewereld van een transactie.
-         Conform DEMO CTP en Almeida et al. (2013). (DD-040)"""@nl .
+    rdfs:label "CoordinationAct"@en , "Coordinatie-act"@nl ;
+    rdfs:comment "Intentionele actie in de coordinatiewereld van een transactie. Conform DEMO CTP. (DD-040)"@nl .
 
 
 ###############################################################################
 #  §C2 — CoordinationAct subtypen (alle 9 DEMO SL §2.1 C-acts)
-#
-#  CORRECTIE v0.3: rdf:type gufo:SubKind → gufo:EventType voor alle subtypen.
-#  Rationale: gufo:SubKind is uitsluitend voor Endurant-sortalen in de
-#  Taxonomy of Individuals. CoordinationActs zijn Events (Perdurants).
-#  Event-subtypen worden geclassificeerd als gufo:EventType in de
-#  Taxonomy of Types. (DD-049)
+#  rdf:type gufo:EventType (was gufo:SubKind — DD-049)
 ###############################################################################
 
 acta:RequestAct
@@ -401,10 +372,7 @@ acta:RequestAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "RequestAct"@en , "Aanvraag-act"@nl ;
-    rdfs:comment
-        """De Initiator vraagt de Executor een transactioneel resultaat voort
-         te brengen. Start het CTP. Performer: Initiator.
-         DEMO-shorthand: [TKi/rq]. (DD-040, DD-049)"""@nl .
+    rdfs:comment "Initiator vraagt Executor. Start CTP. [TKi/rq]. (DD-040, DD-049)"@nl .
 
 acta:PromiseAct
     a owl:Class ;
@@ -412,9 +380,7 @@ acta:PromiseAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "PromiseAct"@en , "Toezegging-act"@nl ;
-    rdfs:comment
-        """De Executor zegt toe de transactie te behandelen. Performer: Executor.
-         DEMO-shorthand: [TKi/pm]. (DD-040, DD-049)"""@nl .
+    rdfs:comment "Executor zegt toe. [TKi/pm]. (DD-040, DD-049)"@nl .
 
 acta:DeclareAct
     a owl:Class ;
@@ -422,9 +388,7 @@ acta:DeclareAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "DeclareAct"@en , "Declaratie-act"@nl ;
-    rdfs:comment
-        """De Executor declareert dat de ProductionAct is uitgevoerd.
-         Performer: Executor. DEMO-shorthand: [TKi/da]. (DD-043, DD-049)"""@nl .
+    rdfs:comment "Executor declareert ProductionAct gereed. [TKi/da]. (DD-043, DD-049)"@nl .
 
 acta:AcceptAct
     a owl:Class ;
@@ -432,9 +396,7 @@ acta:AcceptAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "AcceptAct"@en , "Bekrachtiging-act"@nl ;
-    rdfs:comment
-        """De Initiator bekrachtigt het geleverde resultaat. Performer: Initiator.
-         DEMO-shorthand: [TKi/ac]. (DD-040, DD-049)"""@nl .
+    rdfs:comment "Initiator bekrachtigt resultaat. [TKi/ac]. (DD-040, DD-049)"@nl .
 
 acta:DeclineAct
     a owl:Class ;
@@ -442,9 +404,7 @@ acta:DeclineAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "DeclineAct"@en , "Weigering-act"@nl ;
-    rdfs:comment
-        """De Executor weigert VÓÓR de PromiseAct. Performer: Executor.
-         DEMO-shorthand: [TKi/dc]. (DD-043, DD-049)"""@nl .
+    rdfs:comment "Executor weigert voor PromiseAct. [TKi/dc]. (DD-043, DD-049)"@nl .
 
 acta:RejectAct
     a owl:Class ;
@@ -452,9 +412,7 @@ acta:RejectAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "RejectAct"@en , "Verwerpings-act"@nl ;
-    rdfs:comment
-        """De Initiator verwerpt het gedeclareerde resultaat ná DeclareAct.
-         Performer: Initiator. DEMO-shorthand: [TKi/rj]. (DD-043, DD-049)"""@nl .
+    rdfs:comment "Initiator verwerpt gedeclareerd resultaat. [TKi/rj]. (DD-043, DD-049)"@nl .
 
 acta:RevokeAct
     a owl:Class ;
@@ -462,9 +420,7 @@ acta:RevokeAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "RevokeAct"@en , "Herroepings-act"@nl ;
-    rdfs:comment
-        """Een actor herroept een eerder uitgevoerde CoordinationAct.
-         DEMO-shorthand: [TKi/rv]. (DD-043, DD-049)"""@nl .
+    rdfs:comment "Actor herroept eerder uitgevoerde act. [TKi/rv]. (DD-043, DD-049)"@nl .
 
 acta:RevokeRequestAct
     a owl:Class ;
@@ -488,7 +444,7 @@ acta:RevokeDeclareAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:RevokeAct ;
     rdfs:label "RevokeDeclareAct"@en , "Herroeping declaratie"@nl ;
-    rdfs:comment "Executor herroept DeclareAct vóór accept of reject. (DD-043, DD-049)"@nl .
+    rdfs:comment "Executor herroept DeclareAct voor accept of reject. (DD-043, DD-049)"@nl .
 
 acta:RevokeAcceptAct
     a owl:Class ;
@@ -504,8 +460,7 @@ acta:AllowAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "AllowAct"@en , "Toestemmings-act"@nl ;
-    rdfs:comment
-        """De addressee staat de RevokeAct toe. DEMO-shorthand: [TKi/al]. (DD-043, DD-049)"""@nl .
+    rdfs:comment "Addressee staat RevokeAct toe. [TKi/al]. (DD-043, DD-049)"@nl .
 
 acta:RefuseAct
     a owl:Class ;
@@ -513,8 +468,7 @@ acta:RefuseAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf acta:CoordinationAct ;
     rdfs:label "RefuseAct"@en , "Weigerings-act (herroeping)"@nl ;
-    rdfs:comment
-        """De addressee weigert de RevokeAct. DEMO-shorthand: [TKi/rf]. (DD-043, DD-049)"""@nl .
+    rdfs:comment "Addressee weigert RevokeAct. [TKi/rf]. (DD-043, DD-049)"@nl .
 
 
 ###############################################################################
@@ -527,24 +481,12 @@ acta:ProductionAct
     valor:ontoumlStereotype "event" ;
     rdfs:subClassOf gufo:Action ;
     rdfs:label "ProductionAct"@en , "Productie-act"@nl ;
-    rdfs:comment
-        """De ontologisch centrale act van een transactie: zij brengt een
-         toestandswijziging in het domein teweeg (het TransactionResult).
-         Performer: Executor. Conform DEMO CTP fase 3. (DD-041)"""@nl .
+    rdfs:comment "Brengt het TransactionResult voort. Performer: Executor. DEMO CTP fase 3. (DD-041)"@nl .
 
 
 ###############################################################################
-#  §C4 — CoordinationFact (C-fact model)
-#
-#  CORRECTIE v0.3: rdf:type gufo:Phase → gufo:SituationType.
-#  Rationale: gufo:Phase is uitsluitend voor Endurant-fases (anti-rigide
-#  sortalen in de Taxonomy of Types). CoordinationFacts zijn Situations,
-#  geen Endurants. Situation-subtypen worden geclassificeerd als
-#  gufo:SituationType in de Taxonomy of Types. (DD-050)
-#
-#  NB: de disjointness (owl:AllDisjointClasses) blijft correct — zij drukt
-#  uit dat een transactie-instantie op elk moment in slechts één toestand
-#  verkeert. Dit is onafhankelijk van de gUFO-type-classificatie.
+#  §C4 — CoordinationFact
+#  rdf:type gufo:SituationType (was gufo:Phase — DD-050)
 ###############################################################################
 
 acta:CoordinationFact
@@ -552,12 +494,8 @@ acta:CoordinationFact
     rdf:type gufo:SituationType ;
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
-    rdfs:label "CoordinationFact"@en , "Coördinatiefeit"@nl ;
-    rdfs:comment
-        """De informationele toestand die bestaat nadat een CoordinationAct
-         is uitgevoerd. DEMO-notatie: (TKi/rq) is het C-fact ná [TKi/rq].
-         Negen disjuncte subtypen als gufo:SituationType.
-         (DD-044; DEMO SL §2.1)"""@nl .
+    rdfs:label "CoordinationFact"@en , "Coordinatiefeit"@nl ;
+    rdfs:comment "Informationele toestand na uitvoering van een CoordinationAct. Negen disjuncte subtypen. (DD-044)"@nl .
 
 acta:RequestedFact
     a owl:Class ;
@@ -565,7 +503,7 @@ acta:RequestedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "RequestedFact"@en , "Aangevraagd"@nl ;
-    rdfs:comment "Toestand: aanvraag ingediend. DEMO: (TKi/rq). (DD-044, DD-050)"@nl .
+    rdfs:comment "DEMO: (TKi/rq). (DD-044, DD-050)"@nl .
 
 acta:PromisedFact
     a owl:Class ;
@@ -573,7 +511,7 @@ acta:PromisedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "PromisedFact"@en , "Toegezegd"@nl ;
-    rdfs:comment "Toestand: behandeling toegezegd. DEMO: (TKi/pm). (DD-044, DD-050)"@nl .
+    rdfs:comment "DEMO: (TKi/pm). (DD-044, DD-050)"@nl .
 
 acta:DeclaredFact
     a owl:Class ;
@@ -581,7 +519,7 @@ acta:DeclaredFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "DeclaredFact"@en , "Gedeclareerd"@nl ;
-    rdfs:comment "Toestand: resultaat gedeclareerd. DEMO: (TKi/da). (DD-044, DD-050)"@nl .
+    rdfs:comment "DEMO: (TKi/da). (DD-044, DD-050)"@nl .
 
 acta:AcceptedFact
     a owl:Class ;
@@ -589,7 +527,7 @@ acta:AcceptedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "AcceptedFact"@en , "Geaccepteerd"@nl ;
-    rdfs:comment "Toestand: resultaat geaccepteerd — transactie voltooid. DEMO: (TKi/ac). (DD-044, DD-050)"@nl .
+    rdfs:comment "Transactie voltooid. DEMO: (TKi/ac). (DD-044, DD-050)"@nl .
 
 acta:DeclinedFact
     a owl:Class ;
@@ -597,7 +535,7 @@ acta:DeclinedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "DeclinedFact"@en , "Geweigerd"@nl ;
-    rdfs:comment "Toestand: behandeling geweigerd. DEMO: (TKi/dc). (DD-044, DD-050)"@nl .
+    rdfs:comment "DEMO: (TKi/dc). (DD-044, DD-050)"@nl .
 
 acta:RejectedFact
     a owl:Class ;
@@ -605,7 +543,7 @@ acta:RejectedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "RejectedFact"@en , "Verworpen"@nl ;
-    rdfs:comment "Toestand: resultaat verworpen — opent bezwaarpad. DEMO: (TKi/rj). (DD-044, DD-050)"@nl .
+    rdfs:comment "Opent bezwaarpad. DEMO: (TKi/rj). (DD-044, DD-050)"@nl .
 
 acta:RevokedFact
     a owl:Class ;
@@ -613,7 +551,7 @@ acta:RevokedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "RevokedFact"@en , "Herroepen"@nl ;
-    rdfs:comment "Toestand: herroeping ingediend, wacht op Allow/Refuse. DEMO: (TKi/rv). (DD-044, DD-050)"@nl .
+    rdfs:comment "Wacht op Allow/Refuse. DEMO: (TKi/rv). (DD-044, DD-050)"@nl .
 
 acta:AllowedFact
     a owl:Class ;
@@ -621,7 +559,7 @@ acta:AllowedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "AllowedFact"@en , "Herroeping toegestaan"@nl ;
-    rdfs:comment "Toestand: herroeping toegestaan. DEMO: (TKi/al). (DD-044, DD-050)"@nl .
+    rdfs:comment "DEMO: (TKi/al). (DD-044, DD-050)"@nl .
 
 acta:RefusedFact
     a owl:Class ;
@@ -629,9 +567,8 @@ acta:RefusedFact
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:CoordinationFact ;
     rdfs:label "RefusedFact"@en , "Herroeping geweigerd"@nl ;
-    rdfs:comment "Toestand: herroeping geweigerd. DEMO: (TKi/rf). (DD-044, DD-050)"@nl .
+    rdfs:comment "DEMO: (TKi/rf). (DD-044, DD-050)"@nl .
 
-# ── Disjointness van de negen CoordinationFact-subtypen ────────────────────
 [ a owl:AllDisjointClasses ;
   owl:members (
     acta:RequestedFact  acta:PromisedFact   acta:DeclaredFact
@@ -647,15 +584,12 @@ acta:broughtAboutFact
     rdfs:label "brought about fact"@en , "brengt feit voort"@nl ;
     rdfs:domain acta:CoordinationAct ;
     rdfs:range  acta:CoordinationFact ;
-    rdfs:comment
-        """De CoordinationFact die door deze CoordinationAct tot stand is
-         gebracht. Specialisatie van gufo:broughtAbout. (SHACL G-F2; DD-044)"""@nl .
+    rdfs:comment "De CoordinationFact voortgebracht door deze act. (SHACL G-F2; DD-044)"@nl .
 
 
 ###############################################################################
 #  §C5 — TransactionKindStep
-#
-#  CORRECTIE v0.3: rdf:type gufo:RelationshipType verwijderd. (DD-049)
+#  rdf:type gufo:RelationshipType verwijderd (DD-049)
 ###############################################################################
 
 acta:TransactionKindStep
@@ -663,11 +597,7 @@ acta:TransactionKindStep
     valor:ontoumlStereotype "relator" ;
     rdfs:subClassOf gufo:Relator ;
     rdfs:label "TransactionKindStep"@en , "Transactiestap"@nl ;
-    rdfs:comment
-        """Het geïnstantieerde coördinatiefeit in een specifieke transactie:
-         het paar (Transaction-instantie × CoordinationFact-type).
-         DEMO-notatie: '(TK01/rq) in TX-001'. Gemodelleerd als gufo:Relator.
-         (DD-044, DD-049)"""@nl .
+    rdfs:comment "Paar (Transaction-instantie x CoordinationFact-type). DEMO: '(TK01/rq) in TX-001'. (DD-044, DD-049)"@nl .
 
 acta:inTransaction
     a owl:ObjectProperty ;
@@ -693,15 +623,11 @@ acta:stepPrecedes
     rdfs:label "step precedes"@en ;
     rdfs:domain acta:TransactionKindStep ;
     rdfs:range  acta:TransactionKindStep ;
-    rdfs:comment
-        """Logische precedentie tussen TransactionKindSteps (Relator → Relator).
-         [v0.4] rdfs:subPropertyOf gufo:contributedToTrigger verwijderd:
-         gufo:contributedToTrigger vereist domain gufo:Situation en range gufo:Event;
-         TransactionKindStep is een gufo:Relator — superproperty was incorrect. (DD-044)"""@nl .
+    rdfs:comment "Logische precedentie Relator -> Relator. [v0.4] gufo:contributedToTrigger superproperty verwijderd (domain/range conflict). (DD-044)"@nl .
 
 
 ###############################################################################
-#  §C6 — ResponseLink en WaitLink (cross-transactie PM-structuur)
+#  §C6 — ResponseLink en WaitLink
 ###############################################################################
 
 acta:ResponseLink
@@ -710,9 +636,7 @@ acta:ResponseLink
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "ResponseLink"@en , "Responsekoppeling"@nl ;
-    rdfs:comment
-        """Een Situation die uitdrukt dat een C-fact in TX-A het triggeren van
-         een act in TX-B veroorzaakt. Conform DEMO SL §4.1. (DD-046)"""@nl .
+    rdfs:comment "C-fact in TX-A triggert act in TX-B. DEMO SL §4.1. (DD-046)"@nl .
 
 acta:fromStep
     a owl:ObjectProperty ;
@@ -720,7 +644,7 @@ acta:fromStep
     rdfs:label "from step"@en ;
     rdfs:domain acta:ResponseLink ;
     rdfs:range  acta:TransactionKindStep ;
-    rdfs:comment "De triggerende TransactionKindStep (C-fact in TX-A). (DD-046)"@nl .
+    rdfs:comment "Triggerende TransactionKindStep. (DD-046)"@nl .
 
 acta:toStep
     a owl:ObjectProperty ;
@@ -728,7 +652,7 @@ acta:toStep
     rdfs:label "to step"@en ;
     rdfs:domain acta:ResponseLink ;
     rdfs:range  acta:TransactionKindStep ;
-    rdfs:comment "De getriggerde TransactionKindStep (act in TX-B). (DD-046)"@nl .
+    rdfs:comment "Getriggerde TransactionKindStep. (DD-046)"@nl .
 
 acta:WaitLink
     a owl:Class ;
@@ -736,9 +660,7 @@ acta:WaitLink
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "WaitLink"@en , "Wachtkoppeling"@nl ;
-    rdfs:comment
-        """Een Situation die uitdrukt dat actoren in een ActorRole moeten
-         wachten op een bepaalde TransactionKindStep. DEMO SL §3.1. (DD-046)"""@nl .
+    rdfs:comment "ActorRole wacht op TransactionKindStep. DEMO SL §3.1. (DD-046)"@nl .
 
 acta:waitingRole
     a owl:ObjectProperty ;
@@ -758,10 +680,8 @@ acta:awaitedStep
 
 
 ###############################################################################
-#  §D — TransactionResult en juridische uitkomsten
-#
-#  CORRECTIE v0.3: PositiveResult en NegativeResult:
-#  rdf:type gufo:Phase → gufo:SituationType. (DD-050)
+#  §D — TransactionResult
+#  rdf:type gufo:SituationType (was gufo:Phase — DD-050)
 ###############################################################################
 
 acta:TransactionResult
@@ -770,11 +690,7 @@ acta:TransactionResult
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "TransactionResult"@en , "Transactieresultaat"@nl ;
-    rdfs:comment
-        """De toestand die de ProductionAct voortbrengt. In publieke dienst-
-         verlening: een beschikking, vergunning, uitkering, erkenning of afwijzing.
-         Tevens het cover:ValueObject voor ValueExperiences (brug Acta ↔ Axia).
-         (DD-042)"""@nl .
+    rdfs:comment "Toestand voortgebracht door ProductionAct. Tevens cover:ValueObject voor Axia-brug. (DD-042)"@nl .
 
 acta:PositiveResult
     a owl:Class ;
@@ -782,10 +698,7 @@ acta:PositiveResult
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:TransactionResult ;
     rdfs:label "PositiveResult"@en , "Positief resultaat"@nl ;
-    rdfs:comment
-        """Een TransactionResult waarbij de Initiator het gevraagde resultaat
-         verkrijgt. Schept typisch een nieuwe ufol:ClaimRightRelator.
-         gufo:SituationType (was gufo:Phase — DD-050). (DD-041)"""@nl .
+    rdfs:comment "Initiator verkrijgt gevraagd resultaat. Schept typisch ufol:ClaimRightRelator. (DD-041, DD-050)"@nl .
 
 acta:NegativeResult
     a owl:Class ;
@@ -793,10 +706,7 @@ acta:NegativeResult
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf acta:TransactionResult ;
     rdfs:label "NegativeResult"@en , "Negatief resultaat"@nl ;
-    rdfs:comment
-        """Een TransactionResult waarbij de Initiator het gevraagde resultaat
-         niet verkrijgt. Opent typisch de mogelijkheid voor een BezwaarTransaction.
-         gufo:SituationType (was gufo:Phase — DD-050). (DD-041)"""@nl .
+    rdfs:comment "Initiator verkrijgt gevraagd resultaat niet. Opent bezwaarpad. (DD-041, DD-050)"@nl .
 
 
 ###############################################################################
@@ -810,7 +720,7 @@ acta:hasInitiator
     rdfs:label "has initiator"@en ;
     rdfs:domain acta:Transaction ;
     rdfs:range  ufoc:Agent ;
-    rdfs:comment "Convenience shortcut; rijkere structuur via acta:InitiatorLink. (DD-040)"@nl .
+    rdfs:comment "Convenience shortcut; rijkere structuur via InitiatorLink. (DD-040)"@nl .
 
 acta:hasExecutor
     a owl:ObjectProperty ;
@@ -819,7 +729,7 @@ acta:hasExecutor
     rdfs:label "has executor"@en ;
     rdfs:domain acta:Transaction ;
     rdfs:range  ufoc:Agent ;
-    rdfs:comment "Convenience shortcut; rijkere structuur via acta:TransactorRole. (DD-040)"@nl .
+    rdfs:comment "Convenience shortcut; rijkere structuur via TransactorRole. (DD-040)"@nl .
 
 acta:comprisesAct
     a owl:ObjectProperty ;
@@ -844,7 +754,7 @@ acta:groundedIn
     rdfs:label "grounded in"@en ;
     rdfs:domain acta:Transaction ;
     rdfs:range  ufol:LegalRelator ;
-    rdfs:comment "De pre-existente LegalRelator die de transactie juridisch mogelijk maakt. (DD-040)"@nl .
+    rdfs:comment "Pre-existente LegalRelator die de transactie juridisch mogelijk maakt. (DD-040)"@nl .
 
 acta:guidedByPolicy
     a owl:ObjectProperty ;
@@ -860,7 +770,7 @@ acta:createsLegalRelator
     rdfs:label "creates legal relator"@en ;
     rdfs:domain acta:ProductionAct ;
     rdfs:range  ufol:LegalRelator ;
-    rdfs:comment "De nieuwe LegalRelator die de ProductionAct tot stand brengt. (DD-041)"@nl .
+    rdfs:comment "Nieuwe LegalRelator voortgebracht door ProductionAct. (DD-041)"@nl .
 
 acta:isProductionActOf
     a owl:ObjectProperty ;
@@ -886,7 +796,7 @@ acta:performedBy
     rdfs:label "performed by"@en ;
     rdfs:domain gufo:Action ;
     rdfs:range  ufoc:Agent ;
-    rdfs:comment "De agent die de act uitvoert als intentionele handeling. (DD-040)"@nl .
+    rdfs:comment "De agent die de act uitvoert. (DD-040)"@nl .
 
 acta:enablesExperience
     a owl:ObjectProperty ;
@@ -894,7 +804,7 @@ acta:enablesExperience
     rdfs:label "enables experience"@en ;
     rdfs:domain acta:TransactionResult ;
     rdfs:range  cover:ValueExperience ;
-    rdfs:comment "De ValueExperiences die dit TransactionResult mogelijk maakt. Brug Acta ↔ Axia. (DD-042)"@nl .
+    rdfs:comment "ValueExperiences die dit TransactionResult mogelijk maakt. Brug Acta <-> Axia. (DD-042)"@nl .
 
 
 ###############################################################################
@@ -907,8 +817,8 @@ acta:requiresTransaction
     rdfs:label "requires transaction"@en ;
     rdfs:domain acta:Transaction ;
     rdfs:range  acta:Transaction ;
-    rdfs:comment "Een sub-transactie die vereist is voor de voltooiing. Conform DEMO B-organisatie. (DD-040)"@nl .
+    rdfs:comment "Sub-transactie vereist voor voltooiing. Conform DEMO B-organisatie. (DD-040)"@nl .
 
 ###############################################################################
-#  Einde module 00g-acta.ttl (v0.3)
+#  Einde module 00g-acta.ttl (v0.5)
 ###############################################################################

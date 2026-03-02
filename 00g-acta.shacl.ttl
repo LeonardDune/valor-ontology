@@ -1,7 +1,7 @@
 ###############################################################################
 #  VALOR-O — Module 00g SHACL: ACTA Transactieontologie
 #
-#  Versie : 0.3 (maart 2026)
+#  Versie : 0.4 (maart 2026)
 #
 #  Constraints:
 #    §A  Transaction
@@ -31,7 +31,8 @@
 #      G-TAR1 transactorActorRole  — precies 1 ActorRole
 #      G-TAR2 transactorTransaction — precies 1 Transaction
 #      G-TAR3 Transaction zonder TransactorRole (Warning)
-#      G-CTAR CompositeTransactorRole — minimaal 2 leden
+#      G-CTAR CompositeTransactorRole — RoleMixin-verificatie (v0.4)
+#      G-TN   TransactorNetwork — minimaal 2 TransactorRole-leden (v0.4)
 #      G-IL1  initiatorLinkRole        — precies 1 ActorRole
 #      G-IL2  initiatorLinkTransaction — precies 1 Transaction
 #      G-AL1  accessRole        — ≥1 ActorRole
@@ -53,11 +54,6 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-
-shacta:
-    a owl:Ontology ;
-    dcterms:title "VALOR-O SHACL — ACTA Transactieontologie"@nl ;
-    owl:versionInfo "0.2" .
 
 ###############################################################################
 #  §A — Transaction constraints
@@ -499,20 +495,55 @@ shacta:TransactionHasTransactorShape
             }"""
     ] .
 
+#  G-CTAR: CompositeTransactorRole is een gufo:RoleMixin (v0.4, DD-051).
+#  De vorige constraint (compositeHasTransactorRole minCount 2) is verwijderd:
+#  die property bestaat niet meer op CTAR. De aggregatieconstraint zit nu op
+#  acta:TransactorNetwork (G-TN hieronder).
+#  G-CTAR verifieert dat een CTAR niet per ongeluk als Collection is geclassificeerd.
 shacta:CompositeTransactorRoleShape
     a sh:NodeShape ;
     sh:targetClass acta:CompositeTransactorRole ;
     sh:name "CompositeTransactorRoleShape" ;
     sh:description
-        "G-CTAR: CompositeTransactorRole bevat minimaal 2 TransactorRoles
-         (Weak Supplementation)." ;
+        "G-CTAR (v0.4): CompositeTransactorRole is een gufo:RoleMixin —
+         perspectief-afhankelijk SoI-boundary-concept (DD-051).
+         Aggregatieconstraint zit op acta:TransactorNetwork (G-TN).
+         Warning als CTAR per ongeluk als Collection is geclassificeerd." ;
+
+    sh:sparql [
+        sh:message  "G-CTAR: CompositeTransactorRole mag niet als gufo:Collection zijn geclassificeerd — gebruik acta:TransactorNetwork voor de aggregatie (DD-051)." ;
+        sh:severity sh:Warning ;
+        sh:prefixes [
+            sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ;
+            sh:declare [ sh:prefix "gufo" ;
+                sh:namespace "http://purl.org/nemo/gufo#" ]
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this a acta:CompositeTransactorRole .
+                FILTER EXISTS { $this a gufo:Collection }
+            }"""
+    ] .
+
+
+#  G-TN: TransactorNetwork vereist minimaal 2 TransactorRole-leden.
+#  Weak Supplementation Principle voor gufo:Collection — analoog aan
+#  G-MTK (MultipleTransactionKind) en DD-007 (ComplexEvent).
+shacta:TransactorNetworkShape
+    a sh:NodeShape ;
+    sh:targetClass acta:TransactorNetwork ;
+    sh:name "TransactorNetworkShape" ;
+    sh:description
+        "G-TN: Een TransactorNetwork bevat minimaal 2 TransactorRole-leden
+         (Weak Supplementation voor gufo:Collection, DD-051)." ;
 
     sh:property [
-        sh:path     acta:compositeHasTransactorRole ;
+        sh:path     acta:networkHasTransactorRole ;
         sh:minCount 2 ;
         sh:class    acta:TransactorRole ;
         sh:severity sh:Violation ;
-        sh:message  "G-CTAR: CompositeTransactorRole vereist minimaal 2 acta:TransactorRole-leden."
+        sh:message  "G-TN: TransactorNetwork vereist minimaal 2 acta:TransactorRole-leden (Weak Supplementation, DD-051)."
     ] .
 
 shacta:InitiatorLinkShape
