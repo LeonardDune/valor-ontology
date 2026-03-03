@@ -1,0 +1,398 @@
+###############################################################################
+#  VALOR-O — Module 00i SHACL: SOCIA Actor Analysis Ontologie
+#
+#  Versie : 0.1 (maart 2026)
+#
+#  Constraints:
+#    §A  Stakeholder
+#      S1   Stakeholder.isStakeholderIn — minimaal 1 Issue
+#    §B  IntentionalDependency
+#      ID1  depender — verplicht, precies 1, type Stakeholder
+#      ID2  dependee — verplicht, precies 1, type Stakeholder
+#      ID3  depender ≠ dependee (geen zelfdependentie)
+#      ID4  hasDependencyStrength — aanbevolen (Warning)
+#      ID5  dependencyContext — verplicht, precies 1 Issue
+#      ID6  hasPropositionalContent — verplicht (geërfd van SocialCommitment)
+#    §C  DependencyType-specifieke propositional content
+#      DT1  GoalDependency.hasPropositionalContent → ufoc:Goal of subklasse
+#      DT2  TaskDependency.hasPropositionalContent → gufo:Action (Event)
+#      DT3  ResourceDependency.hasPropositionalContent → gufo:Situation
+#      DT4  SoftGoalDependency.hasPropositionalContent → ufoc:SoftGoal of subklasse
+#    §D  ActorBoundary
+#      AB1  boundaryContains — minimaal 1 InternalElement
+#    §E  StakeholderMap
+#      SM1  mapIncludesStakeholder — minimaal 2 Stakeholders
+#      SM2  mapAddressesIssue — verplicht, precies 1
+#      SM3  mapAuthor — minimaal 1
+#    §F  Koppeling SOCIA → ACTA
+#      SA1  dependencyInstantiatedAs — alleen bij Goal- of TaskDependency
+#    §G  StakeholderInterestProfile
+#      IP1  hasInterestProfile — aanbevolen per Stakeholder (Warning)
+###############################################################################
+
+@prefix socia:  <https://valor-ecosystem.nl/ontology/socia#> .
+@prefix shsocia: <https://valor-ecosystem.nl/shacl/socia#> .
+@prefix causa:  <https://valor-ecosystem.nl/ontology/causa#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix gufo:   <http://purl.org/nemo/gufo#> .
+@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# ── Prefix declarations voor SPARQL-constraints ───────────────────────────────
+
+shsocia:prefixes
+    sh:declare [ sh:prefix "socia" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/socia#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufoc" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "gufo" ;
+        sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] .
+
+shsocia:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — SOCIA Actor Analysis Ontologie"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+#  §A — Stakeholder constraints
+###############################################################################
+
+shsocia:StakeholderShape
+    a sh:NodeShape ;
+    sh:targetClass socia:Stakeholder ;
+    sh:name "StakeholderShape" ;
+    sh:description
+        """S1: Een Stakeholder moet betrokken zijn bij minimaal één
+         valor:Issue. Zonder Issue-context is de rol ontologisch leeg:
+         een agent is Stakeholder alleen t.o.v. een concreet vraagstuk.
+         (DD-061)""" ;
+
+    sh:property [
+        sh:path     socia:isStakeholderIn ;
+        sh:minCount 1 ;
+        sh:class    valor:Issue ;
+        sh:severity sh:Violation ;
+        sh:message  "S1: Stakeholder.isStakeholderIn vereist minimaal één valor:Issue. Een Stakeholder zonder Issue-context is geen Stakeholder."
+    ] ;
+
+    sh:property [
+        sh:path     socia:hasInterestProfile ;
+        sh:minCount 1 ;
+        sh:class    socia:StakeholderInterestProfile ;
+        sh:severity sh:Warning ;
+        sh:message  "IP1 (aanbeveling): Stakeholder zonder StakeholderInterestProfile — overweeg de intentionele positie van deze actor te documenteren voor de Socia-view."
+    ] .
+
+
+###############################################################################
+#  §B — IntentionalDependency constraints
+###############################################################################
+
+shsocia:IntentionalDependencyShape
+    a sh:NodeShape ;
+    sh:targetClass socia:IntentionalDependency ;
+    sh:name "IntentionalDependencyShape" ;
+    sh:description
+        """ID1–ID6: Een IntentionalDependency vereist een depender,
+         een dependee (beide Stakeholders), een Issue-context, en
+         een propositional content. Depender ≠ dependee. (DD-061)""" ;
+
+    sh:property [
+        sh:path     socia:depender ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    socia:Stakeholder ;
+        sh:severity sh:Violation ;
+        sh:message  "ID1: IntentionalDependency.depender vereist precies één socia:Stakeholder."
+    ] ;
+
+    sh:property [
+        sh:path     socia:dependee ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    socia:Stakeholder ;
+        sh:severity sh:Violation ;
+        sh:message  "ID2: IntentionalDependency.dependee vereist precies één socia:Stakeholder."
+    ] ;
+
+    sh:property [
+        sh:path     socia:dependencyContext ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    valor:Issue ;
+        sh:severity sh:Violation ;
+        sh:message  "ID5: IntentionalDependency.dependencyContext vereist precies één valor:Issue."
+    ] ;
+
+    sh:property [
+        sh:path     gufo:hasPropositionalContent ;
+        sh:minCount 1 ;
+        sh:class    gufo:Situation ;
+        sh:severity sh:Violation ;
+        sh:message  "ID6: IntentionalDependency (als SocialCommitment) vereist een propositional content van type gufo:Situation. Welk type is afhankelijk van het DependencyType (DD-063)."
+    ] ;
+
+    sh:property [
+        sh:path     socia:hasDependencyStrength ;
+        sh:minCount 1 ;
+        sh:class    socia:DependencyStrength ;
+        sh:severity sh:Warning ;
+        sh:message  "ID4 (aanbeveling): IntentionalDependency zonder DependencyStrength — overweeg Open, Committed of Critical te specificeren voor de analyse van kwetsbaarheden."
+    ] ;
+
+    sh:sparql [
+        sh:message  "ID3: IntentionalDependency.depender en dependee mogen niet dezelfde Stakeholder zijn (geen zelfdependentie)." ;
+        sh:severity sh:Violation ;
+        sh:prefixes shsocia:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this socia:depender ?dep ;
+                      socia:dependee ?dee .
+                FILTER (?dep = ?dee)
+            }"""
+    ] .
+
+
+###############################################################################
+#  §C — DependencyType-specifieke propositional content
+#
+#  DD-063: Elk DependencyType heeft een verwacht type propositional content.
+#  Dit is een Best Practice constraint (Warning): de content-type kan in
+#  legitieme gevallen breder zijn (open-world), maar afwijking moet bewust
+#  zijn en in een Tessera worden verantwoord.
+###############################################################################
+
+shsocia:GoalDependencyShape
+    a sh:NodeShape ;
+    sh:targetClass socia:GoalDependency ;
+    sh:name "GoalDependencyShape" ;
+    sh:description
+        """DT1: Een GoalDependency heeft als propositional content een
+         ufoc:Goal of subklasse: een toestand die bereikt moet worden.
+         HOE die toestand bereikt wordt, is niet gespecificeerd (DD-063).""" ;
+
+    sh:sparql [
+        sh:message  "DT1: GoalDependency.hasPropositionalContent verwacht een ufoc:Goal of subklasse (outcome-afhankelijkheid). Huidige content is geen Goal-Situation — controleer het DependencyType." ;
+        sh:severity sh:Warning ;
+        sh:prefixes shsocia:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gufo:hasPropositionalContent ?content .
+                FILTER NOT EXISTS {
+                    ?content a/rdfs:subClassOf* ufoc:Goal .
+                }
+                FILTER NOT EXISTS {
+                    ?content a ufoc:Goal .
+                }
+            }"""
+    ] .
+
+shsocia:TaskDependencyShape
+    a sh:NodeShape ;
+    sh:targetClass socia:TaskDependency ;
+    sh:name "TaskDependencyShape" ;
+    sh:description
+        """DT2: Een TaskDependency heeft als propositional content een
+         gufo:Action (een specifieke taak die uitgevoerd moet worden).
+         WAT het oplevert is niet gespecificeerd (DD-063).""" ;
+
+    sh:sparql [
+        sh:message  "DT2: TaskDependency.hasPropositionalContent verwacht een gufo:Action of subklasse (process-afhankelijkheid). Huidige content is geen Action — controleer het DependencyType." ;
+        sh:severity sh:Warning ;
+        sh:prefixes shsocia:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gufo:hasPropositionalContent ?content .
+                FILTER NOT EXISTS {
+                    ?content a/rdfs:subClassOf* gufo:Action .
+                }
+                FILTER NOT EXISTS {
+                    ?content a gufo:Action .
+                }
+            }"""
+    ] .
+
+shsocia:ResourceDependencyShape
+    a sh:NodeShape ;
+    sh:targetClass socia:ResourceDependency ;
+    sh:name "ResourceDependencyShape" ;
+    sh:description
+        """DT3: Een ResourceDependency heeft als propositional content een
+         gufo:Situation die de beschikbaarheid van een object beschrijft.
+         (DD-063)""" ;
+
+    sh:property [
+        sh:path     gufo:hasPropositionalContent ;
+        sh:minCount 1 ;
+        sh:class    gufo:Situation ;
+        sh:severity sh:Violation ;
+        sh:message  "DT3: ResourceDependency.hasPropositionalContent vereist een gufo:Situation (beschikbaarheidstoestand van het middel)."
+    ] .
+
+shsocia:SoftGoalDependencyShape
+    a sh:NodeShape ;
+    sh:targetClass socia:SoftGoalDependency ;
+    sh:name "SoftGoalDependencyShape" ;
+    sh:description
+        """DT4: Een SoftGoalDependency heeft als propositional content een
+         ufoc:SoftGoal of subklasse: een kwaliteitseis of waarde die
+         gradueel nagestreefd wordt. Vervulling is nooit binair. (DD-063)""" ;
+
+    sh:sparql [
+        sh:message  "DT4: SoftGoalDependency.hasPropositionalContent verwacht een ufoc:SoftGoal of subklasse (quality/value-afhankelijkheid). Huidige content is geen SoftGoal — controleer het DependencyType." ;
+        sh:severity sh:Warning ;
+        sh:prefixes shsocia:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gufo:hasPropositionalContent ?content .
+                FILTER NOT EXISTS {
+                    ?content a/rdfs:subClassOf* ufoc:SoftGoal .
+                }
+                FILTER NOT EXISTS {
+                    ?content a ufoc:SoftGoal .
+                }
+            }"""
+    ] .
+
+
+###############################################################################
+#  §D — ActorBoundary constraints
+###############################################################################
+
+shsocia:ActorBoundaryShape
+    a sh:NodeShape ;
+    sh:targetClass socia:ActorBoundary ;
+    sh:name "ActorBoundaryShape" ;
+    sh:description
+        """AB1: Een ActorBoundary is alleen zinvol als er minimaal één
+         intern intentioneel element in zit. Een lege boundary is een
+         actor zonder inhoud: ontologisch inconsistent in i*. (DD-064)""" ;
+
+    sh:property [
+        sh:path     socia:boundaryContains ;
+        sh:minCount 1 ;
+        sh:class    socia:InternalElement ;
+        sh:severity sh:Violation ;
+        sh:message  "AB1: ActorBoundary.boundaryContains vereist minimaal één socia:InternalElement. Een lege actorgrens is ontologisch zinloos."
+    ] .
+
+
+###############################################################################
+#  §E — StakeholderMap constraints
+###############################################################################
+
+shsocia:StakeholderMapShape
+    a sh:NodeShape ;
+    sh:targetClass socia:StakeholderMap ;
+    sh:name "StakeholderMapShape" ;
+    sh:description
+        """SM1–SM3: Een StakeholderMap vereist minimaal 2 Stakeholders
+         (anders is er geen afhankelijkheidsrelatie mogelijk), precies
+         1 adresserend Issue, en minimaal 1 auteur. (DD-065)""" ;
+
+    sh:property [
+        sh:path     socia:mapIncludesStakeholder ;
+        sh:minCount 2 ;
+        sh:class    socia:Stakeholder ;
+        sh:severity sh:Violation ;
+        sh:message  "SM1: StakeholderMap.mapIncludesStakeholder vereist minimaal 2 socia:Stakeholders. Een kaart met één actor heeft geen afhankelijkheidsstructuur."
+    ] ;
+
+    sh:property [
+        sh:path     socia:mapAddressesIssue ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    valor:Issue ;
+        sh:severity sh:Violation ;
+        sh:message  "SM2: StakeholderMap.mapAddressesIssue vereist precies één valor:Issue."
+    ] ;
+
+    sh:property [
+        sh:path     socia:mapAuthor ;
+        sh:minCount 1 ;
+        sh:class    ufoc:Agent ;
+        sh:severity sh:Violation ;
+        sh:message  "SM3: StakeholderMap.mapAuthor vereist minimaal één ufoc:Agent als auteur."
+    ] .
+
+
+###############################################################################
+#  §F — Koppeling SOCIA → ACTA
+#
+#  SA1: dependencyInstantiatedAs mag alleen aanwezig zijn bij
+#  GoalDependency of TaskDependency: alleen outcome- en process-
+#  afhankelijkheden zijn transactioneel instantieerbaar in DEMO-termen.
+#  Een ResourceDependency of SoftGoalDependency wordt niet via
+#  DEMO-transacties afgehandeld. (DD-061)
+###############################################################################
+
+shsocia:DependencyInstantiationShape
+    a sh:NodeShape ;
+    sh:targetSubjectsOf socia:dependencyInstantiatedAs ;
+    sh:name "DependencyInstantiationShape" ;
+    sh:description
+        """SA1: socia:dependencyInstantiatedAs is alleen geldig op
+         GoalDependency of TaskDependency. Resource- en SoftGoal-
+         afhankelijkheden zijn niet transactioneel instantieerbaar
+         in DEMO-termen. (DD-061)""" ;
+
+    sh:sparql [
+        sh:message  "SA1: socia:dependencyInstantiatedAs aanwezig op een dependency die geen GoalDependency of TaskDependency is. Alleen outcome- en process-afhankelijkheden zijn transactioneel instantieerbaar." ;
+        sh:severity sh:Violation ;
+        sh:prefixes shsocia:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this socia:dependencyInstantiatedAs ?tx .
+                FILTER NOT EXISTS {
+                    { $this a socia:GoalDependency }
+                    UNION
+                    { $this a socia:TaskDependency }
+                }
+            }"""
+    ] .
+
+
+###############################################################################
+#  §G — Consistentiecheck: elke IntentionalDependency in een
+#       StakeholderMap heeft Stakeholders die ook in die Map zitten
+###############################################################################
+
+shsocia:MapDependencyConsistencyShape
+    a sh:NodeShape ;
+    sh:targetClass socia:StakeholderMap ;
+    sh:name "MapDependencyConsistencyShape" ;
+    sh:description
+        """SC1: Elke IntentionalDependency in een StakeholderMap moet
+         een depender en dependee hebben die beiden ook expliciet in
+         die map zijn opgenomen. Verweesde afhankelijkheden (naar actoren
+         buiten de kaart) zijn een modelleerwaarschuwing. (DD-065)""" ;
+
+    sh:sparql [
+        sh:message  "SC1 (waarschuwing): Een IntentionalDependency in deze StakeholderMap verwijst naar een Stakeholder die niet expliciet in de map is opgenomen via mapIncludesStakeholder. Overweeg deze Stakeholder toe te voegen of de dependency te verwijderen." ;
+        sh:severity sh:Warning ;
+        sh:prefixes shsocia:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this socia:mapIncludesDependency ?dep .
+                {
+                    ?dep socia:depender ?actor .
+                } UNION {
+                    ?dep socia:dependee ?actor .
+                }
+                FILTER NOT EXISTS {
+                    $this socia:mapIncludesStakeholder ?actor .
+                }
+            }"""
+    ] .
+
+###############################################################################
+#  Einde 00i-socia.shacl.ttl (v0.1)
+###############################################################################

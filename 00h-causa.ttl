@@ -1,0 +1,721 @@
+###############################################################################
+#  VALOR-O — Module 00h: CAUSA Causal Loop Diagram Ontologie
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/causa#  (prefix causa:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00a-gufo-core, 00b-ufo-b, 00b-ufo-c (sic: zie DD-019)
+#
+#  Bron:
+#    Forrester, J.W. (1961). Industrial Dynamics. MIT Press.
+#    Meadows, D.H. (2008). Thinking in Systems. Chelsea Green.
+#    Sterman, J.D. (2000). Business Dynamics. McGraw-Hill.
+#    Enserink et al. (2022). Policy Analysis of Multi-Actor Systems.
+#      TU Delft (PAMS). [onzekerheidsannotaties]
+#    Guizzardi et al. (2013). UFO-C: A Foundational Ontology for
+#      Social Entities. [Belief, PropositionalContent]
+#    Guizzardi et al. (2013). UFO-B: Events. [contributedToTrigger]
+#
+#  Ontologische grondslag (DD-052):
+#    Causaliteit is een bewering over de werkelijkheid — een Claim die
+#    meer of minder plausibel kan zijn. Een causa:CausalClaim is daarom
+#    een ufoc:Belief van een Agent over een causa:CausalSituation als
+#    propositional content. Dit volgt rechtstreeks uit de UFO-C BDI-
+#    architectuur: gufo:IntentionalMode met gufo:hasPropositionalContent.
+#
+#    Twee lagen:
+#      EPISTEMISCH  — causa:CausalClaim  (de bewering; door agents geuit)
+#      ONTOLOGISCH  — gufo:contributedToTrigger  (de werkelijke relatie;
+#                     bestaat alleen als de claim 'waar' is/aanvaard wordt)
+#
+#    Een causa:CausalModel is een ufoc:SocialObject: een coherente collectie
+#    van CausalClaims die samen een verklarend of oplossend model vormen
+#    over een valor:Issue. Meerdere modellen kunnen naast elkaar bestaan
+#    als alternatieven; deliberatie en besluitvorming opereren op claim-
+#    niveau én op modelniveau. (DD-053)
+#
+#  Structuur:
+#    §A  Issue — het maatschappelijk vraagstuk
+#    §B  CausalVariable — meetbare eigenschap van een Situation
+#    §C  CausalSituation — de propositional content van een CausalClaim
+#    §D  CausalClaim — ufoc:Belief over een CausalSituation
+#    §E  CausalModel — SocialObject: collectie van Claims over een Issue
+#    §F  FeedbackLoop — cyclisch patroon in de claim-graph
+#    §G  Properties
+###############################################################################
+
+@prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufob:  <https://valor-ecosystem.nl/ontology/ufo-b#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+vo:causa
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00h — CAUSA Causal Loop Diagram Ontologie"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-b> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Formaliseert Causal Loop Diagrams (CLD) in UFO. Kern:
+         causaliteit is een Claim (ufoc:Belief) over een mogelijke toestand
+         van de werkelijkheid, niet een directe ontologische relatie.
+         Meerdere verklarende en oplossende modellen (causa:CausalModel)
+         kunnen naast elkaar bestaan als alternatieven bij een valor:Issue.
+         (DD-052, DD-053)"""@nl .
+
+
+###############################################################################
+#  §A — Issue (het maatschappelijk vraagstuk)
+#
+#  DD-054: Een valor:Issue is een ufoc:SocialObject dat bestaat doordat
+#  een gemeenschap van agents een gedeeld ufoc:Concern heeft over een
+#  gufo:Situation. Het Issue is de aanleiding voor de Problem-fase en
+#  Solution-fase in het Design Thinking proces.
+#
+#  valor:Issue importeert niet uit een andere module — het is het centrale
+#  verbindingspunt van VALOR-O. Hier gedefinieerd in CAUSA omdat het Issue
+#  de drager is van CausalModels; dezelfde klasse wordt hergebruikt in
+#  toekomstige modules (i*-actor analyse, DEMO-transactie).
+###############################################################################
+
+valor:Issue
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "Issue"@en , "Vraagstuk"@nl ;
+    rdfs:comment
+        """Een maatschappelijk vraagstuk dat om onderzoek en ontwerp vraagt.
+         Ontologische fundering: een SocialObject dat bestaat doordat een
+         gemeenschap van agents een gedeeld ufoc:Concern heeft over een
+         gufo:Situation (de problematische toestand van de wereld).
+         Een Issue is het startpunt van het VALOR Design Thinking proces:
+         Problem-fase (verklarende modellen) en Solution-fase (oplossende
+         modellen). (DD-054)"""@nl .
+
+causa:concernedWithSituation
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerned with situation"@en , "betreft situatie"@nl ;
+    rdfs:domain valor:Issue ;
+    rdfs:range  gufo:Situation ;
+    rdfs:comment
+        """De gufo:Situation (toestand van de wereld) die het Issue
+         aanleiding geeft. Het Concern van de agents betreft deze
+         Situation. (DD-054)"""@nl .
+
+causa:hasConcernedAgent
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has concerned agent"@en , "heeft betrokken agent"@nl ;
+    rdfs:domain valor:Issue ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        """De Agent(s) wiens ufoc:Concern dit Issue constitueert.
+         Een Issue vereist minimaal één betrokken Agent (SHACL I1).
+         (DD-054)"""@nl .
+
+causa:hasModel
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has model"@en , "heeft model"@nl ;
+    rdfs:domain valor:Issue ;
+    rdfs:range  causa:CausalModel ;
+    rdfs:comment
+        """De CausalModels (verklarend of oplossend) die bij dit Issue
+         horen. Meerdere modellen kunnen als alternatieven naast elkaar
+         bestaan. (DD-053)"""@nl .
+
+
+###############################################################################
+#  §B — CausalVariable (meetbare eigenschap van een Situation)
+#
+#  DD-055: Een CausalVariable is een gufo:Quality die inhereert aan een
+#  gufo:Situation (het subsysteem of de probleemcontext). Dit is een
+#  bewuste afwijking van de standaard gUFO-grondslag waarbij Qualities
+#  inhereren aan Objects of Agents: in systemisch denken zijn variabelen
+#  eigenschappen van toestanden van (sub)systemen, niet van discrete
+#  objecten. De Situation fungeert hier als de abstracte drager.
+#
+#  Een CausalVariable heeft idealiter een meetschaal (causa:MeasurementScale)
+#  conform Enserink et al. (PAMS). Kwalitatieve variabelen (hoog/laag) zijn
+#  toegestaan via causa:QualitativeScale.
+###############################################################################
+
+causa:CausalVariable
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:Quality ;
+    rdfs:label "CausalVariable"@en , "Causale variabele"@nl ;
+    rdfs:comment
+        """Een meetbare eigenschap van een Situation die als variabele
+         in een Causal Loop Diagram fungeert. Inherreert aan een
+         gufo:Situation (het subsysteem). Heeft idealiter een meetschaal.
+         Voorbeelden: 'schuldenomvang', 'sociale cohesie',
+         'arbeidsparticipatie'. (DD-055)"""@nl .
+
+causa:inheresInSituation
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:subPropertyOf gufo:inheresIn ;
+    rdfs:label "inheres in situation"@en , "inhereert in situatie"@nl ;
+    rdfs:domain causa:CausalVariable ;
+    rdfs:range  gufo:Situation ;
+    rdfs:comment
+        """De gufo:Situation waarvan deze CausalVariable een eigenschap is.
+         Specialisatie van gufo:inheresIn voor het Situation-domein.
+         (DD-055)"""@nl .
+
+causa:hasMeasurementScale
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has measurement scale"@en , "heeft meetschaal"@nl ;
+    rdfs:domain causa:CausalVariable ;
+    rdfs:range  causa:MeasurementScale ;
+    rdfs:comment
+        """De meetschaal van deze variabele. Optioneel maar aanbevolen
+         (SHACL CV1 Warning). (DD-055)"""@nl .
+
+causa:MeasurementScale
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "MeasurementScale"@en , "Meetschaal"@nl ;
+    rdfs:comment
+        """De schaal waarop een CausalVariable wordt gemeten.
+         Subklassen: causa:QuantitativeScale en causa:QualitativeScale.
+         (DD-055)"""@nl .
+
+causa:QuantitativeScale
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:MeasurementScale ;
+    rdfs:label "QuantitativeScale"@en , "Kwantitatieve schaal"@nl ;
+    rdfs:comment "Numerieke meetschaal (bijv. euro, percentage, aantallen). (DD-055)"@nl .
+
+causa:QualitativeScale
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:MeasurementScale ;
+    rdfs:label "QualitativeScale"@en , "Kwalitatieve schaal"@nl ;
+    rdfs:comment "Ordinale of nominale schaal (bijv. hoog/middel/laag). (DD-055)"@nl .
+
+
+###############################################################################
+#  §C — CausalSituation (propositional content van een CausalClaim)
+#
+#  DD-056: De propositional content van een CausalClaim is een
+#  causa:CausalSituation — een gufo:Situation die de mogelijke causale
+#  relatie beschrijft tussen twee CausalVariables. Het is een mogelijke
+#  stand van zaken: 'variabele V1 beïnvloedt variabele V2 met polariteit P'.
+#
+#  De CausalSituation bestaat als abstract object (mogelijke toestand)
+#  ongeacht of de claim waar is. Als de claim aanvaard wordt, correspondeert
+#  de CausalSituation met de werkelijke gufo:contributedToTrigger-relatie
+#  in de ontologische laag.
+#
+#  Polariteit:
+#    causa:ReinforcingPolarity (+): toename V1 leidt tot toename V2
+#    causa:BalancingPolarity   (-): toename V1 leidt tot afname V2
+#
+#  Vertraging (delay): optionele causa:Delay-kwaliteit op de CausalSituation.
+###############################################################################
+
+causa:CausalSituation
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "CausalSituation"@en , "Causale situatie"@nl ;
+    rdfs:comment
+        """De propositionele inhoud van een CausalClaim: de mogelijke
+         stand van zaken waarbij variabele V1 variabele V2 causaal
+         beïnvloedt met een bepaalde polariteit.
+         Als de corresponderende CausalClaim aanvaard wordt, bestaat
+         ook de werkelijke gufo:contributedToTrigger-relatie in de
+         ontologische laag. (DD-056)"""@nl .
+
+# ── Polariteit ────────────────────────────────────────────────────────────────
+
+causa:Polarity
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "Polarity"@en , "Polariteit"@nl ;
+    rdfs:comment
+        """De richting van de causale invloed: versterkend (+) of
+         dempend (-). Inhereert aan een CausalSituation. (DD-056)"""@nl .
+
+causa:ReinforcingPolarity
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:Polarity ;
+    rdfs:label "ReinforcingPolarity"@en , "Versterkende polariteit (+)"@nl ;
+    rdfs:comment
+        """Toename van V1 leidt tot toename van V2 (of afname leidt tot
+         afname). CLD-notatie: '+'. (DD-056)"""@nl .
+
+causa:BalancingPolarity
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:Polarity ;
+    rdfs:label "BalancingPolarity"@en , "Dempende polariteit (-)"@nl ;
+    rdfs:comment
+        """Toename van V1 leidt tot afname van V2 (of vice versa).
+         CLD-notatie: '-'. (DD-056)"""@nl .
+
+# ── Vertraging ────────────────────────────────────────────────────────────────
+
+causa:Delay
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:Quality ;
+    rdfs:label "Delay"@en , "Vertraging"@nl ;
+    rdfs:comment
+        """Een optionele vertraging in de causale doorwerking van V1 op V2.
+         CLD-notatie: dubbele pijl (||). Inhereert aan een CausalSituation.
+         (DD-056)"""@nl .
+
+
+###############################################################################
+#  §D — CausalClaim (ufoc:Belief over een CausalSituation)
+#
+#  DD-057: Een CausalClaim is geen nieuw construct maar een specialisatie
+#  van ufoc:Belief met CausalSituation als verplichte propositional content.
+#  Dit volgt rechtstreeks uit UFO-C: Belief is een IntentionalMode van een
+#  Agent met een Situation als hasPropositionalContent.
+#
+#  Aanvullingen ten opzichte van de generieke ufoc:Belief:
+#  (a) causa:plausibility — numerieke plausibiliteitsgraad (0.0–1.0) of
+#      causa:UncertaintyLevel conform PAMS-taxonomie (Enserink et al.)
+#  (b) causa:groundedIn — de Evidence die de claim onderbouwt
+#  (c) causa:epistemicStatus — Proposed / Accepted / Rejected
+#      (conform VALOR Tessera-architectuur, DD-058)
+#
+#  Relatie tot de ontologische laag:
+#  Als een CausalClaim de status Accepted heeft, impliceert dit dat de
+#  corresponderende gufo:contributedToTrigger-relatie bestaat tussen de
+#  Situations van de twee betrokken CausalVariables. Dit wordt niet
+#  automatisch geïnstantieerd in OWL (open-world assumption) maar is
+#  de semantische intentie en kan via SPARQL worden gegenereerd.
+###############################################################################
+
+causa:CausalClaim
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Belief ;
+    rdfs:label "CausalClaim"@en , "Causale claim"@nl ;
+    rdfs:comment
+        """Een bewering van een Agent over een causale relatie: een
+         specialisatie van ufoc:Belief waarbij de propositional content
+         verplicht een causa:CausalSituation is.
+         De claim is meer of minder plausibel en kan worden onderbouwd
+         met causa:Evidence. Status: Proposed / Accepted / Rejected
+         conform VALOR Tessera-architectuur.
+         Als Accepted: de werkelijke gufo:contributedToTrigger-relatie
+         bestaat in de ontologische laag. (DD-057, DD-058)"""@nl .
+
+# ── Epistemische status ───────────────────────────────────────────────────────
+
+causa:EpistemicStatus
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "EpistemicStatus"@en , "Epistemische status"@nl ;
+    rdfs:comment
+        """De epistemische status van een CausalClaim of CausalModel:
+         Proposed, Accepted of Rejected. Conform VALOR Tessera-
+         architectuur. (DD-058)"""@nl .
+
+causa:ProposedStatus
+    a causa:EpistemicStatus ;
+    rdfs:label "Proposed"@en , "Voorgesteld"@nl ;
+    rdfs:comment "De claim is ingediend maar nog niet beoordeeld. (DD-058)"@nl .
+
+causa:AcceptedStatus
+    a causa:EpistemicStatus ;
+    rdfs:label "Accepted"@en , "Aanvaard"@nl ;
+    rdfs:comment
+        """De claim is aanvaard via deliberatie/besluitvorming. Impliceert
+         dat de corresponderende causale relatie als werkelijk wordt
+         beschouwd. (DD-058)"""@nl .
+
+causa:RejectedStatus
+    a causa:EpistemicStatus ;
+    rdfs:label "Rejected"@en , "Verworpen"@nl ;
+    rdfs:comment "De claim is verworpen via deliberatie/besluitvorming. (DD-058)"@nl .
+
+# ── Onzekerheid conform PAMS ──────────────────────────────────────────────────
+
+causa:UncertaintyLevel
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "UncertaintyLevel"@en , "Onzekerheidsgraad"@nl ;
+    rdfs:comment
+        """De mate van onzekerheid van een CausalClaim conform de PAMS-
+         taxonomie (Enserink et al. 2022): van statistisch risico (kans-
+         verdelingen bekend) tot diepe onzekerheid (geen overeenstemming
+         over modellen of waarden). (DD-059)"""@nl .
+
+causa:StatisticalRisk
+    a causa:UncertaintyLevel ;
+    rdfs:label "Statistical Risk"@en , "Statistisch risico"@nl ;
+    rdfs:comment "Kansverdelingen zijn bekend; uitkomsten zijn berekenbaar. (DD-059)"@nl .
+
+causa:ScenarioUncertainty
+    a causa:UncertaintyLevel ;
+    rdfs:label "Scenario Uncertainty"@en , "Scenario-onzekerheid"@nl ;
+    rdfs:comment "Meerdere plausibele toekomsten; geen eenduidige kansverdeling. (DD-059)"@nl .
+
+causa:DeepUncertainty
+    a causa:UncertaintyLevel ;
+    rdfs:label "Deep Uncertainty"@en , "Diepe onzekerheid"@nl ;
+    rdfs:comment
+        """Geen overeenstemming over het juiste model of de te hanteren
+         waarden. Hoogste onzekerheidsgraad. (DD-059)"""@nl .
+
+# ── Bewijs ────────────────────────────────────────────────────────────────────
+
+causa:Evidence
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "Evidence"@en , "Bewijs"@nl ;
+    rdfs:comment
+        """Een informatieobject (publicatie, rapport, dataset, ervarings-
+         verslag) dat een CausalClaim ondersteunt of ondermijnt.
+         Als SocialObject: bestaat in virtue van collectieve acceptatie
+         als relevant kennisdocument. (DD-057)"""@nl .
+
+causa:EvidenceType
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "EvidenceType"@en , "Bewijstype"@nl ;
+    rdfs:comment "Het type bewijs: empirisch, theoretisch, expert-oordeel, ervaringskennis. (DD-057)"@nl .
+
+causa:EmpiricalEvidence     a causa:EvidenceType ;
+    rdfs:label "Empirical"@en , "Empirisch"@nl .
+causa:TheoreticalEvidence   a causa:EvidenceType ;
+    rdfs:label "Theoretical"@en , "Theoretisch"@nl .
+causa:ExpertEvidence        a causa:EvidenceType ;
+    rdfs:label "Expert Judgement"@en , "Expert-oordeel"@nl .
+causa:ExperientialEvidence  a causa:EvidenceType ;
+    rdfs:label "Experiential"@en , "Ervaringskennis"@nl .
+
+
+###############################################################################
+#  §E — CausalModel (SocialObject: collectie van CausalClaims)
+#
+#  DD-053: Een CausalModel is een ufoc:SocialObject dat bestaat in virtue
+#  van collectieve intentionaliteit. Het bundelt een coherente set van
+#  CausalClaims over een valor:Issue. Twee subtypen:
+#
+#    causa:ExplanatoryModel — Problem-fase: verklaart de oorzaken van het Issue
+#    causa:SolutionModel    — Solution-fase: beschrijft interventies en effecten
+#
+#  Meerdere modellen van hetzelfde subtype kunnen naast elkaar bestaan als
+#  alternatieven. Deliberatie en democratische besluitvorming opereren:
+#  (1) op claim-niveau: individuele CausalClaims worden aanvaard of verworpen
+#  (2) op modelniveau: het model als geheel wordt aanvaard of verworpen
+#
+#  Het onderscheid Problem-fase / Solution-fase is een Design Thinking
+#  procesonderscheid, niet een ontologisch onderscheid: beide modellen
+#  gebruiken dezelfde CausalClaim-structuur.
+###############################################################################
+
+causa:CausalModel
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "CausalModel"@en , "Causaal model"@nl ;
+    rdfs:comment
+        """Een coherente collectie van CausalClaims over een valor:Issue.
+         Als SocialObject: bestaat in virtue van collectieve intentionaliteit;
+         heeft auteur(s), tijdstip en scope.
+         Meerdere modellen kunnen als alternatieven naast elkaar bestaan.
+         Deliberatie op twee niveaus: per Claim en per Model als geheel.
+         (DD-053)"""@nl .
+
+causa:ExplanatoryModel
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:CausalModel ;
+    rdfs:label "ExplanatoryModel"@en , "Verklarend model"@nl ;
+    rdfs:comment
+        """Een CausalModel uit de Problem-fase: een verklarend model dat
+         de (veronderstelde) oorzaken en gevolgen van het Issue beschrijft.
+         Meerdere ExplanatoryModels kunnen als alternatieve verklaringen
+         naast elkaar bestaan. (DD-053)"""@nl .
+
+causa:SolutionModel
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:CausalModel ;
+    rdfs:label "SolutionModel"@en , "Oplossingsmodel"@nl ;
+    rdfs:comment
+        """Een CausalModel uit de Solution-fase: een interventiemodel dat
+         beschrijft welke ingrepen welke effecten hebben op de variabelen
+         van het (aanvaarde) ExplanatoryModel.
+         Meerdere SolutionModels kunnen als alternatieven naast elkaar
+         bestaan. (DD-053)"""@nl .
+
+# ── Interventie (oplossingsspecifiek element) ─────────────────────────────────
+
+causa:Intervention
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "Intervention"@en , "Interventie"@nl ;
+    rdfs:comment
+        """Een doelbewuste ingreep in een systeem die de waarde van een
+         of meer CausalVariables beïnvloedt. Een Interventie is een
+         gufo:Situation (de toestand na invoering van de maatregel) die
+         via CausalClaims in een SolutionModel wordt gekoppeld aan de
+         variabelen die ze beïnvloedt. (DD-053)"""@nl .
+
+
+###############################################################################
+#  §F — FeedbackLoop (cyclisch patroon in de claim-graph)
+#
+#  DD-060: Een FeedbackLoop is een gufo:Situation die een cyclisch patroon
+#  in de CausalClaim-graph beschrijft. Twee subtypen conform CLD-theorie:
+#    - ReinforcingLoop (R): alle relaties in de cyclus zijn versterkend,
+#      of een even aantal is dempend → exponentiële groei of ineenstorting
+#    - BalancingLoop (B): een oneven aantal dempende relaties →
+#      zelfregulering of oscillatie
+#
+#  Een FeedbackLoop bestaat als SocialObject (een benoemd patroon in een
+#  model) en verwijst naar de CausalClaims die de cyclus vormen.
+#  Detectie via SPARQL property paths (DD-060).
+###############################################################################
+
+causa:FeedbackLoop
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "FeedbackLoop"@en , "Terugkoppelingsloop"@nl ;
+    rdfs:comment
+        """Een cyclisch patroon van CausalClaims in een CausalModel.
+         Benoemd als Situation zodat het als entiteit kan worden
+         beschreven, gelabeld en gekoppeld aan het model.
+         Twee subtypen: ReinforcingLoop en BalancingLoop.
+         Detecteerbaar via SPARQL property path op causa:fromVariable/
+         causa:toVariable. (DD-060)"""@nl .
+
+causa:ReinforcingLoop
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:FeedbackLoop ;
+    rdfs:label "ReinforcingLoop"@en , "Versterkende loop (R)"@nl ;
+    rdfs:comment
+        """Een cyclus met uitsluitend versterkende relaties, of een even
+         aantal dempende relaties. Leidt tot exponentiële groei of
+         ineenstorting. CLD-label: 'R'. (DD-060)"""@nl .
+
+causa:BalancingLoop
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf causa:FeedbackLoop ;
+    rdfs:label "BalancingLoop"@en , "Dempende loop (B)"@nl ;
+    rdfs:comment
+        """Een cyclus met een oneven aantal dempende relaties.
+         Leidt tot zelfregulering of oscillatie. CLD-label: 'B'. (DD-060)"""@nl .
+
+
+###############################################################################
+#  §G — Properties
+###############################################################################
+
+# ── Properties op CausalSituation ────────────────────────────────────────────
+
+causa:fromVariable
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "from variable"@en , "van variabele"@nl ;
+    rdfs:domain causa:CausalSituation ;
+    rdfs:range  causa:CausalVariable ;
+    rdfs:comment "De veroorzakende CausalVariable in deze CausalSituation. (DD-056)"@nl .
+
+causa:toVariable
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "to variable"@en , "naar variabele"@nl ;
+    rdfs:domain causa:CausalSituation ;
+    rdfs:range  causa:CausalVariable ;
+    rdfs:comment "De beïnvloede CausalVariable in deze CausalSituation. (DD-056)"@nl .
+
+causa:hasPolarity
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "has polarity"@en , "heeft polariteit"@nl ;
+    rdfs:domain causa:CausalSituation ;
+    rdfs:range  causa:Polarity ;
+    rdfs:comment "De polariteit van de causale invloed (+ of -). (DD-056)"@nl .
+
+causa:hasDelay
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "has delay"@en , "heeft vertraging"@nl ;
+    rdfs:domain causa:CausalSituation ;
+    rdfs:range  causa:Delay ;
+    rdfs:comment "Optionele vertraging in de causale doorwerking. (DD-056)"@nl .
+
+# ── Properties op CausalClaim ─────────────────────────────────────────────────
+
+causa:hasEpistemicStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "has epistemic status"@en , "heeft epistemische status"@nl ;
+    rdfs:domain causa:CausalClaim ;
+    rdfs:range  causa:EpistemicStatus ;
+    rdfs:comment
+        """De huidige epistemische status van de claim: Proposed, Accepted
+         of Rejected. (DD-058)"""@nl .
+
+causa:hasUncertaintyLevel
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "has uncertainty level"@en , "heeft onzekerheidsgraad"@nl ;
+    rdfs:domain causa:CausalClaim ;
+    rdfs:range  causa:UncertaintyLevel ;
+    rdfs:comment "De PAMS-onzekerheidsgraad van deze claim. (DD-059)"@nl .
+
+causa:groundedInEvidence
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "grounded in evidence"@en , "onderbouwd door bewijs"@nl ;
+    rdfs:domain causa:CausalClaim ;
+    rdfs:range  causa:Evidence ;
+    rdfs:comment "Het bewijs dat deze CausalClaim onderbouwt of ondermijnt. (DD-057)"@nl .
+
+causa:claimedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "claimed at"@en , "geclaimd op"@nl ;
+    rdfs:domain causa:CausalClaim ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop de claim is geuit. (DD-057)"@nl .
+
+# ── Properties op CausalModel ─────────────────────────────────────────────────
+
+causa:hasClaim
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has claim"@en , "heeft claim"@nl ;
+    rdfs:domain causa:CausalModel ;
+    rdfs:range  causa:CausalClaim ;
+    rdfs:comment
+        """De CausalClaims die dit model vormen. Minimaal 1 (SHACL CM1).
+         (DD-053)"""@nl .
+
+causa:modelEpistemicStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "model epistemic status"@en , "model epistemische status"@nl ;
+    rdfs:domain causa:CausalModel ;
+    rdfs:range  causa:EpistemicStatus ;
+    rdfs:comment
+        """De epistemische status van het model als geheel: Proposed,
+         Accepted of Rejected. Onderscheiden van de status van
+         individuele Claims. (DD-053, DD-058)"""@nl .
+
+causa:modelAuthor
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "model author"@en , "modelauteur"@nl ;
+    rdfs:domain causa:CausalModel ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment "De Agent(s) die dit model hebben opgesteld. (DD-053)"@nl .
+
+causa:modelCreatedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "model created at"@en , "model aangemaakt op"@nl ;
+    rdfs:domain causa:CausalModel ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop het model is aangemaakt. (DD-053)"@nl .
+
+causa:addressesIssue
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "addresses issue"@en , "adresseert vraagstuk"@nl ;
+    rdfs:domain causa:CausalModel ;
+    rdfs:range  valor:Issue ;
+    rdfs:comment "Het Issue waarop dit CausalModel betrekking heeft. (DD-053)"@nl .
+
+# ── Properties op FeedbackLoop ────────────────────────────────────────────────
+
+causa:loopIncludesClaim
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "loop includes claim"@en , "loop bevat claim"@nl ;
+    rdfs:domain causa:FeedbackLoop ;
+    rdfs:range  causa:CausalClaim ;
+    rdfs:comment
+        """De CausalClaims die de cyclus van deze FeedbackLoop vormen.
+         Minimaal 2 (SHACL FL1). (DD-060)"""@nl .
+
+# ── Koppeling epistemische → ontologische laag ────────────────────────────────
+
+causa:manifestsAsRelation
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "manifests as relation"@en , "manifesteert als relatie"@nl ;
+    rdfs:domain causa:CausalClaim ;
+    rdfs:range  gufo:Situation ;
+    rdfs:comment
+        """Koppeling van een aanvaarde CausalClaim naar de werkelijke
+         gufo:Situation die de causale relatie in de ontologische laag
+         vertegenwoordigt. Wordt alleen ingevuld als EpistemicStatus =
+         Accepted. Brug epistemische → ontologische laag. (DD-057)"""@nl .
+
+# ── Evidence properties ───────────────────────────────────────────────────────
+
+causa:evidenceType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "evidence type"@en , "bewijstype"@nl ;
+    rdfs:domain causa:Evidence ;
+    rdfs:range  causa:EvidenceType ;
+    rdfs:comment "Het type van dit bewijs conform PAMS-taxonomie. (DD-057)"@nl .
+
+causa:evidenceSource
+    a owl:DatatypeProperty ;
+    rdfs:label "evidence source"@en , "bewijsbron"@nl ;
+    rdfs:domain causa:Evidence ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:comment "URI van het brondocument of de dataset. (DD-057)"@nl .
+
+###############################################################################
+#  Einde module 00h-causa.ttl (v0.1)
+###############################################################################
