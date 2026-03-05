@@ -1,0 +1,636 @@
+# TRiG version of SOCIA ontology\n
+<https://valor-ecosystem.nl/ontology/socia> {
+    ###############################################################################
+    #  VALOR-O — Module 00i: SOCIA Actor Analysis Ontologie (i*-framework)
+    #
+    #  Namespace  : https://valor-ecosystem.nl/ontology/socia#  (prefix socia:)
+    #  Versie     : 0.1  (maart 2026)
+    #  Imports    : 00a-gufo-core, 00b-ufo-c, 00h-causa (voor valor:Issue)
+    #
+    #  Bron:
+    #    Yu, E. (1995). Modelling Strategic Relationships for Process
+    #      Reengineering. PhD thesis, University of Toronto.
+    #    Yu, E. (2011). Social Modeling and i*. In Conceptual Modeling:
+    #      Foundations and Applications, LNCS 6520.
+    #    Guizzardi et al. (2013). UFO-C: A Foundational Ontology for
+    #      Social Entities. [SocialCommitment als Relator]
+    #    Enserink et al. (2022). Policy Analysis of Multi-Actor Systems.
+    #      TU Delft (PAMS). [stakeholderanalyse]
+    #
+    #  Ontologische grondslag (DD-061):
+    #    Een intentionele afhankelijkheidsrelatie (i*-dependum) is een
+    #    specialisatie van ufoc:SocialCommitment: een Relator tussen twee
+    #    Agents (depender en dependee) met een propositional content die
+    #    het type afhankelijkheid bepaalt:
+    #      GoalDependency     → propositional content: ufoc:Goal-Situation
+    #      TaskDependency     → propositional content: gufo:Action-EventType
+    #      ResourceDependency → propositional content: gufo:Situation (resource)
+    #      SoftGoalDependency → propositional content: ufoc:SoftGoal-Situation
+    #
+    #    Hiermee wordt het i*-framework volledig uitgedrukt in bestaande
+    #    UFO-C-constructen. Geen nieuwe foundational types nodig.
+    #
+    #  Structuur:
+    #    §A  Stakeholder (Actor in i*-terminologie)
+    #    §B  StakeholderRole (Role die een Stakeholder speelt)
+    #    §C  IntentionalDependency (het i*-dependum als SocialCommitment)
+    #    §D  DependencyType — vier subtypen conform i*
+    #    §E  ActorBoundary (systeemgrens van een actor)
+    #    §F  StakeholderMap (overzicht van een Issue-context)
+    #    §G  Properties
+    ###############################################################################
+    
+    @prefix socia: <https://valor-ecosystem.nl/ontology/socia#> .
+    @prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+    
+    ###############################################################################
+    #  Ontologie-declaratie
+    ###############################################################################
+    
+    vo:socia
+        a owl:Ontology ;
+        rdfs:label "VALOR-O Module 00i — SOCIA Actor Analysis Ontologie"@nl ;
+        owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/causa> ;
+        owl:versionInfo "0.1" ;
+        rdfs:comment
+            """Formaliseert het i*-framework (Yu 1995/2011) in UFO. Kern:
+             intentionele afhankelijkheden (dependum-relaties) zijn
+             specialisaties van ufoc:SocialCommitment — een Relator tussen
+             twee Agents met een type propositional content dat het
+             afhankelijkheidstype bepaalt (Goal/Task/Resource/SoftGoal).
+             Integreert met causa:Issue voor stakeholdercontext. (DD-061)"""@nl .
+    
+    
+    ###############################################################################
+    #  §A — Stakeholder
+    #
+    #  DD-061: Een socia:Stakeholder is een specialisatie van ufoc:Agent die
+    #  expliciet betrokken is bij een valor:Issue — d.w.z. die intentionele
+    #  modi heeft (Goals, Interests, Concerns) die relevant zijn voor het
+    #  vraagstuk. In i*-terminologie: een 'actor' met een intentional boundary.
+    #
+    #  Twee subtypen conform PAMS/i*:
+    #    socia:HumanStakeholder     — ufoc:PhysicalAgent in stakeholderrol
+    #    socia:OrganisationalActor  — ufoc:InstitutionalAgent in stakeholderrol
+    #
+    #  Een Stakeholder speelt zijn rol t.o.v. een specifiek Issue. Dezelfde
+    #  persoon of organisatie kan voor verschillende Issues een andere
+    #  stakeholderrol spelen (anti-rigid → Role in gUFO).
+    ###############################################################################
+    
+    socia:Stakeholder
+        a owl:Class ;
+        rdf:type gufo:RoleMixin ;
+        valor:ontoumlStereotype "roleMixin" ;
+        rdfs:subClassOf ufoc:Agent ;
+        rdfs:label "Stakeholder"@en , "Belanghebbende"@nl ;
+        rdfs:comment
+            """Een Agent die intentionele modi heeft die relevant zijn voor
+             een valor:Issue. Anti-rigide: een agent is Stakeholder alleen
+             t.o.v. een specifiek Issue en een specifieke context.
+             Conform i*: 'actor with an intentional boundary'. (DD-061)"""@nl .
+    
+    socia:HumanStakeholder
+        a owl:Class ;
+        rdf:type gufo:Role ;
+        valor:ontoumlStereotype "role" ;
+        rdfs:subClassOf socia:Stakeholder ;
+        rdfs:subClassOf ufoc:PhysicalAgent ;
+        rdfs:label "HumanStakeholder"@en , "Menselijke belanghebbende"@nl ;
+        rdfs:comment
+            """Een fysieke persoon als Stakeholder bij een Issue. Conform
+             PAMS: individuen wiens belangen en rechten direct worden
+             geraakt. (DD-061)"""@nl .
+    
+    socia:OrganisationalActor
+        a owl:Class ;
+        rdf:type gufo:Role ;
+        valor:ontoumlStereotype "role" ;
+        rdfs:subClassOf socia:Stakeholder ;
+        rdfs:subClassOf ufoc:InstitutionalAgent ;
+        rdfs:label "OrganisationalActor"@en , "Organisationele actor"@nl ;
+        rdfs:comment
+            """Een institutionele agent (organisatie, overheidsinstantie,
+             rechtspersoon) als Stakeholder bij een Issue. (DD-061)"""@nl .
+    
+    
+    ###############################################################################
+    #  §B — StakeholderRole
+    #
+    #  DD-062: In i* kunnen actoren meerdere rollen spelen afhankelijk van
+    #  de context. Een socia:StakeholderRole beschrijft de functionele positie
+    #  die een Stakeholder inneemt t.o.v. een Issue — los van de concrete
+    #  agent die die rol vervult.
+    #
+    #  Voorbeelden: 'Burger als aanvrager', 'Gemeente als uitvoerder',
+    #  'Toezichthouder', 'Ketenpartner'.
+    #
+    #  Een StakeholderRole is een ufoc:SocialRole: een sociale constructie die
+    #  bestaat in virtue van collectieve acceptatie. Meerdere Stakeholders
+    #  kunnen dezelfde rol spelen; één Stakeholder kan meerdere rollen spelen.
+    ###############################################################################
+    
+    socia:StakeholderRole
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf ufoc:SocialRole ;
+        rdfs:label "StakeholderRole"@en , "Stakeholderrol"@nl ;
+        rdfs:comment
+            """De functionele positie die een Stakeholder inneemt t.o.v. een
+             Issue. Een SocialRole: bestaat in virtue van collectieve acceptatie.
+             Voorbeelden: aanvrager, uitvoerder, toezichthouder, ketenpartner.
+             Meerdere Stakeholders kunnen dezelfde rol spelen. (DD-062)"""@nl .
+    
+    socia:StakeholderInterestProfile
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "StakeholderInterestProfile"@en , "Belangenprofiel"@nl ;
+        rdfs:comment
+            """Een coherente verzameling van intentionele modi (Goals, Interests,
+             Concerns, Beliefs) van een Stakeholder t.o.v. een specifiek Issue.
+             Als SocialObject: bestaat in virtue van collectieve kennis over
+             de positie van de Stakeholder. Basis voor het Socia-perspectief
+             in VALOR. (DD-062)"""@nl .
+    
+    
+    ###############################################################################
+    #  §C — IntentionalDependency (het i*-dependum als SocialCommitment)
+    #
+    #  DD-061: De centrale ontologische keuze van SOCIA:
+    #  Een i*-dependum is een intentionele afhankelijkheidsrelatie tussen twee
+    #  agents. In UFO-C is ufoc:SocialCommitment precies dat: een Relator
+    #  tussen een committed agent en een claimant agent met een propositional
+    #  content (de situatie die de committed agent moet bewerkstelligen).
+    #
+    #  socia:IntentionalDependency specialiseert SocialCommitment met:
+    #  (a) de afhankelijkheidsrichting expliciet benoemd als depender/dependee
+    #      (terminologie van i*; inhoudelijk identiek aan claimant/committed)
+    #  (b) een socia:DependencyType die het type dependum classificeert
+    #  (c) een socia:DependencyStrength die de kritikaliteit uitdrukt
+    #
+    #  Relatie tot ACTA: een IntentionalDependency kan geïnstantieerd worden
+    #  als acta:Transaction wanneer de afhankelijkheid formeel en transactioneel
+    #  wordt — de dependency is de normatieve grondslag, de transactie is de
+    #  uitvoering.
+    ###############################################################################
+    
+    socia:IntentionalDependency
+        a owl:Class ;
+        valor:ontoumlStereotype "relator" ;
+        rdfs:subClassOf ufoc:SocialCommitment ;
+        rdfs:label "IntentionalDependency"@en , "Intentionele afhankelijkheid"@nl ;
+        rdfs:comment
+            """Een intentionele afhankelijkheidsrelatie (i*-dependum) tussen
+             twee Agents. Specialisatie van ufoc:SocialCommitment:
+               depender = de agent die afhankelijk is (claimant)
+               dependee = de agent waarvan men afhankelijk is (committed)
+             De propositional content bepaalt het type afhankelijkheid.
+             Type wordt geclassificeerd via socia:DependencyType.
+             Kan geïnstantieerd worden als acta:Transaction wanneer de
+             afhankelijkheid transactioneel wordt. (DD-061)"""@nl .
+    
+    socia:DependencyStrength
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf gufo:IntrinsicMode ;
+        rdfs:label "DependencyStrength"@en , "Afhankelijkheidssterkte"@nl ;
+        rdfs:comment
+            """De kritikaliteit van de afhankelijkheid: hoe ernstig is het
+             als de dependee niet levert? Drie gradaties conform i*:
+             Open, Committed, Critical. (DD-061)"""@nl .
+    
+    socia:OpenDependency
+        a socia:DependencyStrength ;
+        rdfs:label "Open"@en , "Open afhankelijkheid"@nl ;
+        rdfs:comment
+            """De depender kan zijn doel alsnog bereiken als de dependee
+             niet levert — zij het minder efficiënt. (DD-061)"""@nl .
+    
+    socia:CommittedDependency
+        a socia:DependencyStrength ;
+        rdfs:label "Committed"@en , "Gebonden afhankelijkheid"@nl ;
+        rdfs:comment
+            """De depender heeft zich gecommitteerd aan de afhankelijkheid
+             maar kan in extremis alternatieven zoeken. (DD-061)"""@nl .
+    
+    socia:CriticalDependency
+        a socia:DependencyStrength ;
+        rdfs:label "Critical"@en , "Kritieke afhankelijkheid"@nl ;
+        rdfs:comment
+            """De depender kan zijn doel beslist niet bereiken zonder de
+             dependee. De sterkste vorm van afhankelijkheid in i*. (DD-061)"""@nl .
+    
+    
+    ###############################################################################
+    #  §D — DependencyType — vier subtypen conform i*
+    #
+    #  DD-063: Het i*-framework onderscheidt vier typen dependum, elk met een
+    #  eigen ontologische status in UFO:
+    #
+    #  GoalDependency:
+    #    Propositional content is een ufoc:Goal-Situation (een toestand die
+    #    bereikt moet worden). De dependee is verantwoordelijk voor het
+    #    bereiken van die toestand; HOE is niet gespecificeerd.
+    #    → pure outcome-afhankelijkheid
+    #
+    #  TaskDependency:
+    #    Propositional content is een gufo:Action (een specifieke handeling
+    #    die uitgevoerd moet worden). De dependee voert een welbepaald proces
+    #    uit; WAT het oplevert is niet gespecificeerd.
+    #    → pure process-afhankelijkheid
+    #
+    #  ResourceDependency:
+    #    Propositional content is een gufo:Situation die de beschikbaarheid
+    #    van een fysiek of informatieobject beschrijft. Geen redenering over
+    #    hoe het geproduceerd of ingezet wordt.
+    #    → pure availability-afhankelijkheid
+    #
+    #  SoftGoalDependency:
+    #    Propositional content is een ufoc:SoftGoal-Situation (een kwaliteits-
+    #    eigenschap of waarde die gradueel nagestreefd wordt). Vervulling is
+    #    nooit volledig binair — altijd 'meer of minder'.
+    #    → quality/value-afhankelijkheid
+    #
+    #  Implementatie: DependencyType is een Higher-Order Type dat het type
+    #  SocialCommitment classificeert. Via het patroon van Fase -1b:
+    #  socia:DependencyType rdfs:subClassOf gufo:SubKind (classificator).
+    ###############################################################################
+    
+    socia:DependencyType
+        a owl:Class ;
+        rdfs:subClassOf gufo:SubKind ;
+        gufo:partitions socia:IntentionalDependency ;
+        rdfs:label "DependencyType"@en , "Afhankelijkheidstype"@nl ;
+        rdfs:comment
+            """Higher-Order Type voor de sortale classificatie van
+             IntentionalDependencies. Vier instanties conform i*:
+             GoalDependency, TaskDependency, ResourceDependency,
+             SoftGoalDependency. (DD-063)"""@nl .
+    
+    socia:GoalDependency
+        a owl:Class ;
+        rdf:type socia:DependencyType ;
+        rdfs:subClassOf socia:IntentionalDependency ;
+        rdfs:label "GoalDependency"@en , "Doelafhankelijkheid"@nl ;
+        owl:disjointWith socia:TaskDependency ,
+                         socia:ResourceDependency ,
+                         socia:SoftGoalDependency ;
+        rdfs:comment
+            """De depender is afhankelijk van de dependee voor het bereiken
+             van een toestand (outcome). HOE is niet gespecificeerd.
+             Propositional content: ufoc:Goal-Situation. (DD-063)"""@nl .
+    
+    socia:TaskDependency
+        a owl:Class ;
+        rdf:type socia:DependencyType ;
+        rdfs:subClassOf socia:IntentionalDependency ;
+        rdfs:label "TaskDependency"@en , "Taakafhankelijkheid"@nl ;
+        owl:disjointWith socia:GoalDependency ,
+                         socia:ResourceDependency ,
+                         socia:SoftGoalDependency ;
+        rdfs:comment
+            """De depender is afhankelijk van de dependee voor de uitvoering
+             van een specifieke taak (process). WAT het oplevert is niet
+             gespecificeerd. Propositional content: gufo:Action. (DD-063)"""@nl .
+    
+    socia:ResourceDependency
+        a owl:Class ;
+        rdf:type socia:DependencyType ;
+        rdfs:subClassOf socia:IntentionalDependency ;
+        rdfs:label "ResourceDependency"@en , "Middelenafhankelijkheid"@nl ;
+        owl:disjointWith socia:GoalDependency ,
+                         socia:TaskDependency ,
+                         socia:SoftGoalDependency ;
+        rdfs:comment
+            """De depender is afhankelijk van de dependee voor de
+             beschikbaarheid van een fysiek of informatie-object (resource).
+             Propositional content: gufo:Situation (beschikbaarheidstoestand).
+             (DD-063)"""@nl .
+    
+    socia:SoftGoalDependency
+        a owl:Class ;
+        rdf:type socia:DependencyType ;
+        rdfs:subClassOf socia:IntentionalDependency ;
+        rdfs:label "SoftGoalDependency"@en , "Kwaliteitsafhankelijkheid"@nl ;
+        owl:disjointWith socia:GoalDependency ,
+                         socia:TaskDependency ,
+                         socia:ResourceDependency ;
+        rdfs:comment
+            """De depender is afhankelijk van de dependee voor het (gradueel)
+             realiseren van een kwaliteitseis of waarde (softgoal). Vervulling
+             is nooit binair. Propositional content: ufoc:SoftGoal-Situation.
+             (DD-063)"""@nl .
+    
+    
+    ###############################################################################
+    #  §E — ActorBoundary (de intentionele grens van een actor in i*)
+    #
+    #  DD-064: In i* heeft elke actor een 'intentional boundary' — een
+    #  afbakening van wat binnen de actor valt (zijn interne doelen, taken,
+    #  bronnen) en wat buiten valt (afhankelijkheden naar andere actoren).
+    #
+    #  socia:ActorBoundary is een gufo:Situation die de interne intentionele
+    #  structuur van een Stakeholder beschrijft t.o.v. een Issue. Ze bevat:
+    #  - de intentionele modi (Goals, SoftGoals, Tasks, Resources) van de actor
+    #  - de afhankelijkheden (IntentionalDependencies) naar buiten toe
+    #
+    #  In VALOR: de ActorBoundary is de 'eenheid van analyse' in de Socia-view.
+    #  Ze is zichtbaar als een afgebakend vlak in de i*-diagram.
+    ###############################################################################
+    
+    socia:ActorBoundary
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "ActorBoundary"@en , "Actorgrens"@nl ;
+        rdfs:comment
+            """De intentionele grens van een Stakeholder t.o.v. een Issue:
+             de afbakening van interne intentionele elementen (Goals, Tasks,
+             Resources, SoftGoals) en externe afhankelijkheden.
+             Conform i*: 'intentional boundary'. Zichtbaar als afgebakend
+             vlak in de Socia-view. (DD-064)"""@nl .
+    
+    # ── Interne intentionele elementen (binnen de ActorBoundary) ─────────────────
+    
+    socia:InternalElement
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf gufo:IntrinsicMode ;
+        rdfs:label "InternalElement"@en , "Intern element"@nl ;
+        rdfs:comment
+            """Een intentioneel element binnen de ActorBoundary van een
+             Stakeholder: een interne Goal, Task, Resource of SoftGoal
+             die de actor zelf nastreeft of beheert — zonder afhankelijkheid
+             van een andere actor. (DD-064)"""@nl .
+    
+    socia:InternalGoal
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf socia:InternalElement ;
+        rdfs:subClassOf ufoc:Goal ;
+        rdfs:label "InternalGoal"@en , "Intern doel"@nl ;
+        rdfs:comment "Een Goal die de actor intern nastreeft. (DD-064)"@nl .
+    
+    socia:InternalTask
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf socia:InternalElement ;
+        rdfs:label "InternalTask"@en , "Interne taak"@nl ;
+        rdfs:comment
+            """Een specifieke werkwijze of methode die de actor intern hanteert
+             om een Goal of SoftGoal te bereiken. Correspondeert met een
+             gufo:Action die de actor zelf uitvoert. (DD-064)"""@nl .
+    
+    socia:InternalResource
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf socia:InternalElement ;
+        rdfs:label "InternalResource"@en , "Intern middel"@nl ;
+        rdfs:comment
+            """Een fysiek of informatieobject dat de actor intern beschikbaar
+             heeft en beheert. (DD-064)"""@nl .
+    
+    socia:InternalSoftGoal
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf socia:InternalElement ;
+        rdfs:subClassOf ufoc:SoftGoal ;
+        rdfs:label "InternalSoftGoal"@en , "Interne kwaliteitseis"@nl ;
+        rdfs:comment
+            """Een kwaliteitseis of waarde die de actor intern nastreeft —
+             gradueel, nooit volledig bereikt. (DD-064)"""@nl .
+    
+    
+    ###############################################################################
+    #  §F — StakeholderMap (overzicht van alle actoren t.o.v. een Issue)
+    #
+    #  DD-065: Een socia:StakeholderMap is het i*-equivalent van een Strategic
+    #  Dependency model: een overzicht van alle Stakeholders en hun
+    #  IntentionalDependencies t.o.v. een specifiek Issue.
+    #
+    #  Als ufoc:SocialObject: bestaat in virtue van collectieve acceptatie;
+    #  heeft auteur(s) en tijdstip. Meerdere StakeholderMaps kunnen als
+    #  alternatieven naast elkaar bestaan (analoog aan causa:CausalModel).
+    #
+    #  Koppeling met CAUSA: een StakeholderMap adresseert hetzelfde
+    #  valor:Issue als de CausalModels. Stakeholders zijn de agents die
+    #  CausalClaims indienen, delibereren en besluiten nemen.
+    ###############################################################################
+    
+    socia:StakeholderMap
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "StakeholderMap"@en , "Belanghebbendenkaart"@nl ;
+        rdfs:comment
+            """Een coherent overzicht van alle Stakeholders en hun
+             IntentionalDependencies t.o.v. een valor:Issue. Als SocialObject:
+             heeft auteur(s) en tijdstip. Meerdere maps kunnen als alternatieven
+             naast elkaar bestaan. Koppeling: dezelfde Stakeholders zijn de
+             agents die CausalClaims indienen in de causa:CausalModel-laag.
+             (DD-065)"""@nl .
+    
+    
+    ###############################################################################
+    #  §G — Properties
+    ###############################################################################
+    
+    # ── Stakeholder-properties ────────────────────────────────────────────────────
+    
+    socia:isStakeholderIn
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "is stakeholder in"@en , "is belanghebbende bij"@nl ;
+        rdfs:domain socia:Stakeholder ;
+        rdfs:range  valor:Issue ;
+        rdfs:comment
+            """De valor:Issue waarbij deze Stakeholder betrokken is.
+             (DD-061)"""@nl .
+    
+    socia:playsRole
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "plays role"@en , "speelt rol"@nl ;
+        rdfs:domain socia:Stakeholder ;
+        rdfs:range  socia:StakeholderRole ;
+        rdfs:comment "De StakeholderRole die deze Stakeholder speelt. (DD-062)"@nl .
+    
+    socia:hasInterestProfile
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "characterization" ;
+        rdfs:label "has interest profile"@en , "heeft belangenprofiel"@nl ;
+        rdfs:domain socia:Stakeholder ;
+        rdfs:range  socia:StakeholderInterestProfile ;
+        rdfs:comment
+            """Het StakeholderInterestProfile dat de intentionele positie
+             van deze Stakeholder beschrijft. (DD-062)"""@nl .
+    
+    socia:hasBoundary
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "characterization" ;
+        rdfs:label "has boundary"@en , "heeft actorgrens"@nl ;
+        rdfs:domain socia:Stakeholder ;
+        rdfs:range  socia:ActorBoundary ;
+        rdfs:comment
+            """De ActorBoundary die de interne intentionele structuur van
+             deze Stakeholder afbakent. (DD-064)"""@nl .
+    
+    # ── IntentionalDependency-properties ─────────────────────────────────────────
+    
+    socia:depender
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf ufoc:hasClaimantAgent ;
+        rdfs:label "depender"@en , "afhankelijke actor"@nl ;
+        rdfs:domain socia:IntentionalDependency ;
+        rdfs:range  socia:Stakeholder ;
+        rdfs:comment
+            """De Stakeholder die afhankelijk is van de dependee (claimant
+             in UFO-C-termen). (DD-061)"""@nl .
+    
+    socia:dependee
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf ufoc:hasCommittedAgent ;
+        rdfs:label "dependee"@en , "leverancier actor"@nl ;
+        rdfs:domain socia:IntentionalDependency ;
+        rdfs:range  socia:Stakeholder ;
+        rdfs:comment
+            """De Stakeholder waarvan de depender afhankelijk is (committed
+             agent in UFO-C-termen). (DD-061)"""@nl .
+    
+    socia:hasDependencyStrength
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "characterization" ;
+        rdfs:label "has dependency strength"@en , "heeft afhankelijkheidssterkte"@nl ;
+        rdfs:domain socia:IntentionalDependency ;
+        rdfs:range  socia:DependencyStrength ;
+        rdfs:comment "De kritikaliteit van de afhankelijkheid. (DD-061)"@nl .
+    
+    socia:dependencyContext
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "dependency context"@en , "afhankelijkheidscontext"@nl ;
+        rdfs:domain socia:IntentionalDependency ;
+        rdfs:range  valor:Issue ;
+        rdfs:comment
+            """Het Issue in de context waarvan deze afhankelijkheid bestaat.
+             (DD-061)"""@nl .
+    
+    # ── ActorBoundary-properties ──────────────────────────────────────────────────
+    
+    socia:boundaryContains
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "componentOf" ;
+        rdfs:subPropertyOf gufo:hasProperPart ;
+        rdfs:label "boundary contains"@en , "grens bevat"@nl ;
+        rdfs:domain socia:ActorBoundary ;
+        rdfs:range  socia:InternalElement ;
+        rdfs:comment
+            """De interne intentionele elementen (Goals, Tasks, Resources,
+             SoftGoals) binnen deze ActorBoundary. (DD-064)"""@nl .
+    
+    socia:boundaryHasDependency
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "boundary has dependency"@en , "grens heeft afhankelijkheid"@nl ;
+        rdfs:domain socia:ActorBoundary ;
+        rdfs:range  socia:IntentionalDependency ;
+        rdfs:comment
+            """De IntentionalDependencies die de grens van deze ActorBoundary
+             overschrijden (naar andere actoren). (DD-064)"""@nl .
+    
+    # ── StakeholderMap-properties ─────────────────────────────────────────────────
+    
+    socia:mapIncludesStakeholder
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "map includes stakeholder"@en , "kaart bevat belanghebbende"@nl ;
+        rdfs:domain socia:StakeholderMap ;
+        rdfs:range  socia:Stakeholder ;
+        rdfs:comment "De Stakeholders in deze StakeholderMap. (DD-065)"@nl .
+    
+    socia:mapIncludesDependency
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "map includes dependency"@en , "kaart bevat afhankelijkheid"@nl ;
+        rdfs:domain socia:StakeholderMap ;
+        rdfs:range  socia:IntentionalDependency ;
+        rdfs:comment "De IntentionalDependencies in deze StakeholderMap. (DD-065)"@nl .
+    
+    socia:mapAddressesIssue
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "map addresses issue"@en , "kaart adresseert vraagstuk"@nl ;
+        rdfs:domain socia:StakeholderMap ;
+        rdfs:range  valor:Issue ;
+        rdfs:comment "Het Issue waarop deze StakeholderMap betrekking heeft. (DD-065)"@nl .
+    
+    socia:mapAuthor
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "map author"@en , "kaartauteur"@nl ;
+        rdfs:domain socia:StakeholderMap ;
+        rdfs:range  ufoc:Agent ;
+        rdfs:comment "De Agent(s) die deze StakeholderMap hebben opgesteld. (DD-065)"@nl .
+    
+    socia:mapCreatedAt
+        a owl:DatatypeProperty ;
+        rdfs:label "map created at"@en , "kaart aangemaakt op"@nl ;
+        rdfs:domain socia:StakeholderMap ;
+        rdfs:range  xsd:dateTime ;
+        rdfs:comment "Het tijdstip waarop de StakeholderMap is aangemaakt. (DD-065)"@nl .
+    
+    # ── Koppeling SOCIA → CAUSA ───────────────────────────────────────────────────
+    
+    socia:stakeholderSubmitsClaim
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "stakeholder submits claim"@en , "belanghebbende dient claim in"@nl ;
+        rdfs:domain socia:Stakeholder ;
+        rdfs:range  causa:CausalClaim ;
+        rdfs:comment
+            """De CausalClaims die deze Stakeholder heeft ingediend in een
+             causa:CausalModel. Koppeling SOCIA ↔ CAUSA: de actors in de
+             stakeholdermap zijn dezelfde agents als de claimanten in het
+             causale model. (DD-065)"""@nl .
+    
+    # ── Koppeling SOCIA → ACTA ────────────────────────────────────────────────────
+    
+    socia:dependencyInstantiatedAs
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "dependency instantiated as"@en , "afhankelijkheid geïnstantieerd als"@nl ;
+        rdfs:domain socia:IntentionalDependency ;
+        rdfs:range  <https://valor-ecosystem.nl/ontology/acta#Transaction> ;
+        rdfs:comment
+            """Koppeling van een IntentionalDependency naar de acta:Transaction
+             die de afhankelijkheid formeel en transactioneel uitwerkt.
+             Een dependency is de normatieve intentionele grondslag;
+             de transactie is de uitvoeringsstructuur. (DD-061)"""@nl .
+    
+    ###############################################################################
+    #  Einde module 00i-socia.ttl (v0.1)
+    ###############################################################################
+}

@@ -1,0 +1,1194 @@
+# TRiG version of 00a-gufo-core.shacl.ttl
+<https://valor-ecosystem.nl/shacl/gufo-core> {
+    @prefix sh:    <http://www.w3.org/ns/shacl#> .
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    @prefix dcterms: <http://purl.org/dc/terms/> .
+    @prefix shg:  <https://valor-ecosystem.nl/shacl/gufo-core#> .
+    @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+    
+    ###############################################################################
+    # VALOR-O — SHACL Shapes: gUFO Core (Module 00a)
+    # Versie 0.2 — valor:ontoumlStereotype correctie (DD-002)
+    #
+    # Correctie t.o.v. v0.1:
+    #   [SA-001] gufo:ontoumlStereotype → valor:ontoumlStereotype in alle shapes
+    #            die sh:targetSubjectsOf of SPARQL-queries gebruiken.
+    #            Reden: de ontologie-modules gebruiken valor:ontoumlStereotype;
+    #            SHACL moet naar dezelfde property kijken anders vindt G7/G8/G9/G10
+    #            niets in de data.
+    ###############################################################################
+    
+    shg:
+        a owl:Ontology ;
+        dcterms:title "VALOR-O SHACL — gUFO Core"@nl ;
+        owl:versionInfo "0.2" .
+    
+    
+    ###############################################################################
+    # G1 — Every IntrinsicMode must inhere in exactly one Endurant
+    ###############################################################################
+    
+    shg:IntrinsicModeShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:IntrinsicMode ;
+        sh:name "IntrinsicModeShape" ;
+        sh:description
+            "G1: Elke IntrinsicMode moet via gufo:inheresIn inheren aan precies één Endurant (gUFO axioma: modes zijn existentieel afhankelijk van hun drager)." ;
+    
+        sh:property [
+            sh:path     gufo:inheresIn ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    gufo:Endurant ;
+            sh:name     "inheresIn" ;
+            sh:message  "G1: IntrinsicMode.inheresIn vereist precies één gufo:Endurant."
+        ] .
+    
+    
+    ###############################################################################
+    # G1b — Every ExtrinsicMode must have exactly one primary bearer (inheresIn)
+    #        and at least one external dependent (externallyDependsOn)
+    ###############################################################################
+    
+    shg:ExtrinsicModeShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:ExtrinsicMode ;
+        sh:name "ExtrinsicModeShape" ;
+        sh:description
+            """G1b: Elke ExtrinsicMode moet via gufo:inheresIn inheren aan
+             precies één Endurant (de drager), én via gufo:externallyDependsOn
+             afhankelijk zijn van ten minste één andere Endurant (het externe object).""" ;
+    
+        sh:property [
+            sh:path     gufo:inheresIn ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    gufo:Endurant ;
+            sh:name     "inheresIn" ;
+            sh:message  "G1b: ExtrinsicMode.inheresIn vereist precies één gufo:Endurant (de primaire drager)."
+        ] ;
+    
+        sh:property [
+            sh:path     gufo:externallyDependsOn ;
+            sh:minCount 1 ;
+            sh:class    gufo:Endurant ;
+            sh:name     "externallyDependsOn" ;
+            sh:message  "G1b: ExtrinsicMode.externallyDependsOn vereist ten minste één gufo:Endurant (het externe object)."
+        ] ;
+    
+        sh:sparql [
+            sh:name    "G1b-drager-ne-extern" ;
+            sh:message "G1b: De primaire drager (inheresIn) en het externe object (externallyDependsOn) mogen niet hetzelfde individu zijn." ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    $this gufo:inheresIn          ?bearer .
+                    $this gufo:externallyDependsOn ?external .
+                    FILTER (?bearer = ?external)
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    # G2 — Every Relator must mediate at least two distinct Endurants
+    ###############################################################################
+    
+    shg:RelatorShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:Relator ;
+        sh:name "RelatorShape" ;
+        sh:description
+            """G2: Elke Relator moet via gufo:mediates ten minste twee
+             verschillende Endurants mediëren.""" ;
+    
+        sh:property [
+            sh:path     gufo:mediates ;
+            sh:minCount 2 ;
+            sh:class    gufo:Endurant ;
+            sh:name     "mediates" ;
+            sh:message  "G2: Relator.mediates vereist ten minste 2 gufo:Endurant instances."
+        ] ;
+    
+        sh:sparql [
+            sh:name    "G2b-distinct-mediated" ;
+            sh:message "G2b: Een Relator mag niet tweemaal dezelfde Endurant mediëren." ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this
+                WHERE {
+                    $this gufo:mediates ?e1 .
+                    $this gufo:mediates ?e2 .
+                    FILTER (?e1 = ?e2)
+                    FILTER NOT EXISTS {
+                        $this gufo:mediates ?other .
+                        FILTER (?other != ?e1)
+                    }
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    # G3 — Quality must have at most one hasQualityValue
+    ###############################################################################
+    
+    shg:QualityShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:Quality ;
+        sh:name "QualityShape" ;
+        sh:description "G3: Een Quality mag maximaal één hasQualityValue hebben." ;
+    
+        sh:property [
+            sh:path     gufo:hasQualityValue ;
+            sh:maxCount 1 ;
+            sh:name     "hasQualityValue" ;
+            sh:message  "G3: Quality.hasQualityValue mag maximaal één waarde hebben."
+        ] .
+    
+    
+    ###############################################################################
+    # G4 — Event must have hasBeginPoint ≤ hasEndPoint when both present
+    ###############################################################################
+    
+    shg:EventTemporalShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:Event ;
+        sh:name "EventTemporalShape" ;
+        sh:description "G4: hasBeginPoint ≤ hasEndPoint wanneer beide aanwezig." ;
+    
+        sh:sparql [
+            sh:name    "G4-begin-before-end" ;
+            sh:message "G4: gufo:hasBeginPoint moet ≤ gufo:hasEndPoint zijn." ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this
+                WHERE {
+                    $this gufo:hasBeginPoint ?begin .
+                    $this gufo:hasEndPoint   ?end .
+                    FILTER (?begin > ?end)
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    # G5 — Situation: ten minste één betrokken Endurant (waarschuwing)
+    ###############################################################################
+    
+    shg:SituationShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:Situation ;
+        sh:name "SituationShape" ;
+        sh:description "G5 (waarschuwing): Situation zonder Endurant via gufo:manifestedIn." ;
+    
+        sh:severity sh:Warning ;
+        sh:property [
+            sh:path     [ sh:inversePath gufo:manifestedIn ] ;
+            sh:minCount 1 ;
+            sh:name     "manifestedBy" ;
+            sh:message  "G5 (waarschuwing): Situation heeft geen Endurant via gufo:manifestedIn."
+        ] .
+    
+    
+    ###############################################################################
+    # G6 — IntentionalMode.hasPropositionalContent → Situation
+    ###############################################################################
+    
+    shg:IntentionalModeContentShape
+        a sh:NodeShape ;
+        sh:targetClass gufo:IntentionalMode ;
+        sh:name "IntentionalModeContentShape" ;
+        sh:description "G6: IntentionalMode vereist precies één hasPropositionalContent (Situation)." ;
+    
+        sh:property [
+            sh:path     gufo:hasPropositionalContent ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    gufo:Situation ;
+            sh:name     "hasPropositionalContent" ;
+            sh:message  "G6: IntentionalMode.hasPropositionalContent vereist precies één gufo:Situation."
+        ] .
+    
+    
+    ###############################################################################
+    # G7 — OWL Punning: elke resource met valor:ontoumlStereotype moet ook
+    #       rdf:type hebben naar het corresponderende gUFO-type
+    #
+    # [SA-001] sh:targetSubjectsOf: gufo:ontoumlStereotype → valor:ontoumlStereotype
+    # [SA-001] SPARQL-query: gufo:ontoumlStereotype → valor:ontoumlStereotype
+    #
+    # DD-002: stereotype → gUFO-type mapping (inclusief DD-052 correctie):
+    #   mode / quality → GEEN punning-verplichting (geen ModeType/QualityType in gUFO)
+    ###############################################################################
+    
+    shg:OntoumlPunningShape
+        a sh:NodeShape ;
+        sh:targetSubjectsOf valor:ontoumlStereotype ;        # [SA-001]
+        sh:name "OntoumlPunningShape" ;
+        sh:description
+            """G7: Elke resource met valor:ontoumlStereotype moet via rdf:type
+             het corresponderende gUFO-type-hiërarchietype dragen
+             (OWL2 punning-conventie, DD-002).
+             [SA-001] v0.2: valor:ontoumlStereotype i.p.v. gufo:ontoumlStereotype.""" ;
+    
+        sh:sparql [
+            sh:name    "G7-punning-volledig" ;
+            sh:message """G7: Resource met ontoumlStereotype '{?stereotype}' mist
+             het vereiste rdf:type '{?vereistType}'.
+             Voeg toe: <resource> rdf:type <vereistType> .
+             (OWL2 punning — DD-002; gUFO-primitieven uitgesloten — DD-003).""" ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this ?stereotype ?vereistType
+                WHERE {
+                    $this valor:ontoumlStereotype ?stereotype .
+    
+                    VALUES (?stereotype ?vereistType) {
+                        ( "kind"           gufo:Kind          )
+                        ( "subkind"        gufo:SubKind       )
+                        ( "role"           gufo:Role          )
+                        ( "historicalRole" gufo:Role          )
+                        ( "phase"          gufo:Phase         )
+                        ( "category"       gufo:Category      )
+                        ( "mixin"          gufo:Mixin         )
+                        ( "roleMixin"      gufo:RoleMixin     )
+                        ( "relator"        gufo:Relator       )
+                        ( "event"          gufo:EventType     )
+                        ( "situation"      gufo:SituationType )
+                    }
+                    # NB: "mode" en "quality" zijn NIET opgenomen —
+                    # gUFO 1.0 definieert geen ModeType of QualityType (DD-052).
+    
+                    FILTER NOT EXISTS { $this rdf:type ?vereistType }
+    
+                    # Sluit gUFO-primitieven uit (DD-003)
+                    FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    # G8 — OntoUML Stereotype Combinatie Constraints (DD-026)
+    # [SA-001] sh:targetSubjectsOf en SPARQL: gufo:ontoumlStereotype → valor:ontoumlStereotype
+    ###############################################################################
+    
+    shg:OntoumlRelationConstraintShape
+        a sh:NodeShape ;
+        sh:targetSubjectsOf valor:ontoumlStereotype ;        # [SA-001]
+        sh:name "OntoumlRelationConstraintShape" ;
+        sh:description
+            """G8: Elke owl:ObjectProperty met een relatie-stereotype moet een
+             geldige combinatie van source- en target-stereotypen hebben conform
+             OntoUML 2.0 (DD-026).
+             [SA-001] v0.2: valor:ontoumlStereotype i.p.v. gufo:ontoumlStereotype.""" ;
+    
+        sh:sparql [
+            sh:name    "G8-stereotypecombinatie" ;
+            sh:message """G8: Property heeft relatie-stereotype maar
+             de combinatie (source-stereotype, target-stereotype) is niet geldig
+             conform OntoUML 2.0 en VALOR-O-extensies. Zie DD-026.""" ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this ?relStereo ?srcStereo ?tgtStereo
+                WHERE {
+                    $this a owl:ObjectProperty .
+                    $this valor:ontoumlStereotype ?relStereo .
+    
+                    VALUES ?relStereo {
+                        "characterization" "mediation" "externalDependence"
+                        "material" "comparative" "participation"
+                        "creation" "termination" "bringsAbout"
+                        "triggers" "manifestation" "historicalDependence"
+                        "componentOf" "subCollectionOf" "subQuantityOf" "memberOf"
+                    }
+    
+                    FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
+    
+                    $this rdfs:domain ?srcClass .
+                    ?srcClass valor:ontoumlStereotype ?srcStereo .
+    
+                    $this rdfs:range ?tgtClass .
+                    ?tgtClass valor:ontoumlStereotype ?tgtStereo .
+    
+                    FILTER NOT EXISTS {
+                        VALUES (?relStereo ?srcStereo ?tgtStereo) {
+                        ( "bringsAbout" "event" "situation" )
+                        ( "characterization" "mode" "kind" )
+                        ( "characterization" "mode" "subkind" )
+                        ( "characterization" "mode" "role" )
+                        ( "characterization" "mode" "historicalRole" )
+                        ( "characterization" "mode" "phase" )
+                        ( "characterization" "mode" "category" )
+                        ( "characterization" "mode" "mixin" )
+                        ( "characterization" "mode" "roleMixin" )
+                        ( "characterization" "mode" "phaseMixin" )
+                        ( "characterization" "mode" "relator" )
+                        ( "characterization" "mode" "mode" )
+                        ( "characterization" "mode" "quality" )
+                        ( "characterization" "quality" "kind" )
+                        ( "characterization" "quality" "subkind" )
+                        ( "characterization" "quality" "role" )
+                        ( "characterization" "quality" "historicalRole" )
+                        ( "characterization" "quality" "phase" )
+                        ( "characterization" "quality" "category" )
+                        ( "characterization" "quality" "mixin" )
+                        ( "characterization" "quality" "roleMixin" )
+                        ( "characterization" "quality" "phaseMixin" )
+                        ( "characterization" "quality" "relator" )
+                        ( "characterization" "quality" "mode" )
+                        ( "characterization" "quality" "quality" )
+                        ( "characterization" "kind" "kind" )
+                        ( "characterization" "kind" "subkind" )
+                        ( "characterization" "kind" "role" )
+                        ( "characterization" "kind" "historicalRole" )
+                        ( "characterization" "kind" "phase" )
+                        ( "characterization" "kind" "category" )
+                        ( "characterization" "kind" "mixin" )
+                        ( "characterization" "kind" "roleMixin" )
+                        ( "characterization" "kind" "phaseMixin" )
+                        ( "characterization" "kind" "relator" )
+                        ( "characterization" "kind" "mode" )
+                        ( "characterization" "kind" "quality" )
+                        ( "characterization" "subkind" "kind" )
+                        ( "characterization" "subkind" "subkind" )
+                        ( "characterization" "subkind" "role" )
+                        ( "characterization" "subkind" "historicalRole" )
+                        ( "characterization" "subkind" "phase" )
+                        ( "characterization" "subkind" "category" )
+                        ( "characterization" "subkind" "mixin" )
+                        ( "characterization" "subkind" "roleMixin" )
+                        ( "characterization" "subkind" "phaseMixin" )
+                        ( "characterization" "subkind" "relator" )
+                        ( "characterization" "subkind" "mode" )
+                        ( "characterization" "subkind" "quality" )
+                        ( "characterization" "role" "kind" )
+                        ( "characterization" "role" "subkind" )
+                        ( "characterization" "role" "role" )
+                        ( "characterization" "role" "historicalRole" )
+                        ( "characterization" "role" "phase" )
+                        ( "characterization" "role" "category" )
+                        ( "characterization" "role" "mixin" )
+                        ( "characterization" "role" "roleMixin" )
+                        ( "characterization" "role" "phaseMixin" )
+                        ( "characterization" "role" "relator" )
+                        ( "characterization" "role" "mode" )
+                        ( "characterization" "role" "quality" )
+                        ( "characterization" "historicalRole" "kind" )
+                        ( "characterization" "historicalRole" "subkind" )
+                        ( "characterization" "historicalRole" "role" )
+                        ( "characterization" "historicalRole" "historicalRole" )
+                        ( "characterization" "historicalRole" "phase" )
+                        ( "characterization" "historicalRole" "category" )
+                        ( "characterization" "historicalRole" "mixin" )
+                        ( "characterization" "historicalRole" "roleMixin" )
+                        ( "characterization" "historicalRole" "phaseMixin" )
+                        ( "characterization" "historicalRole" "relator" )
+                        ( "characterization" "historicalRole" "mode" )
+                        ( "characterization" "historicalRole" "quality" )
+                        ( "characterization" "phase" "kind" )
+                        ( "characterization" "phase" "subkind" )
+                        ( "characterization" "phase" "role" )
+                        ( "characterization" "phase" "historicalRole" )
+                        ( "characterization" "phase" "phase" )
+                        ( "characterization" "phase" "category" )
+                        ( "characterization" "phase" "mixin" )
+                        ( "characterization" "phase" "roleMixin" )
+                        ( "characterization" "phase" "phaseMixin" )
+                        ( "characterization" "phase" "relator" )
+                        ( "characterization" "phase" "mode" )
+                        ( "characterization" "phase" "quality" )
+                        ( "characterization" "category" "kind" )
+                        ( "characterization" "category" "subkind" )
+                        ( "characterization" "category" "role" )
+                        ( "characterization" "category" "historicalRole" )
+                        ( "characterization" "category" "phase" )
+                        ( "characterization" "category" "category" )
+                        ( "characterization" "category" "mixin" )
+                        ( "characterization" "category" "roleMixin" )
+                        ( "characterization" "category" "phaseMixin" )
+                        ( "characterization" "category" "relator" )
+                        ( "characterization" "category" "mode" )
+                        ( "characterization" "category" "quality" )
+                        ( "characterization" "mixin" "kind" )
+                        ( "characterization" "mixin" "subkind" )
+                        ( "characterization" "mixin" "role" )
+                        ( "characterization" "mixin" "historicalRole" )
+                        ( "characterization" "mixin" "phase" )
+                        ( "characterization" "mixin" "category" )
+                        ( "characterization" "mixin" "mixin" )
+                        ( "characterization" "mixin" "roleMixin" )
+                        ( "characterization" "mixin" "phaseMixin" )
+                        ( "characterization" "mixin" "relator" )
+                        ( "characterization" "mixin" "mode" )
+                        ( "characterization" "mixin" "quality" )
+                        ( "characterization" "roleMixin" "kind" )
+                        ( "characterization" "roleMixin" "subkind" )
+                        ( "characterization" "roleMixin" "role" )
+                        ( "characterization" "roleMixin" "historicalRole" )
+                        ( "characterization" "roleMixin" "phase" )
+                        ( "characterization" "roleMixin" "category" )
+                        ( "characterization" "roleMixin" "mixin" )
+                        ( "characterization" "roleMixin" "roleMixin" )
+                        ( "characterization" "roleMixin" "phaseMixin" )
+                        ( "characterization" "roleMixin" "relator" )
+                        ( "characterization" "roleMixin" "mode" )
+                        ( "characterization" "roleMixin" "quality" )
+                        ( "characterization" "phaseMixin" "kind" )
+                        ( "characterization" "phaseMixin" "subkind" )
+                        ( "characterization" "phaseMixin" "role" )
+                        ( "characterization" "phaseMixin" "historicalRole" )
+                        ( "characterization" "phaseMixin" "phase" )
+                        ( "characterization" "phaseMixin" "category" )
+                        ( "characterization" "phaseMixin" "mixin" )
+                        ( "characterization" "phaseMixin" "roleMixin" )
+                        ( "characterization" "phaseMixin" "phaseMixin" )
+                        ( "characterization" "phaseMixin" "relator" )
+                        ( "characterization" "phaseMixin" "mode" )
+                        ( "characterization" "phaseMixin" "quality" )
+                        ( "characterization" "relator" "kind" )
+                        ( "characterization" "relator" "subkind" )
+                        ( "characterization" "relator" "role" )
+                        ( "characterization" "relator" "historicalRole" )
+                        ( "characterization" "relator" "phase" )
+                        ( "characterization" "relator" "category" )
+                        ( "characterization" "relator" "mixin" )
+                        ( "characterization" "relator" "roleMixin" )
+                        ( "characterization" "relator" "phaseMixin" )
+                        ( "characterization" "relator" "relator" )
+                        ( "characterization" "relator" "mode" )
+                        ( "characterization" "relator" "quality" )
+                        ( "comparative" "kind" "kind" )
+                        ( "comparative" "kind" "subkind" )
+                        ( "comparative" "kind" "role" )
+                        ( "comparative" "kind" "historicalRole" )
+                        ( "comparative" "kind" "phase" )
+                        ( "comparative" "kind" "category" )
+                        ( "comparative" "kind" "mixin" )
+                        ( "comparative" "kind" "roleMixin" )
+                        ( "comparative" "kind" "phaseMixin" )
+                        ( "comparative" "subkind" "kind" )
+                        ( "comparative" "subkind" "subkind" )
+                        ( "comparative" "subkind" "role" )
+                        ( "comparative" "subkind" "historicalRole" )
+                        ( "comparative" "subkind" "phase" )
+                        ( "comparative" "subkind" "category" )
+                        ( "comparative" "subkind" "mixin" )
+                        ( "comparative" "subkind" "roleMixin" )
+                        ( "comparative" "subkind" "phaseMixin" )
+                        ( "comparative" "role" "kind" )
+                        ( "comparative" "role" "subkind" )
+                        ( "comparative" "role" "role" )
+                        ( "comparative" "role" "historicalRole" )
+                        ( "comparative" "role" "phase" )
+                        ( "comparative" "role" "category" )
+                        ( "comparative" "role" "mixin" )
+                        ( "comparative" "role" "roleMixin" )
+                        ( "comparative" "role" "phaseMixin" )
+                        ( "comparative" "historicalRole" "kind" )
+                        ( "comparative" "historicalRole" "subkind" )
+                        ( "comparative" "historicalRole" "role" )
+                        ( "comparative" "historicalRole" "historicalRole" )
+                        ( "comparative" "historicalRole" "phase" )
+                        ( "comparative" "historicalRole" "category" )
+                        ( "comparative" "historicalRole" "mixin" )
+                        ( "comparative" "historicalRole" "roleMixin" )
+                        ( "comparative" "historicalRole" "phaseMixin" )
+                        ( "comparative" "phase" "kind" )
+                        ( "comparative" "phase" "subkind" )
+                        ( "comparative" "phase" "role" )
+                        ( "comparative" "phase" "historicalRole" )
+                        ( "comparative" "phase" "phase" )
+                        ( "comparative" "phase" "category" )
+                        ( "comparative" "phase" "mixin" )
+                        ( "comparative" "phase" "roleMixin" )
+                        ( "comparative" "phase" "phaseMixin" )
+                        ( "comparative" "category" "kind" )
+                        ( "comparative" "category" "subkind" )
+                        ( "comparative" "category" "role" )
+                        ( "comparative" "category" "historicalRole" )
+                        ( "comparative" "category" "phase" )
+                        ( "comparative" "category" "category" )
+                        ( "comparative" "category" "mixin" )
+                        ( "comparative" "category" "roleMixin" )
+                        ( "comparative" "category" "phaseMixin" )
+                        ( "comparative" "mixin" "kind" )
+                        ( "comparative" "mixin" "subkind" )
+                        ( "comparative" "mixin" "role" )
+                        ( "comparative" "mixin" "historicalRole" )
+                        ( "comparative" "mixin" "phase" )
+                        ( "comparative" "mixin" "category" )
+                        ( "comparative" "mixin" "mixin" )
+                        ( "comparative" "mixin" "roleMixin" )
+                        ( "comparative" "mixin" "phaseMixin" )
+                        ( "comparative" "roleMixin" "kind" )
+                        ( "comparative" "roleMixin" "subkind" )
+                        ( "comparative" "roleMixin" "role" )
+                        ( "comparative" "roleMixin" "historicalRole" )
+                        ( "comparative" "roleMixin" "phase" )
+                        ( "comparative" "roleMixin" "category" )
+                        ( "comparative" "roleMixin" "mixin" )
+                        ( "comparative" "roleMixin" "roleMixin" )
+                        ( "comparative" "roleMixin" "phaseMixin" )
+                        ( "comparative" "phaseMixin" "kind" )
+                        ( "comparative" "phaseMixin" "subkind" )
+                        ( "comparative" "phaseMixin" "role" )
+                        ( "comparative" "phaseMixin" "historicalRole" )
+                        ( "comparative" "phaseMixin" "phase" )
+                        ( "comparative" "phaseMixin" "category" )
+                        ( "comparative" "phaseMixin" "mixin" )
+                        ( "comparative" "phaseMixin" "roleMixin" )
+                        ( "comparative" "phaseMixin" "phaseMixin" )
+                        ( "componentOf" "kind" "kind" )
+                        ( "componentOf" "kind" "subkind" )
+                        ( "componentOf" "kind" "role" )
+                        ( "componentOf" "kind" "historicalRole" )
+                        ( "componentOf" "kind" "phase" )
+                        ( "componentOf" "kind" "category" )
+                        ( "componentOf" "kind" "mixin" )
+                        ( "componentOf" "kind" "roleMixin" )
+                        ( "componentOf" "kind" "phaseMixin" )
+                        ( "componentOf" "kind" "mode" )
+                        ( "componentOf" "kind" "quality" )
+                        ( "componentOf" "kind" "relator" )
+                        ( "componentOf" "kind" "situation" )
+                        ( "componentOf" "subkind" "kind" )
+                        ( "componentOf" "subkind" "subkind" )
+                        ( "componentOf" "subkind" "role" )
+                        ( "componentOf" "subkind" "historicalRole" )
+                        ( "componentOf" "subkind" "phase" )
+                        ( "componentOf" "subkind" "category" )
+                        ( "componentOf" "subkind" "mixin" )
+                        ( "componentOf" "subkind" "roleMixin" )
+                        ( "componentOf" "subkind" "phaseMixin" )
+                        ( "componentOf" "subkind" "mode" )
+                        ( "componentOf" "subkind" "quality" )
+                        ( "componentOf" "subkind" "relator" )
+                        ( "componentOf" "subkind" "situation" )
+                        ( "componentOf" "role" "kind" )
+                        ( "componentOf" "role" "subkind" )
+                        ( "componentOf" "role" "role" )
+                        ( "componentOf" "role" "historicalRole" )
+                        ( "componentOf" "role" "phase" )
+                        ( "componentOf" "role" "category" )
+                        ( "componentOf" "role" "mixin" )
+                        ( "componentOf" "role" "roleMixin" )
+                        ( "componentOf" "role" "phaseMixin" )
+                        ( "componentOf" "role" "mode" )
+                        ( "componentOf" "role" "quality" )
+                        ( "componentOf" "role" "relator" )
+                        ( "componentOf" "role" "situation" )
+                        ( "componentOf" "historicalRole" "kind" )
+                        ( "componentOf" "historicalRole" "subkind" )
+                        ( "componentOf" "historicalRole" "role" )
+                        ( "componentOf" "historicalRole" "historicalRole" )
+                        ( "componentOf" "historicalRole" "phase" )
+                        ( "componentOf" "historicalRole" "category" )
+                        ( "componentOf" "historicalRole" "mixin" )
+                        ( "componentOf" "historicalRole" "roleMixin" )
+                        ( "componentOf" "historicalRole" "phaseMixin" )
+                        ( "componentOf" "historicalRole" "mode" )
+                        ( "componentOf" "historicalRole" "quality" )
+                        ( "componentOf" "historicalRole" "relator" )
+                        ( "componentOf" "historicalRole" "situation" )
+                        ( "componentOf" "phase" "kind" )
+                        ( "componentOf" "phase" "subkind" )
+                        ( "componentOf" "phase" "role" )
+                        ( "componentOf" "phase" "historicalRole" )
+                        ( "componentOf" "phase" "phase" )
+                        ( "componentOf" "phase" "category" )
+                        ( "componentOf" "phase" "mixin" )
+                        ( "componentOf" "phase" "roleMixin" )
+                        ( "componentOf" "phase" "phaseMixin" )
+                        ( "componentOf" "phase" "mode" )
+                        ( "componentOf" "phase" "quality" )
+                        ( "componentOf" "phase" "relator" )
+                        ( "componentOf" "phase" "situation" )
+                        ( "componentOf" "category" "kind" )
+                        ( "componentOf" "category" "subkind" )
+                        ( "componentOf" "category" "role" )
+                        ( "componentOf" "category" "historicalRole" )
+                        ( "componentOf" "category" "phase" )
+                        ( "componentOf" "category" "category" )
+                        ( "componentOf" "category" "mixin" )
+                        ( "componentOf" "category" "roleMixin" )
+                        ( "componentOf" "category" "phaseMixin" )
+                        ( "componentOf" "category" "mode" )
+                        ( "componentOf" "category" "quality" )
+                        ( "componentOf" "category" "relator" )
+                        ( "componentOf" "category" "situation" )
+                        ( "componentOf" "mixin" "kind" )
+                        ( "componentOf" "mixin" "subkind" )
+                        ( "componentOf" "mixin" "role" )
+                        ( "componentOf" "mixin" "historicalRole" )
+                        ( "componentOf" "mixin" "phase" )
+                        ( "componentOf" "mixin" "category" )
+                        ( "componentOf" "mixin" "mixin" )
+                        ( "componentOf" "mixin" "roleMixin" )
+                        ( "componentOf" "mixin" "phaseMixin" )
+                        ( "componentOf" "mixin" "mode" )
+                        ( "componentOf" "mixin" "quality" )
+                        ( "componentOf" "mixin" "relator" )
+                        ( "componentOf" "mixin" "situation" )
+                        ( "componentOf" "roleMixin" "kind" )
+                        ( "componentOf" "roleMixin" "subkind" )
+                        ( "componentOf" "roleMixin" "role" )
+                        ( "componentOf" "roleMixin" "historicalRole" )
+                        ( "componentOf" "roleMixin" "phase" )
+                        ( "componentOf" "roleMixin" "category" )
+                        ( "componentOf" "roleMixin" "mixin" )
+                        ( "componentOf" "roleMixin" "roleMixin" )
+                        ( "componentOf" "roleMixin" "phaseMixin" )
+                        ( "componentOf" "roleMixin" "mode" )
+                        ( "componentOf" "roleMixin" "quality" )
+                        ( "componentOf" "roleMixin" "relator" )
+                        ( "componentOf" "roleMixin" "situation" )
+                        ( "componentOf" "phaseMixin" "kind" )
+                        ( "componentOf" "phaseMixin" "subkind" )
+                        ( "componentOf" "phaseMixin" "role" )
+                        ( "componentOf" "phaseMixin" "historicalRole" )
+                        ( "componentOf" "phaseMixin" "phase" )
+                        ( "componentOf" "phaseMixin" "category" )
+                        ( "componentOf" "phaseMixin" "mixin" )
+                        ( "componentOf" "phaseMixin" "roleMixin" )
+                        ( "componentOf" "phaseMixin" "phaseMixin" )
+                        ( "componentOf" "phaseMixin" "mode" )
+                        ( "componentOf" "phaseMixin" "quality" )
+                        ( "componentOf" "phaseMixin" "relator" )
+                        ( "componentOf" "phaseMixin" "situation" )
+                        ( "componentOf" "mode" "kind" )
+                        ( "componentOf" "mode" "subkind" )
+                        ( "componentOf" "mode" "role" )
+                        ( "componentOf" "mode" "historicalRole" )
+                        ( "componentOf" "mode" "phase" )
+                        ( "componentOf" "mode" "category" )
+                        ( "componentOf" "mode" "mixin" )
+                        ( "componentOf" "mode" "roleMixin" )
+                        ( "componentOf" "mode" "phaseMixin" )
+                        ( "componentOf" "mode" "mode" )
+                        ( "componentOf" "mode" "quality" )
+                        ( "componentOf" "mode" "relator" )
+                        ( "componentOf" "mode" "situation" )
+                        ( "componentOf" "quality" "kind" )
+                        ( "componentOf" "quality" "subkind" )
+                        ( "componentOf" "quality" "role" )
+                        ( "componentOf" "quality" "historicalRole" )
+                        ( "componentOf" "quality" "phase" )
+                        ( "componentOf" "quality" "category" )
+                        ( "componentOf" "quality" "mixin" )
+                        ( "componentOf" "quality" "roleMixin" )
+                        ( "componentOf" "quality" "phaseMixin" )
+                        ( "componentOf" "quality" "mode" )
+                        ( "componentOf" "quality" "quality" )
+                        ( "componentOf" "quality" "relator" )
+                        ( "componentOf" "quality" "situation" )
+                        ( "componentOf" "relator" "kind" )
+                        ( "componentOf" "relator" "subkind" )
+                        ( "componentOf" "relator" "role" )
+                        ( "componentOf" "relator" "historicalRole" )
+                        ( "componentOf" "relator" "phase" )
+                        ( "componentOf" "relator" "category" )
+                        ( "componentOf" "relator" "mixin" )
+                        ( "componentOf" "relator" "roleMixin" )
+                        ( "componentOf" "relator" "phaseMixin" )
+                        ( "componentOf" "relator" "mode" )
+                        ( "componentOf" "relator" "quality" )
+                        ( "componentOf" "relator" "relator" )
+                        ( "componentOf" "relator" "situation" )
+                        ( "componentOf" "situation" "kind" )
+                        ( "componentOf" "situation" "subkind" )
+                        ( "componentOf" "situation" "role" )
+                        ( "componentOf" "situation" "historicalRole" )
+                        ( "componentOf" "situation" "phase" )
+                        ( "componentOf" "situation" "category" )
+                        ( "componentOf" "situation" "mixin" )
+                        ( "componentOf" "situation" "roleMixin" )
+                        ( "componentOf" "situation" "phaseMixin" )
+                        ( "componentOf" "situation" "mode" )
+                        ( "componentOf" "situation" "quality" )
+                        ( "componentOf" "situation" "relator" )
+                        ( "componentOf" "situation" "situation" )
+                        ( "creation" "event" "kind" )
+                        ( "creation" "event" "subkind" )
+                        ( "creation" "event" "role" )
+                        ( "creation" "event" "historicalRole" )
+                        ( "creation" "event" "phase" )
+                        ( "creation" "event" "relator" )
+                        ( "creation" "event" "mode" )
+                        ( "creation" "event" "quality" )
+                        ( "externalDependence" "mode" "kind" )
+                        ( "externalDependence" "mode" "subkind" )
+                        ( "externalDependence" "mode" "role" )
+                        ( "externalDependence" "mode" "historicalRole" )
+                        ( "externalDependence" "mode" "phase" )
+                        ( "externalDependence" "mode" "category" )
+                        ( "externalDependence" "mode" "mixin" )
+                        ( "externalDependence" "mode" "roleMixin" )
+                        ( "externalDependence" "mode" "phaseMixin" )
+                        ( "externalDependence" "mode" "relator" )
+                        ( "externalDependence" "mode" "situation" )
+                        ( "externalDependence" "quality" "kind" )
+                        ( "externalDependence" "quality" "subkind" )
+                        ( "externalDependence" "quality" "role" )
+                        ( "externalDependence" "quality" "historicalRole" )
+                        ( "externalDependence" "quality" "phase" )
+                        ( "externalDependence" "quality" "category" )
+                        ( "externalDependence" "quality" "mixin" )
+                        ( "externalDependence" "quality" "roleMixin" )
+                        ( "externalDependence" "quality" "phaseMixin" )
+                        ( "externalDependence" "quality" "relator" )
+                        ( "externalDependence" "quality" "situation" )
+                        ( "historicalDependence" "kind" "kind" )
+                        ( "historicalDependence" "kind" "subkind" )
+                        ( "historicalDependence" "kind" "role" )
+                        ( "historicalDependence" "kind" "historicalRole" )
+                        ( "historicalDependence" "kind" "phase" )
+                        ( "historicalDependence" "kind" "category" )
+                        ( "historicalDependence" "kind" "mixin" )
+                        ( "historicalDependence" "kind" "roleMixin" )
+                        ( "historicalDependence" "kind" "phaseMixin" )
+                        ( "historicalDependence" "kind" "mode" )
+                        ( "historicalDependence" "kind" "quality" )
+                        ( "historicalDependence" "kind" "relator" )
+                        ( "historicalDependence" "kind" "situation" )
+                        ( "historicalDependence" "kind" "event" )
+                        ( "historicalDependence" "subkind" "kind" )
+                        ( "historicalDependence" "subkind" "subkind" )
+                        ( "historicalDependence" "subkind" "role" )
+                        ( "historicalDependence" "subkind" "historicalRole" )
+                        ( "historicalDependence" "subkind" "phase" )
+                        ( "historicalDependence" "subkind" "category" )
+                        ( "historicalDependence" "subkind" "mixin" )
+                        ( "historicalDependence" "subkind" "roleMixin" )
+                        ( "historicalDependence" "subkind" "phaseMixin" )
+                        ( "historicalDependence" "subkind" "mode" )
+                        ( "historicalDependence" "subkind" "quality" )
+                        ( "historicalDependence" "subkind" "relator" )
+                        ( "historicalDependence" "subkind" "situation" )
+                        ( "historicalDependence" "subkind" "event" )
+                        ( "historicalDependence" "role" "kind" )
+                        ( "historicalDependence" "role" "subkind" )
+                        ( "historicalDependence" "role" "role" )
+                        ( "historicalDependence" "role" "historicalRole" )
+                        ( "historicalDependence" "role" "phase" )
+                        ( "historicalDependence" "role" "category" )
+                        ( "historicalDependence" "role" "mixin" )
+                        ( "historicalDependence" "role" "roleMixin" )
+                        ( "historicalDependence" "role" "phaseMixin" )
+                        ( "historicalDependence" "role" "mode" )
+                        ( "historicalDependence" "role" "quality" )
+                        ( "historicalDependence" "role" "relator" )
+                        ( "historicalDependence" "role" "situation" )
+                        ( "historicalDependence" "role" "event" )
+                        ( "historicalDependence" "historicalRole" "kind" )
+                        ( "historicalDependence" "historicalRole" "subkind" )
+                        ( "historicalDependence" "historicalRole" "role" )
+                        ( "historicalDependence" "historicalRole" "historicalRole" )
+                        ( "historicalDependence" "historicalRole" "phase" )
+                        ( "historicalDependence" "historicalRole" "category" )
+                        ( "historicalDependence" "historicalRole" "mixin" )
+                        ( "historicalDependence" "historicalRole" "roleMixin" )
+                        ( "historicalDependence" "historicalRole" "phaseMixin" )
+                        ( "historicalDependence" "historicalRole" "mode" )
+                        ( "historicalDependence" "historicalRole" "quality" )
+                        ( "historicalDependence" "historicalRole" "relator" )
+                        ( "historicalDependence" "historicalRole" "situation" )
+                        ( "historicalDependence" "historicalRole" "event" )
+                        ( "historicalDependence" "phase" "kind" )
+                        ( "historicalDependence" "phase" "subkind" )
+                        ( "historicalDependence" "phase" "role" )
+                        ( "historicalDependence" "phase" "historicalRole" )
+                        ( "historicalDependence" "phase" "phase" )
+                        ( "historicalDependence" "phase" "category" )
+                        ( "historicalDependence" "phase" "mixin" )
+                        ( "historicalDependence" "phase" "roleMixin" )
+                        ( "historicalDependence" "phase" "phaseMixin" )
+                        ( "historicalDependence" "phase" "mode" )
+                        ( "historicalDependence" "phase" "quality" )
+                        ( "historicalDependence" "phase" "relator" )
+                        ( "historicalDependence" "phase" "situation" )
+                        ( "historicalDependence" "phase" "event" )
+                        ( "historicalDependence" "category" "kind" )
+                        ( "historicalDependence" "category" "subkind" )
+                        ( "historicalDependence" "category" "role" )
+                        ( "historicalDependence" "category" "historicalRole" )
+                        ( "historicalDependence" "category" "phase" )
+                        ( "historicalDependence" "category" "category" )
+                        ( "historicalDependence" "category" "mixin" )
+                        ( "historicalDependence" "category" "roleMixin" )
+                        ( "historicalDependence" "category" "phaseMixin" )
+                        ( "historicalDependence" "category" "mode" )
+                        ( "historicalDependence" "category" "quality" )
+                        ( "historicalDependence" "category" "relator" )
+                        ( "historicalDependence" "category" "situation" )
+                        ( "historicalDependence" "category" "event" )
+                        ( "historicalDependence" "mixin" "kind" )
+                        ( "historicalDependence" "mixin" "subkind" )
+                        ( "historicalDependence" "mixin" "role" )
+                        ( "historicalDependence" "mixin" "historicalRole" )
+                        ( "historicalDependence" "mixin" "phase" )
+                        ( "historicalDependence" "mixin" "category" )
+                        ( "historicalDependence" "mixin" "mixin" )
+                        ( "historicalDependence" "mixin" "roleMixin" )
+                        ( "historicalDependence" "mixin" "phaseMixin" )
+                        ( "historicalDependence" "mixin" "mode" )
+                        ( "historicalDependence" "mixin" "quality" )
+                        ( "historicalDependence" "mixin" "relator" )
+                        ( "historicalDependence" "mixin" "situation" )
+                        ( "historicalDependence" "mixin" "event" )
+                        ( "historicalDependence" "roleMixin" "kind" )
+                        ( "historicalDependence" "roleMixin" "subkind" )
+                        ( "historicalDependence" "roleMixin" "role" )
+                        ( "historicalDependence" "roleMixin" "historicalRole" )
+                        ( "historicalDependence" "roleMixin" "phase" )
+                        ( "historicalDependence" "roleMixin" "category" )
+                        ( "historicalDependence" "roleMixin" "mixin" )
+                        ( "historicalDependence" "roleMixin" "roleMixin" )
+                        ( "historicalDependence" "roleMixin" "phaseMixin" )
+                        ( "historicalDependence" "roleMixin" "mode" )
+                        ( "historicalDependence" "roleMixin" "quality" )
+                        ( "historicalDependence" "roleMixin" "relator" )
+                        ( "historicalDependence" "roleMixin" "situation" )
+                        ( "historicalDependence" "roleMixin" "event" )
+                        ( "historicalDependence" "phaseMixin" "kind" )
+                        ( "historicalDependence" "phaseMixin" "subkind" )
+                        ( "historicalDependence" "phaseMixin" "role" )
+                        ( "historicalDependence" "phaseMixin" "historicalRole" )
+                        ( "historicalDependence" "phaseMixin" "phase" )
+                        ( "historicalDependence" "phaseMixin" "category" )
+                        ( "historicalDependence" "phaseMixin" "mixin" )
+                        ( "historicalDependence" "phaseMixin" "roleMixin" )
+                        ( "historicalDependence" "phaseMixin" "phaseMixin" )
+                        ( "historicalDependence" "phaseMixin" "mode" )
+                        ( "historicalDependence" "phaseMixin" "quality" )
+                        ( "historicalDependence" "phaseMixin" "relator" )
+                        ( "historicalDependence" "phaseMixin" "situation" )
+                        ( "historicalDependence" "phaseMixin" "event" )
+                        ( "historicalDependence" "mode" "kind" )
+                        ( "historicalDependence" "mode" "subkind" )
+                        ( "historicalDependence" "mode" "role" )
+                        ( "historicalDependence" "mode" "historicalRole" )
+                        ( "historicalDependence" "mode" "phase" )
+                        ( "historicalDependence" "mode" "category" )
+                        ( "historicalDependence" "mode" "mixin" )
+                        ( "historicalDependence" "mode" "roleMixin" )
+                        ( "historicalDependence" "mode" "phaseMixin" )
+                        ( "historicalDependence" "mode" "mode" )
+                        ( "historicalDependence" "mode" "quality" )
+                        ( "historicalDependence" "mode" "relator" )
+                        ( "historicalDependence" "mode" "situation" )
+                        ( "historicalDependence" "mode" "event" )
+                        ( "historicalDependence" "quality" "kind" )
+                        ( "historicalDependence" "quality" "subkind" )
+                        ( "historicalDependence" "quality" "role" )
+                        ( "historicalDependence" "quality" "historicalRole" )
+                        ( "historicalDependence" "quality" "phase" )
+                        ( "historicalDependence" "quality" "category" )
+                        ( "historicalDependence" "quality" "mixin" )
+                        ( "historicalDependence" "quality" "roleMixin" )
+                        ( "historicalDependence" "quality" "phaseMixin" )
+                        ( "historicalDependence" "quality" "mode" )
+                        ( "historicalDependence" "quality" "quality" )
+                        ( "historicalDependence" "quality" "relator" )
+                        ( "historicalDependence" "quality" "situation" )
+                        ( "historicalDependence" "quality" "event" )
+                        ( "historicalDependence" "relator" "kind" )
+                        ( "historicalDependence" "relator" "subkind" )
+                        ( "historicalDependence" "relator" "role" )
+                        ( "historicalDependence" "relator" "historicalRole" )
+                        ( "historicalDependence" "relator" "phase" )
+                        ( "historicalDependence" "relator" "category" )
+                        ( "historicalDependence" "relator" "mixin" )
+                        ( "historicalDependence" "relator" "roleMixin" )
+                        ( "historicalDependence" "relator" "phaseMixin" )
+                        ( "historicalDependence" "relator" "mode" )
+                        ( "historicalDependence" "relator" "quality" )
+                        ( "historicalDependence" "relator" "relator" )
+                        ( "historicalDependence" "relator" "situation" )
+                        ( "historicalDependence" "relator" "event" )
+                        ( "historicalDependence" "situation" "kind" )
+                        ( "historicalDependence" "situation" "subkind" )
+                        ( "historicalDependence" "situation" "role" )
+                        ( "historicalDependence" "situation" "historicalRole" )
+                        ( "historicalDependence" "situation" "phase" )
+                        ( "historicalDependence" "situation" "category" )
+                        ( "historicalDependence" "situation" "mixin" )
+                        ( "historicalDependence" "situation" "roleMixin" )
+                        ( "historicalDependence" "situation" "phaseMixin" )
+                        ( "historicalDependence" "situation" "mode" )
+                        ( "historicalDependence" "situation" "quality" )
+                        ( "historicalDependence" "situation" "relator" )
+                        ( "historicalDependence" "situation" "situation" )
+                        ( "historicalDependence" "situation" "event" )
+                        ( "historicalDependence" "event" "kind" )
+                        ( "historicalDependence" "event" "subkind" )
+                        ( "historicalDependence" "event" "role" )
+                        ( "historicalDependence" "event" "historicalRole" )
+                        ( "historicalDependence" "event" "phase" )
+                        ( "historicalDependence" "event" "category" )
+                        ( "historicalDependence" "event" "mixin" )
+                        ( "historicalDependence" "event" "roleMixin" )
+                        ( "historicalDependence" "event" "phaseMixin" )
+                        ( "historicalDependence" "event" "mode" )
+                        ( "historicalDependence" "event" "quality" )
+                        ( "historicalDependence" "event" "relator" )
+                        ( "historicalDependence" "event" "situation" )
+                        ( "historicalDependence" "event" "event" )
+                        ( "manifestation" "mode" "event" )
+                        ( "manifestation" "quality" "event" )
+                        ( "material" "kind" "kind" )
+                        ( "material" "kind" "subkind" )
+                        ( "material" "kind" "role" )
+                        ( "material" "kind" "historicalRole" )
+                        ( "material" "kind" "phase" )
+                        ( "material" "kind" "category" )
+                        ( "material" "kind" "mixin" )
+                        ( "material" "kind" "roleMixin" )
+                        ( "material" "kind" "phaseMixin" )
+                        ( "material" "kind" "relator" )
+                        ( "material" "subkind" "kind" )
+                        ( "material" "subkind" "subkind" )
+                        ( "material" "subkind" "role" )
+                        ( "material" "subkind" "historicalRole" )
+                        ( "material" "subkind" "phase" )
+                        ( "material" "subkind" "category" )
+                        ( "material" "subkind" "mixin" )
+                        ( "material" "subkind" "roleMixin" )
+                        ( "material" "subkind" "phaseMixin" )
+                        ( "material" "subkind" "relator" )
+                        ( "material" "role" "kind" )
+                        ( "material" "role" "subkind" )
+                        ( "material" "role" "role" )
+                        ( "material" "role" "historicalRole" )
+                        ( "material" "role" "phase" )
+                        ( "material" "role" "category" )
+                        ( "material" "role" "mixin" )
+                        ( "material" "role" "roleMixin" )
+                        ( "material" "role" "phaseMixin" )
+                        ( "material" "role" "relator" )
+                        ( "material" "historicalRole" "kind" )
+                        ( "material" "historicalRole" "subkind" )
+                        ( "material" "historicalRole" "role" )
+                        ( "material" "historicalRole" "historicalRole" )
+                        ( "material" "historicalRole" "phase" )
+                        ( "material" "historicalRole" "category" )
+                        ( "material" "historicalRole" "mixin" )
+                        ( "material" "historicalRole" "roleMixin" )
+                        ( "material" "historicalRole" "phaseMixin" )
+                        ( "material" "historicalRole" "relator" )
+                        ( "material" "phase" "kind" )
+                        ( "material" "phase" "subkind" )
+                        ( "material" "phase" "role" )
+                        ( "material" "phase" "historicalRole" )
+                        ( "material" "phase" "phase" )
+                        ( "material" "phase" "category" )
+                        ( "material" "phase" "mixin" )
+                        ( "material" "phase" "roleMixin" )
+                        ( "material" "phase" "phaseMixin" )
+                        ( "material" "phase" "relator" )
+                        ( "material" "category" "kind" )
+                        ( "material" "category" "subkind" )
+                        ( "material" "category" "role" )
+                        ( "material" "category" "historicalRole" )
+                        ( "material" "category" "phase" )
+                        ( "material" "category" "category" )
+                        ( "material" "category" "mixin" )
+                        ( "material" "category" "roleMixin" )
+                        ( "material" "category" "phaseMixin" )
+                        ( "material" "category" "relator" )
+                        ( "material" "mixin" "kind" )
+                        ( "material" "mixin" "subkind" )
+                        ( "material" "mixin" "role" )
+                        ( "material" "mixin" "historicalRole" )
+                        ( "material" "mixin" "phase" )
+                        ( "material" "mixin" "category" )
+                        ( "material" "mixin" "mixin" )
+                        ( "material" "mixin" "roleMixin" )
+                        ( "material" "mixin" "phaseMixin" )
+                        ( "material" "mixin" "relator" )
+                        ( "material" "roleMixin" "kind" )
+                        ( "material" "roleMixin" "subkind" )
+                        ( "material" "roleMixin" "role" )
+                        ( "material" "roleMixin" "historicalRole" )
+                        ( "material" "roleMixin" "phase" )
+                        ( "material" "roleMixin" "category" )
+                        ( "material" "roleMixin" "mixin" )
+                        ( "material" "roleMixin" "roleMixin" )
+                        ( "material" "roleMixin" "phaseMixin" )
+                        ( "material" "roleMixin" "relator" )
+                        ( "material" "phaseMixin" "kind" )
+                        ( "material" "phaseMixin" "subkind" )
+                        ( "material" "phaseMixin" "role" )
+                        ( "material" "phaseMixin" "historicalRole" )
+                        ( "material" "phaseMixin" "phase" )
+                        ( "material" "phaseMixin" "category" )
+                        ( "material" "phaseMixin" "mixin" )
+                        ( "material" "phaseMixin" "roleMixin" )
+                        ( "material" "phaseMixin" "phaseMixin" )
+                        ( "material" "phaseMixin" "relator" )
+                        ( "material" "relator" "kind" )
+                        ( "material" "relator" "subkind" )
+                        ( "material" "relator" "role" )
+                        ( "material" "relator" "historicalRole" )
+                        ( "material" "relator" "phase" )
+                        ( "material" "relator" "category" )
+                        ( "material" "relator" "mixin" )
+                        ( "material" "relator" "roleMixin" )
+                        ( "material" "relator" "phaseMixin" )
+                        ( "material" "relator" "relator" )
+                        ( "mediation" "relator" "kind" )
+                        ( "mediation" "relator" "subkind" )
+                        ( "mediation" "relator" "role" )
+                        ( "mediation" "relator" "historicalRole" )
+                        ( "mediation" "relator" "phase" )
+                        ( "mediation" "relator" "category" )
+                        ( "mediation" "relator" "mixin" )
+                        ( "mediation" "relator" "roleMixin" )
+                        ( "mediation" "relator" "phaseMixin" )
+                        ( "memberOf" "kind" "collective" )
+                        ( "memberOf" "subkind" "collective" )
+                        ( "memberOf" "role" "collective" )
+                        ( "memberOf" "historicalRole" "collective" )
+                        ( "memberOf" "phase" "collective" )
+                        ( "memberOf" "category" "collective" )
+                        ( "memberOf" "mixin" "collective" )
+                        ( "memberOf" "roleMixin" "collective" )
+                        ( "memberOf" "phaseMixin" "collective" )
+                        ( "participation" "kind" "event" )
+                        ( "participation" "subkind" "event" )
+                        ( "participation" "role" "event" )
+                        ( "participation" "historicalRole" "event" )
+                        ( "participation" "phase" "event" )
+                        ( "participation" "category" "event" )
+                        ( "participation" "mixin" "event" )
+                        ( "participation" "roleMixin" "event" )
+                        ( "participation" "phaseMixin" "event" )
+                        ( "subCollectionOf" "collective" "collective" )
+                        ( "subQuantityOf" "quantity" "quantity" )
+                        ( "termination" "event" "kind" )
+                        ( "termination" "event" "subkind" )
+                        ( "termination" "event" "role" )
+                        ( "termination" "event" "historicalRole" )
+                        ( "termination" "event" "phase" )
+                        ( "termination" "event" "relator" )
+                        ( "termination" "event" "mode" )
+                        ( "termination" "event" "quality" )
+                        ( "triggers" "situation" "event" )
+                        }
+                    }
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    # G9 — Properties met relatie-stereotype maar zonder domain of range
+    # [SA-001] sh:targetSubjectsOf en SPARQL: gufo:ontoumlStereotype → valor:ontoumlStereotype
+    ###############################################################################
+    
+    shg:OntoumlRelationDomainRangeShape
+        a sh:NodeShape ;
+        sh:targetSubjectsOf valor:ontoumlStereotype ;        # [SA-001]
+        sh:name "OntoumlRelationDomainRangeShape" ;
+        sh:description
+            """G9 (waarschuwing): Een owl:ObjectProperty met relatie-stereotype
+             hoort een rdfs:domain en rdfs:range te hebben zodat G8 kan worden
+             gecontroleerd (DD-026).
+             [SA-001] v0.2: valor:ontoumlStereotype.""" ;
+    
+        sh:severity sh:Warning ;
+    
+        sh:sparql [
+            sh:name    "G9a-domain-aanwezig" ;
+            sh:message "G9a (waarschuwing): Property met relatie-stereotype mist rdfs:domain — G8-validatie niet mogelijk." ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this
+                WHERE {
+                    $this a owl:ObjectProperty .
+                    $this valor:ontoumlStereotype ?relStereo .
+                    VALUES ?relStereo {
+                        "characterization" "mediation" "externalDependence"
+                        "material" "comparative" "participation"
+                        "creation" "termination" "bringsAbout"
+                        "triggers" "manifestation" "historicalDependence"
+                        "componentOf" "subCollectionOf" "subQuantityOf" "memberOf"
+                    }
+                    FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
+                    FILTER NOT EXISTS { $this rdfs:domain ?d }
+                }
+            """
+        ] ;
+    
+        sh:sparql [
+            sh:name    "G9b-range-aanwezig" ;
+            sh:message "G9b (waarschuwing): Property met relatie-stereotype mist rdfs:range — G8-validatie niet mogelijk." ;
+            sh:prefixes shg: ;
+            sh:select  """
+                SELECT $this
+                WHERE {
+                    $this a owl:ObjectProperty .
+                    $this valor:ontoumlStereotype ?relStereo .
+                    VALUES ?relStereo {
+                        "characterization" "mediation" "externalDependence"
+                        "material" "comparative" "participation"
+                        "creation" "termination" "bringsAbout"
+                        "triggers" "manifestation" "historicalDependence"
+                        "componentOf" "subCollectionOf" "subQuantityOf" "memberOf"
+                    }
+                    FILTER (!STRSTARTS(STR($this), "http://purl.org/nemo/gufo#"))
+                    FILTER NOT EXISTS { $this rdfs:range ?r }
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    # Prefix declarations for SPARQL constraints
+    ###############################################################################
+    
+    shg:
+        a sh:PrefixDeclaration ;
+        sh:declare [
+            sh:prefix    "gufo" ;
+            sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "valor" ;
+            sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "rdf" ;
+            sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "rdfs" ;
+            sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "owl" ;
+            sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "ufoc" ;
+            sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "ufol" ;
+            sh:namespace "https://valor-ecosystem.nl/ontology/ufo-l#"^^xsd:anyURI
+        ] ;
+        sh:declare [
+            sh:prefix    "xsd" ;
+            sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI
+        ] .
+    
+    ###############################################################################
+    # END OF SHACL — gUFO Core  (v0.2)
+    ###############################################################################
+}

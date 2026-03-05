@@ -1,0 +1,425 @@
+# TRiG version of 00e-coodm.ttl
+<https://valor-ecosystem.nl/ontology/coodm> {
+    ###############################################################################
+    #  VALOR-O — Module 00e: COoDM Decision Ontology + COVER Value Ascription
+    #  Versie 0.2 — gUFO-typefouten gecorrigeerd (DD-049)
+    #
+    #  Correcties t.o.v. v0.1:
+    #   [E-001] cover:ValueAscription: rdf:type gufo:RelationshipType VERWIJDERD
+    #           gufo:RelationshipType is voor object-properties, niet voor klassen.
+    #           (DD-049)
+    #   [E-002] cover:ValuePerception: rdf:type gufo:Phase VERWIJDERD
+    #           ValueAscription is een Relator (ExtrinsicAspect), geen Endurant-sortal.
+    #           gufo:Phase is uitsluitend voor anti-rigide Endurant-fases. (DD-049/DD-050)
+    #   [E-003] cover:ValueAssertion: rdf:type gufo:Phase VERWIJDERD (zelfde reden)
+    #   [E-004] cover:VAComponent: rdf:type gufo:RelationshipType VERWIJDERD
+    #           (zelfde reden als E-001)
+    #
+    #  Ongewijzigd correct:
+    #   - cover:ValueType: rdf:type gufo:EventType ✓ (intentioneel higher-order type)
+    #   - cover:ValueExperience: rdf:type gufo:EventType ✓
+    #   - cover:ValueBeholder/ValueBeneficiary: rdf:type gufo:RoleMixin ✓
+    #   - coodm:DecisionSituation/DecisionAlternative/ValueTension: rdf:type gufo:SituationType ✓
+    #   - coodm:Deliberation: rdf:type gufo:EventType ✓
+    #   - coodm:Decision/Preference: mode, GEEN rdf:type ✓ (DD-029)
+    ###############################################################################
+    
+    @prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+    @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
+    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+    @prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+    
+    vo:coodm
+        a owl:Ontology ;
+        rdfs:label "VALOR-O Module 00e — COoDM Decision Ontology + COVER Value Ascription"@en ;
+        owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/ufo-b> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
+        owl:versionInfo "0.2" ;
+        rdfs:comment
+            """Integreert COoDM (Guizzardi et al. 2020) en een eerste opzet van
+             COVER (Guizzardi et al. 2022) in VALOR-O. Fundeert het
+             Delibera-perspectief (besluitvorming) en het Axia-perspectief
+             (waarden) in VALOR."""@nl .
+    
+    
+    ###############################################################################
+    #  §A — COoDM: Besluitvormingskern
+    ###############################################################################
+    
+    coodm:DecisionSituation
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "DecisionSituation"@en , "Beslissingssituatie"@nl ;
+        rdfs:comment
+            """Een situatie die een agent ervaart als onbevredigend: zijn intentionele
+             toestand (Goals, Desires) is niet vervuld. De DecisionSituation is de
+             trigger voor een Deliberation-event. Conform COoDM §3."""@nl .
+    
+    coodm:Deliberation
+        a owl:Class ;
+        rdf:type gufo:EventType ;
+        valor:ontoumlStereotype "event" ;
+        rdfs:subClassOf gufo:Action ;
+        rdfs:label "Deliberation"@en , "Deliberatie"@nl ;
+        rdfs:comment
+            """Het besluitvormingsproces als intentioneel event. Getriggerd door een
+             DecisionSituation, overweegt één of meer DecisionAlternatives op basis
+             van Preferences (ValueAscriptions), en resulteert in een Decision.
+             Conform COoDM §3. (DD-030, DD-031)"""@nl .
+    
+    coodm:DecisionAlternative
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "DecisionAlternative"@en , "Beslissingsalternatief"@nl ;
+        rdfs:comment
+            """Een mogelijke toestand (Situation) die zou ontstaan als een bepaalde
+             handelwijze wordt gekozen. Conform COoDM §3."""@nl .
+    
+    coodm:Decision
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Intention ;
+        rdfs:label "Decision"@en , "Beslissing"@nl ;
+        rdfs:comment
+            """De uitkomst van een Deliberation: een nieuwe Intention van de agent.
+             Decision is een IntrinsicMode (Intention), NIET een Event.
+             [DD-029] Geen rdf:type in Taxonomy of Types. (DD-030; COoDM §3)"""@nl .
+    
+    coodm:DecisionGoal
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Goal ;
+        rdfs:label "DecisionGoal"@en , "Beslissingsdoel"@nl ;
+        rdfs:comment
+            """De propositiële inhoud van een Decision: de gewenste situatie die
+             de agent heeft besloten na te streven via Deliberation. (COoDM §3)"""@nl .
+    
+    
+    ###############################################################################
+    #  §A6 — COoDM Properties
+    ###############################################################################
+    
+    coodm:triggeredBy
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "triggering" ;
+        rdfs:subPropertyOf gufo:wasTriggeredBy ;
+        rdfs:label "triggered by"@en ;
+        rdfs:domain coodm:Deliberation ;
+        rdfs:range  coodm:DecisionSituation .
+    
+    coodm:considers
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "considers"@en ;
+        rdfs:domain coodm:Deliberation ;
+        rdfs:range  coodm:DecisionAlternative .
+    
+    coodm:resultedIn
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "creation" ;
+        rdfs:subPropertyOf gufo:wasCreatedIn ;
+        rdfs:label "resulted in"@en ;
+        rdfs:domain coodm:Deliberation ;
+        rdfs:range  coodm:Decision .
+    
+    coodm:decisionGoal
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf gufo:hasPropositionalContent ;
+        rdfs:label "decision goal"@en ;
+        rdfs:domain coodm:Decision ;
+        rdfs:range  coodm:DecisionGoal .
+    
+    coodm:manifestedAs
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "manifestation" ;
+        rdfs:label "manifested as"@en ;
+        rdfs:domain coodm:Decision ;
+        rdfs:range  gufo:Action .
+    
+    coodm:guidedByPolicy
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "guided by policy"@en ;
+        rdfs:domain coodm:Deliberation ;
+        rdfs:range  ufol:Policy .
+    
+    coodm:hasPreference
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "has preference"@en ;
+        rdfs:domain coodm:Deliberation ;
+        rdfs:range  coodm:Preference .
+    
+    
+    ###############################################################################
+    #  §B — COVER: Waarde-ascriptie
+    ###############################################################################
+    
+    ###############################################################################
+    #  §B1 — ValueType
+    ###############################################################################
+    
+    cover:ValueType
+        a owl:Class ;
+        rdf:type gufo:EventType ;
+        valor:ontoumlStereotype "event" ;
+        rdfs:subClassOf gufo:EventType ;
+        rdfs:label "ValueType"@en , "Waardetype"@nl ;
+        rdfs:comment
+            """Een EventType dat ValueExperiences (events) classificeert.
+             Conform Sales et al. (2017) §4. (DD-036)"""@nl .
+    
+    cover:PrivacyExperience
+        a cover:ValueType ;
+        rdfs:label "PrivacyExperience"@en , "Privacybeleving"@nl .
+    
+    cover:FairnessExperience
+        a cover:ValueType ;
+        rdfs:label "FairnessExperience"@en , "Rechtvaardigheidsbeleving"@nl .
+    
+    cover:AutonomyExperience
+        a cover:ValueType ;
+        rdfs:label "AutonomyExperience"@en , "Autonomiebeleving"@nl .
+    
+    cover:EfficiencyExperience
+        a cover:ValueType ;
+        rdfs:label "EfficiencyExperience"@en , "Efficiëntiebeleving"@nl .
+    
+    cover:TransparencyExperience
+        a cover:ValueType ;
+        rdfs:label "TransparencyExperience"@en , "Transparantiebeleving"@nl .
+    
+    cover:SolidarityExperience
+        a cover:ValueType ;
+        rdfs:label "SolidarityExperience"@en , "Solidariteitsbeleving"@nl .
+    
+    
+    ###############################################################################
+    #  §B2 — ValueExperience
+    ###############################################################################
+    
+    cover:ValueExperience
+        a owl:Class ;
+        rdf:type gufo:EventType ;
+        valor:ontoumlStereotype "event" ;
+        rdfs:subClassOf gufo:Event ;
+        rdfs:label "ValueExperience"@en , "Waardebeleving"@nl ;
+        rdfs:comment
+            """Een waardebeleving als event: de episode waarin een ValueBeneficiary
+             een waarde ervaart. Conform Sales et al. (2017) §4. (DD-036)"""@nl .
+    
+    
+    ###############################################################################
+    #  §B3 — ValueBeholder en ValueBeneficiary
+    ###############################################################################
+    
+    cover:ValueBeholder
+        a owl:Class ;
+        rdf:type gufo:RoleMixin ;
+        valor:ontoumlStereotype "roleMixin" ;
+        rdfs:subClassOf gufo:RoleMixin ;
+        rdfs:label "ValueBeholder"@en , "Waarde-beoordelaar"@nl ;
+        rdfs:comment
+            """De agent die in een ValueAscription de rol van beoordelaar speelt.
+             RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"""@nl .
+    
+    cover:ValueBeneficiary
+        a owl:Class ;
+        rdf:type gufo:RoleMixin ;
+        valor:ontoumlStereotype "roleMixin" ;
+        rdfs:subClassOf gufo:RoleMixin ;
+        rdfs:label "ValueBeneficiary"@en , "Waarde-ontvanger"@nl ;
+        rdfs:comment
+            """De agent voor wie het waarde-oordeel geldt in een ValueAscription.
+             RoleMixin conform Sales et al. (2017) Fig. 2. (DD-036)"""@nl .
+    
+    
+    ###############################################################################
+    #  §B4 — ValueAscription
+    #
+    #  [E-001] rdf:type gufo:RelationshipType VERWIJDERD (v0.2, DD-049):
+    #    gufo:RelationshipType classificeert object-properties in de Taxonomy of
+    #    Types, niet klassen. ValueAscription is een Relator-subklasse via
+    #    rdfs:subClassOf gufo:Relator — dat positioneert haar correct.
+    #
+    #  [E-002/E-003] ValuePerception/ValueAssertion: rdf:type gufo:Phase VERWIJDERD (v0.2):
+    #    gufo:Phase is voor anti-rigide fases van Endurant-sortalen. ValueAscription
+    #    is een Relator (ExtrinsicAspect), geen Endurant-sortal. Phase-classificatie
+    #    is hier niet van toepassing. (DD-049/DD-050)
+    ###############################################################################
+    
+    cover:ValueAscription
+        a owl:Class ;
+        valor:ontoumlStereotype "relator" ;
+        rdfs:subClassOf gufo:Relator ;
+        rdfs:label "ValueAscription"@en , "Waarde-ascriptie"@nl ;
+        rdfs:comment
+            """Een waarde-ascriptie als Relator: medieert ValueBeholder en
+             ValueBeneficiary. Conform Sales et al. (2017) Fig. 2. (DD-036)
+             [E-001] rdf:type gufo:RelationshipType verwijderd (DD-049)."""@nl .
+    
+    cover:ValuePerception
+        a owl:Class ;
+        valor:ontoumlStereotype "phase" ;
+        rdfs:subClassOf cover:ValueAscription ;
+        rdfs:label "ValuePerception"@en , "Waarde-perceptie"@nl ;
+        rdfs:comment
+            """Een ValueAscription waarbij beholder en beneficiary dezelfde agent
+             zijn: zelf-beoordeling. Conform Sales et al. (2017) §4.
+             [E-002] rdf:type gufo:Phase verwijderd (DD-049/DD-050):
+             Phase is voor Endurant-fases; ValueAscription is een Relator."""@nl .
+    
+    cover:ValueAssertion
+        a owl:Class ;
+        valor:ontoumlStereotype "phase" ;
+        rdfs:subClassOf cover:ValueAscription ;
+        rdfs:label "ValueAssertion"@en , "Waarde-assertie"@nl ;
+        rdfs:comment
+            """Een ValueAscription waarbij beholder en beneficiary verschillende
+             agents zijn. Fundeert Value Propositions (00f).
+             Conform Sales et al. (2017) §4.
+             [E-003] rdf:type gufo:Phase verwijderd (DD-049/DD-050)."""@nl .
+    
+    
+    ###############################################################################
+    #  §B5 — Preference
+    ###############################################################################
+    
+    coodm:Preference
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Belief ;
+        rdfs:label "Preference"@en , "Preferentie"@nl ;
+        rdfs:comment
+            """Een ufoc:Belief van een delibererende agent die zijn waarde-oordeel
+             uitdrukt over een DecisionAlternative. Het mentale substraat dat een
+             ValueAscription fundeert via coodm:groundsAscription.
+             [DD-029] Geen rdf:type in Taxonomy of Types. (DD-036)"""@nl .
+    
+    
+    ###############################################################################
+    #  §B6 — ValueTension
+    ###############################################################################
+    
+    cover:ValueTension
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "ValueTension"@en , "Waardenspanning"@nl ;
+        rdfs:comment
+            "Een situatie waarin twee of meer ValueExperiences in conflict zijn."@nl .
+    
+    
+    ###############################################################################
+    #  §B7 — ValueScale
+    ###############################################################################
+    
+    cover:ValueScale
+        a owl:Class ;
+        rdfs:label "ValueScale"@en , "Waardeschaal"@nl ;
+        rdfs:comment
+            """De valentie van een ValueExperience: positief, negatief of neutraal.
+             (DD-036)"""@nl .
+    
+    cover:PositiveValence
+        a cover:ValueScale ;
+        rdfs:label "positive valence"@en , "positieve valentie"@nl .
+    
+    cover:NegativeValence
+        a cover:ValueScale ;
+        rdfs:label "negative valence"@en , "negatieve valentie"@nl .
+    
+    cover:NeutralValence
+        a cover:ValueScale ;
+        rdfs:label "neutral valence"@en , "neutrale valentie"@nl .
+    
+    
+    ###############################################################################
+    #  §B8 — COVER Properties
+    ###############################################################################
+    
+    cover:hasBeneficiary
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "participational" ;
+        rdfs:subPropertyOf gufo:hasParticipant ;
+        rdfs:label "has beneficiary"@en ;
+        rdfs:domain cover:ValueExperience ;
+        rdfs:range  ufoc:Agent .
+    
+    cover:hasValueContext
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "has value context"@en ;
+        rdfs:domain cover:ValueExperience ;
+        rdfs:range  gufo:Situation .
+    
+    cover:ofType
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "instantiation" ;
+        rdfs:label "of type"@en ;
+        rdfs:domain cover:ValueExperience ;
+        rdfs:range  cover:ValueType .
+    
+    cover:hasValence
+        a owl:ObjectProperty ;
+        rdfs:label "has valence"@en ;
+        rdfs:domain cover:ValueExperience ;
+        rdfs:range  cover:ValueScale .
+    
+    cover:hasBeholderAgent
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf gufo:mediates ;
+        rdfs:label "has beholder agent"@en ;
+        rdfs:domain cover:ValueAscription ;
+        rdfs:range  ufoc:Agent .
+    
+    cover:hasBeneficiaryAgent
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf gufo:mediates ;
+        rdfs:label "has beneficiary agent"@en ;
+        rdfs:domain cover:ValueAscription ;
+        rdfs:range  ufoc:Agent .
+    
+    cover:ascribesValueTo
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf gufo:mediates ;
+        rdfs:label "ascribes value to"@en ;
+        rdfs:domain cover:ValueAscription ;
+        rdfs:range  cover:ValueExperience .
+    
+    coodm:groundsAscription
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "grounds ascription"@en ;
+        rdfs:domain coodm:Preference ;
+        rdfs:range  cover:ValueAscription .
+    
+    cover:involvesTension
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "involves tension"@en ;
+        rdfs:domain cover:ValueTension ;
+        rdfs:range  cover:ValueExperience .
+    
+    ###############################################################################
+    #  Einde module 00e-coodm.ttl  (v0.2)
+    ###############################################################################
+}

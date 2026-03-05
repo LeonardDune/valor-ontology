@@ -1,0 +1,630 @@
+# TRiG version of 00g-acta.shacl.ttl
+<https://valor-ecosystem.nl/shacl/acta> {
+    ###############################################################################
+    #  VALOR-O — Module 00g SHACL: ACTA Transactieontologie
+    #
+    #  Versie : 0.5 (maart 2026)
+    #
+    #  Constraints:
+    #    §A  Transaction
+    #      G1  Transaction.hasInitiator     — vereist precies 1 Agent
+    #      G2  Transaction.hasExecutor      — vereist precies 1 Agent
+    #      G3  Transaction.hasTransactionResult — vereist precies 1 Result
+    #      G4  Transaction: Initiator ≠ Executor (publieke transactie)
+    #    §B  ProductionAct
+    #      G5  ProductionAct.isProductionActOf — vereist precies 1 Transaction
+    #      G6  ProductionAct.performedBy    — vereist precies 1 Agent
+    #    §C  CoordinationAct
+    #      G7  CoordinationAct.performedBy  — vereist precies 1 Agent
+    #    §D  Juridische koppelingen
+    #      G8  PositiveResult → createsLegalRelator aanbeveling (Warning)
+    #    §E  CoordinationFact type-consistentie (v0.2)
+    #      G-F2a..i  act→fact type-consistentie (9 checks)
+    #    §F  TransactionKindStep (v0.2)
+    #      G-TS1  inTransaction — precies 1 Transaction
+    #      G-TS2  ofFactKind    — precies 1 CoordinationFact
+    #    §G  ResponseLink en WaitLink (v0.2)
+    #      G-RL1  fromStep — verplicht, precies 1
+    #      G-RL2  toStep   — verplicht, precies 1
+    #      G-RL3  fromStep ≠ toStep
+    #      G-WL1  waitingRole — verplicht, ≥1
+    #      G-WL2  awaitedStep — verplicht, precies 1
+    #    §H  TransactorRole en CSD-structuur (v0.2)
+    #      G-TAR1 transactorActorRole  — precies 1 ActorRole
+    #      G-TAR2 transactorTransaction — precies 1 Transaction
+    #      G-TAR3 Transaction zonder TransactorRole (Warning)
+    #      G-CTAR CompositeTransactorRole — RoleMixin-verificatie (v0.4)
+    #      G-TN   TransactorNetwork — minimaal 2 TransactorRole-leden (v0.4)
+    #      G-IL1  initiatorLinkRole        — precies 1 ActorRole
+    #      G-IL2  initiatorLinkTransaction — precies 1 Transaction
+    #      G-AL1  accessRole        — ≥1 ActorRole
+    #      G-AL2  accessTransaction — ≥1 Transaction
+    #    §I  O/I/D-lagen (v0.5)
+    #      G-OID1 Transaction is in precies één ALPHA-laag (O, I of D) (Warning)
+    ###############################################################################
+    
+    @prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+    @prefix shacta: <https://valor-ecosystem.nl/shacl/acta#> .
+    @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+    @prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+    @prefix sh:    <http://www.w3.org/ns/shacl#> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    
+    
+    ###############################################################################
+    #  §A — Transaction constraints
+    ###############################################################################
+    
+    shacta:TransactionShape
+        a sh:NodeShape ;
+        sh:targetClass acta:Transaction ;
+        sh:name "TransactionShape" ;
+        sh:description
+            """G1–G3: Een transactie vereist precies één Initiator, één Executor
+             en precies één TransactionResult. Conform DEMO CTP en
+             Almeida et al. (2013).""" ;
+    
+        sh:property [
+            sh:path acta:hasInitiator ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class ufoc:Agent ;
+            sh:severity sh:Violation ;
+            sh:message "G1: Transaction.hasInitiator vereist precies één ufoc:Agent."
+        ] ;
+    
+        sh:property [
+            sh:path acta:hasExecutor ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class ufoc:Agent ;
+            sh:severity sh:Violation ;
+            sh:message "G2: Transaction.hasExecutor vereist precies één ufoc:Agent."
+        ] ;
+    
+        sh:property [
+            sh:path acta:hasTransactionResult ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class acta:TransactionResult ;
+            sh:severity sh:Violation ;
+            sh:message "G3: Transaction.hasTransactionResult vereist precies één acta:TransactionResult."
+        ] .
+    
+    
+    ###############################################################################
+    #  G4 — PublicServiceTransaction: Initiator ≠ Executor
+    ###############################################################################
+    
+    shacta:PublicServiceTransactionShape
+        a sh:NodeShape ;
+        sh:targetClass acta:PublicServiceTransaction ;
+        sh:name "PublicServiceTransactionShape" ;
+        sh:description
+            """G4: In een PublicServiceTransaction moeten de Initiator en
+             Executor verschillende agents zijn.""" ;
+    
+        sh:sparql [
+            sh:message "G4: PublicServiceTransaction.hasInitiator en hasExecutor mogen niet dezelfde Agent zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [
+                sh:declare [
+                    sh:prefix "acta" ;
+                    sh:namespace "https://valor-ecosystem.nl/ontology/acta#"
+                ]
+            ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this acta:hasInitiator ?initiator .
+                    $this acta:hasExecutor ?executor .
+                    FILTER (?initiator = ?executor)
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    #  §B — ProductionAct constraints
+    ###############################################################################
+    
+    shacta:ProductionActShape
+        a sh:NodeShape ;
+        sh:targetClass acta:ProductionAct ;
+        sh:name "ProductionActShape" ;
+        sh:description
+            """G5–G6: Een ProductionAct behoort tot precies één Transaction
+             en heeft precies één performer (de Executor).""" ;
+    
+        sh:property [
+            sh:path acta:isProductionActOf ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class acta:Transaction ;
+            sh:severity sh:Violation ;
+            sh:message "G5: ProductionAct.isProductionActOf vereist precies één acta:Transaction."
+        ] ;
+    
+        sh:property [
+            sh:path acta:performedBy ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class ufoc:Agent ;
+            sh:severity sh:Violation ;
+            sh:message "G6: ProductionAct.performedBy vereist precies één ufoc:Agent (de Executor)."
+        ] .
+    
+    
+    ###############################################################################
+    #  §C — CoordinationAct constraints
+    ###############################################################################
+    
+    shacta:CoordinationActShape
+        a sh:NodeShape ;
+        sh:targetClass acta:CoordinationAct ;
+        sh:name "CoordinationActShape" ;
+        sh:description "G7: Een CoordinationAct heeft precies één performer." ;
+    
+        sh:property [
+            sh:path acta:performedBy ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class ufoc:Agent ;
+            sh:severity sh:Violation ;
+            sh:message "G7: CoordinationAct.performedBy vereist precies één ufoc:Agent."
+        ] .
+    
+    
+    ###############################################################################
+    #  §D — Juridische koppelingen
+    ###############################################################################
+    
+    shacta:PositiveResultShape
+        a sh:NodeShape ;
+        sh:targetClass acta:PositiveResult ;
+        sh:name "PositiveResultShape" ;
+        sh:description
+            """G8: Een PositiveResult wordt aanbevolen gekoppeld te zijn aan
+             een nieuwe LegalRelator via createsLegalRelator op de ProductionAct.""" ;
+    
+        sh:sparql [
+            sh:message "G8: Dit PositiveResult is niet gekoppeld aan een nieuwe LegalRelator via de ProductionAct — overweeg acta:createsLegalRelator toe te voegen." ;
+            sh:severity sh:Warning ;
+            sh:prefixes [
+                sh:declare [
+                    sh:prefix "acta" ;
+                    sh:namespace "https://valor-ecosystem.nl/ontology/acta#"
+                ]
+            ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    ?tx acta:hasTransactionResult $this .
+                    ?act acta:isProductionActOf ?tx .
+                    FILTER NOT EXISTS { ?act acta:createsLegalRelator ?lr }
+                }
+            """
+        ] .
+    
+    
+    ###############################################################################
+    #  §E — CoordinationFact fase-disjointheid en type-consistentie
+    #
+    #  G-F1 (documentatief): De negen CoordinationFact-fases zijn OWL-disjunct
+    #  verklaard via owl:AllDisjointClasses in 00g-acta.ttl. Operationele
+    #  handhaving op instantieniveau: een TransactionKindStep heeft precies één
+    #  ofFactKind (G-TS2 maxCount 1). Een aparte SPARQL-query is redundant
+    #  door de OWL-disjointness.
+    shacta:CoordFactDisjointnessNote
+        a sh:NodeShape ;
+        sh:name "G-F1-documentation" ;
+        sh:description
+            """G-F1: CoordinationFact-fases zijn disjunct (owl:AllDisjointClasses
+             in 00g-acta.ttl). Instantieniveau-handhaving via G-TS2 (maxCount 1
+             op ofFactKind). Geen extra SPARQL-constraint nodig.""" .
+    
+    
+    #  G-F2: Type-consistentie act → fact (v0.2)
+    #
+    #  G-F2: Elke CoordinationAct brengt via broughtAboutFact uitsluitend
+    #  het corresponderende CoordinationFact-subtype voort.
+    #  Negen SPARQL-checks — één per type-paar.
+    ###############################################################################
+    
+    shacta:ActFactTypeConsistencyShape
+        a sh:NodeShape ;
+        sh:targetClass acta:CoordinationAct ;
+        sh:name "ActFactTypeConsistencyShape" ;
+        sh:description
+            "G-F2: Type-consistentie act→fact via acta:broughtAboutFact." ;
+    
+        sh:sparql [
+            sh:message "G-F2a: RequestAct.broughtAboutFact moet een acta:RequestedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:RequestAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:RequestedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2b: PromiseAct.broughtAboutFact moet een acta:PromisedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:PromiseAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:PromisedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2c: DeclareAct.broughtAboutFact moet een acta:DeclaredFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:DeclareAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:DeclaredFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2d: AcceptAct.broughtAboutFact moet een acta:AcceptedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:AcceptAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:AcceptedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2e: DeclineAct.broughtAboutFact moet een acta:DeclinedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:DeclineAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:DeclinedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2f: RejectAct.broughtAboutFact moet een acta:RejectedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:RejectAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:RejectedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2g: RevokeAct.broughtAboutFact moet een acta:RevokedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:RevokeAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:RevokedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2h: AllowAct.broughtAboutFact moet een acta:AllowedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:AllowAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:AllowedFact }
+                }"""
+        ] ;
+    
+        sh:sparql [
+            sh:message "G-F2i: RefuseAct.broughtAboutFact moet een acta:RefusedFact zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:RefuseAct ;
+                          acta:broughtAboutFact ?f .
+                    FILTER NOT EXISTS { ?f a acta:RefusedFact }
+                }"""
+        ] .
+    
+    
+    ###############################################################################
+    #  §F — TransactionKindStep constraints (v0.2)
+    ###############################################################################
+    
+    shacta:TransactionKindStepShape
+        a sh:NodeShape ;
+        sh:targetClass acta:TransactionKindStep ;
+        sh:name "TransactionKindStepShape" ;
+        sh:description
+            """G-TS1–G-TS2: Een TransactionKindStep verbindt precies één
+             Transaction (inTransaction) en precies één CoordinationFact-type
+             (ofFactKind).""" ;
+    
+        sh:property [
+            sh:path     acta:inTransaction ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:Transaction ;
+            sh:severity sh:Violation ;
+            sh:message  "G-TS1: TransactionKindStep.inTransaction vereist precies één acta:Transaction."
+        ] ;
+    
+        sh:property [
+            sh:path     acta:ofFactKind ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:CoordinationFact ;
+            sh:severity sh:Violation ;
+            sh:message  "G-TS2: TransactionKindStep.ofFactKind vereist precies één acta:CoordinationFact."
+        ] .
+    
+    
+    ###############################################################################
+    #  §G — ResponseLink en WaitLink constraints (v0.2)
+    ###############################################################################
+    
+    shacta:ResponseLinkShape
+        a sh:NodeShape ;
+        sh:targetClass acta:ResponseLink ;
+        sh:name "ResponseLinkShape" ;
+        sh:description
+            """G-RL1–G-RL3: ResponseLink vereist fromStep en toStep
+             (beide verplicht, precies 1), en fromStep ≠ toStep.""" ;
+    
+        sh:property [
+            sh:path     acta:fromStep ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:TransactionKindStep ;
+            sh:severity sh:Violation ;
+            sh:message  "G-RL1: ResponseLink.fromStep vereist precies één acta:TransactionKindStep."
+        ] ;
+    
+        sh:property [
+            sh:path     acta:toStep ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:TransactionKindStep ;
+            sh:severity sh:Violation ;
+            sh:message  "G-RL2: ResponseLink.toStep vereist precies één acta:TransactionKindStep."
+        ] ;
+    
+        sh:sparql [
+            sh:message  "G-RL3: ResponseLink.fromStep en toStep mogen niet dezelfde TransactionKindStep zijn." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this acta:fromStep ?from ;
+                          acta:toStep   ?to .
+                    FILTER (?from = ?to)
+                }"""
+        ] .
+    
+    shacta:WaitLinkShape
+        a sh:NodeShape ;
+        sh:targetClass acta:WaitLink ;
+        sh:name "WaitLinkShape" ;
+        sh:description "G-WL1–G-WL2: WaitLink vereist waitingRole en awaitedStep." ;
+    
+        sh:property [
+            sh:path     acta:waitingRole ;
+            sh:minCount 1 ;
+            sh:class    acta:ActorRole ;
+            sh:severity sh:Violation ;
+            sh:message  "G-WL1: WaitLink.waitingRole vereist minimaal één acta:ActorRole."
+        ] ;
+    
+        sh:property [
+            sh:path     acta:awaitedStep ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:TransactionKindStep ;
+            sh:severity sh:Violation ;
+            sh:message  "G-WL2: WaitLink.awaitedStep vereist precies één acta:TransactionKindStep."
+        ] .
+    
+    
+    ###############################################################################
+    #  §H — TransactorRole en CSD-structuur constraints (v0.2)
+    ###############################################################################
+    
+    shacta:TransactorRoleShape
+        a sh:NodeShape ;
+        sh:targetClass acta:TransactorRole ;
+        sh:name "TransactorRoleShape" ;
+        sh:description
+            """G-TAR1–G-TAR2: TransactorRole verbindt precies één ActorRole
+             en precies één Transaction.""" ;
+    
+        sh:property [
+            sh:path     acta:transactorActorRole ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:ActorRole ;
+            sh:severity sh:Violation ;
+            sh:message  "G-TAR1: TransactorRole.transactorActorRole vereist precies één acta:ActorRole."
+        ] ;
+    
+        sh:property [
+            sh:path     acta:transactorTransaction ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:Transaction ;
+            sh:severity sh:Violation ;
+            sh:message  "G-TAR2: TransactorRole.transactorTransaction vereist precies één acta:Transaction."
+        ] .
+    
+    shacta:TransactionHasTransactorShape
+        a sh:NodeShape ;
+        sh:targetClass acta:Transaction ;
+        sh:name "TransactionHasTransactorShape" ;
+        sh:description
+            """G-TAR3: Aanbeveling dat elke Transaction gekoppeld is aan
+             minimaal één TransactorRole (Warning).""" ;
+    
+        sh:sparql [
+            sh:message  "G-TAR3: Deze Transaction heeft geen geassocieerde TransactorRole — overweeg acta:transactorTransaction toe te voegen." ;
+            sh:severity sh:Warning ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    FILTER NOT EXISTS {
+                        ?tar acta:transactorTransaction $this .
+                    }
+                }"""
+        ] .
+    
+    #  G-CTAR: CompositeTransactorRole is een gufo:RoleMixin (v0.4, DD-051).
+    #  De vorige constraint (compositeHasTransactorRole minCount 2) is verwijderd:
+    #  die property bestaat niet meer op CTAR. De aggregatieconstraint zit nu op
+    #  acta:TransactorNetwork (G-TN hieronder).
+    #  G-CTAR verifieert dat een CTAR niet per ongeluk als Collection is geclassificeerd.
+    shacta:CompositeTransactorRoleShape
+        a sh:NodeShape ;
+        sh:targetClass acta:CompositeTransactorRole ;
+        sh:name "CompositeTransactorRoleShape" ;
+        sh:description
+            """G-CTAR (v0.4): CompositeTransactorRole is een gufo:RoleMixin —
+             perspectief-afhankelijk SoI-boundary-concept (DD-051).
+             Aggregatieconstraint zit op acta:TransactorNetwork (G-TN).
+             Warning als CTAR per ongeluk als Collection is geclassificeerd.""" ;
+    
+        sh:sparql [
+            sh:message  "G-CTAR: CompositeTransactorRole mag niet als gufo:Collection zijn geclassificeerd — gebruik acta:TransactorNetwork voor de aggregatie (DD-051)." ;
+            sh:severity sh:Warning ;
+            sh:prefixes [
+                sh:declare [ sh:prefix "acta" ;
+                    sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ;
+                sh:declare [ sh:prefix "gufo" ;
+                    sh:namespace "http://purl.org/nemo/gufo#" ]
+            ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this a acta:CompositeTransactorRole .
+                    FILTER EXISTS { $this a gufo:Collection }
+                }"""
+        ] .
+    
+    
+    #  G-TN: TransactorNetwork vereist minimaal 2 TransactorRole-leden.
+    #  Weak Supplementation Principle voor gufo:Collection — analoog aan
+    #  G-MTK (MultipleTransactionKind) en DD-007 (ComplexEvent).
+    shacta:TransactorNetworkShape
+        a sh:NodeShape ;
+        sh:targetClass acta:TransactorNetwork ;
+        sh:name "TransactorNetworkShape" ;
+        sh:description
+            """G-TN: Een TransactorNetwork bevat minimaal 2 TransactorRole-leden
+             (Weak Supplementation voor gufo:Collection, DD-051).""" ;
+    
+        sh:property [
+            sh:path     acta:networkHasTransactorRole ;
+            sh:minCount 2 ;
+            sh:class    acta:TransactorRole ;
+            sh:severity sh:Violation ;
+            sh:message  "G-TN: TransactorNetwork vereist minimaal 2 acta:TransactorRole-leden (Weak Supplementation, DD-051)."
+        ] .
+    
+    shacta:InitiatorLinkShape
+        a sh:NodeShape ;
+        sh:targetClass acta:InitiatorLink ;
+        sh:name "InitiatorLinkShape" ;
+        sh:description "G-IL1–G-IL2: InitiatorLink verbindt precies één ActorRole en Transaction." ;
+    
+        sh:property [
+            sh:path     acta:initiatorLinkRole ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:ActorRole ;
+            sh:severity sh:Violation ;
+            sh:message  "G-IL1: InitiatorLink.initiatorLinkRole vereist precies één acta:ActorRole."
+        ] ;
+    
+        sh:property [
+            sh:path     acta:initiatorLinkTransaction ;
+            sh:minCount 1 ; sh:maxCount 1 ;
+            sh:class    acta:Transaction ;
+            sh:severity sh:Violation ;
+            sh:message  "G-IL2: InitiatorLink.initiatorLinkTransaction vereist precies één acta:Transaction."
+        ] .
+    
+    shacta:AccessLinkShape
+        a sh:NodeShape ;
+        sh:targetClass acta:AccessLink ;
+        sh:name "AccessLinkShape" ;
+        sh:description "G-AL1–G-AL2: AccessLink verbindt ≥1 ActorRole en ≥1 Transaction." ;
+    
+        sh:property [
+            sh:path     acta:accessRole ;
+            sh:minCount 1 ;
+            sh:class    acta:ActorRole ;
+            sh:severity sh:Violation ;
+            sh:message  "G-AL1: AccessLink.accessRole vereist minimaal één acta:ActorRole."
+        ] ;
+    
+        sh:property [
+            sh:path     acta:accessTransaction ;
+            sh:minCount 1 ;
+            sh:class    acta:Transaction ;
+            sh:severity sh:Violation ;
+            sh:message  "G-AL2: AccessLink.accessTransaction vereist minimaal één acta:Transaction."
+        ] .
+    
+    ###############################################################################
+    #  §I — O/I/D-lagen (v0.5)
+    ###############################################################################
+    
+    #  G-OID1: Aanbeveling dat elke Transaction in precies één ALPHA-laag zit.
+    #  Warning (geen Violation): een partieel model mag de laag weglaten.
+    #  De OWL owl:AllDisjointClasses in 00g-acta.ttl bewaakt de exclusiviteit
+    #  als de laag WEL is opgegeven.
+    shacta:TransactionAlphaLayerShape
+        a sh:NodeShape ;
+        sh:targetClass acta:Transaction ;
+        sh:name "TransactionAlphaLayerShape" ;
+        sh:description
+            """G-OID1: Aanbeveling dat elke Transaction is geclassificeerd als
+             OriginalTransaction, InformationalTransaction of
+             DocumentalTransaction (DEMO ALPHA-theorie, DD-048).""" ;
+        sh:sparql [
+            sh:message  "G-OID1: Deze Transaction heeft geen ALPHA-laagclassificatie (O/I/D) — overweeg acta:OriginalTransaction, acta:InformationalTransaction of acta:DocumentalTransaction toe te voegen." ;
+            sh:severity sh:Warning ;
+            sh:prefixes [ sh:declare [ sh:prefix "acta" ;
+                sh:namespace "https://valor-ecosystem.nl/ontology/acta#" ] ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    FILTER NOT EXISTS {
+                        { $this a acta:OriginalTransaction }
+                        UNION
+                        { $this a acta:InformationalTransaction }
+                        UNION
+                        { $this a acta:DocumentalTransaction }
+                    }
+                }"""
+        ] .
+    
+    ###############################################################################
+    #  Einde 00g-acta.shacl.ttl (v0.5)
+    ###############################################################################
+}

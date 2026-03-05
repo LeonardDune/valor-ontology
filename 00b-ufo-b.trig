@@ -1,0 +1,289 @@
+# TRiG version of 00b-ufo-b.ttl
+<https://valor-ecosystem.nl/ontology/ufo-b> {
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
+    @prefix ufob:  <https://valor-ecosystem.nl/ontology/ufo-b#> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    @prefix dcterms: <http://purl.org/dc/terms/> .
+    @prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+    
+    ###############################################################################
+    # VALOR-O — Module 00b: UFO-B  (Events & Causality)
+    # Versie 0.2 — valor:ontoumlStereotype correctie (DD-002)
+    #
+    # Correctie t.o.v. v0.1:
+    #   [B-001] gufo:ontoumlStereotype → valor:ontoumlStereotype overal (DD-002)
+    #
+    # Geen inhoudelijke gUFO-typefouten aanwezig in v0.1:
+    #   - AtomicEvent/ComplexEvent: rdf:type gufo:EventType ✓
+    #   - CausalRelation/FeedbackLoop/ReinforcingLoop/BalancingLoop: rdf:type gufo:SituationType ✓
+    #   - Disposition/UncertaintyLevel: geen rdf:type (mode/quality — DD-052) ✓
+    #
+    # DESIGN DECISIONS:
+    #   DD-006 · UFO-B als aparte module
+    #   DD-007 · AtomicEvent/ComplexEvent als disjuncte partitie
+    #   DD-008 · Disposition als subklasse van IntrinsicMode
+    #   DD-009 · gufo:contributedToTrigger vs. strict UFO-B triggers
+    #   DD-010 · directlyCauses en causes als niet-transitieve OWL-properties
+    #   DD-011 · historicalRole als nieuw stereotype (UFO-B-2019)
+    #   DD-012 · participational en temporal als relatie-stereotypen
+    #   DD-052 · Mode/Quality-klassen: geen rdf:type in Taxonomy of Types
+    ###############################################################################
+    
+    vo:ufo-b
+        a owl:Ontology ;
+        owl:imports vo:gufo-core ;
+        dcterms:title "VALOR-O — UFO-B Events & Causality"@nl ;
+        dcterms:description
+            """Ontologie van events, causaliteit en disposities.
+             Uitbreiding van de event-primitieven in gUFO Core.
+             Gefundeerd in UFO-B-2013 (axiomatisering) en
+             UFO-B-2019 (OntoUML-stereotypen)."""@nl ;
+        owl:versionInfo "0.2" .
+    
+    
+    ###############################################################################
+    # ── 1. ATOMICEVENT / COMPLEXEVENT PARTITIE ───────────────────────────────────
+    ###############################################################################
+    
+    gufo:Event
+        owl:disjointUnionOf ( ufob:AtomicEvent ufob:ComplexEvent ) .
+    
+    ufob:AtomicEvent
+        a owl:Class ;
+        rdf:type gufo:EventType ;
+        valor:ontoumlStereotype "event" ;
+        rdfs:subClassOf gufo:Event ;
+        rdfs:label "AtomicEvent"@en , "Atomair event"@nl ;
+        rdfs:comment
+            """Een event zonder event-delen.
+             UFO-B-2013 §3.1 axioma M1: AtomicEvent(e) ↔ ¬∃e':Event has-part(e,e')
+             [DD-007] disjoint van ComplexEvent via owl:disjointUnionOf."""@nl .
+    
+    ufob:ComplexEvent
+        a owl:Class ;
+        rdf:type gufo:EventType ;
+        valor:ontoumlStereotype "event" ;
+        rdfs:subClassOf gufo:Event ;
+        rdfs:label "ComplexEvent"@en , "Complex event"@nl ;
+        rdfs:comment
+            """Een event dat bestaat uit ten minste twee disjuncte event-delen.
+             UFO-B-2013 §3.1 axioma M2: ComplexEvent(e) ↔ ¬AtomicEvent(e)
+             [DD-007] Minimale partgrootte 2 is SHACL-constraint B1."""@nl .
+    
+    
+    ###############################################################################
+    # ── 2. EXCLUSIEVE DEPENDENTIE (excDependsOn) ─────────────────────────────────
+    ###############################################################################
+    
+    ufob:excDependsOn
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:hasParticipant ;
+        rdfs:label "exclusively depends on"@en , "hangt exclusief af van"@nl ;
+        rdfs:domain ufob:AtomicEvent ;
+        rdfs:range  gufo:Object ;
+        rdfs:comment
+            """Functionele dependentierelatie: een AtomicEvent hangt af van
+             precies één Object. UFO-B-2013 §3.2 axioma P1.
+             [DD-007] Onderscheid van gufo:hasParticipant (niet-functioneel)."""@nl .
+    
+    
+    ###############################################################################
+    # ── 3. DISPOSITION ───────────────────────────────────────────────────────────
+    #
+    # [DD-052] Disposition is een mode-klasse: GEEN rdf:type in Taxonomy of Types.
+    ###############################################################################
+    
+    ufob:Disposition
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf gufo:IntrinsicMode ;
+        rdfs:label "Disposition"@en , "Dispositie"@nl ;
+        rdfs:comment
+            """Een intrinsieke modus van een Object die het object gevoelig
+             maakt voor activering door een Situation.
+             UFO-B-2013 §3.5 axioma D1: Disposition ⊂ Trope (IntrinsicMode).
+             [DD-008] Keuze voor IntrinsicMode i.p.v. Quality.
+             [DD-052] Geen rdf:type in Taxonomy of Types (mode-klasse)."""@nl .
+    
+    ufob:activates
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:contributedToTrigger ;
+        rdfs:label "activates"@en , "activeert"@nl ;
+        rdfs:domain gufo:Situation ;
+        rdfs:range  ufob:Disposition ;
+        rdfs:comment
+            """Relateert een Situation aan een Disposition die ze triggert.
+             UFO-B-2013 §3.5 axioma D3."""@nl .
+    
+    ufob:manifestedBy
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "manifestation" ;
+        rdfs:subPropertyOf gufo:manifestedIn ;
+        rdfs:label "manifested by"@en , "manifsteert zich als"@nl ;
+        rdfs:domain ufob:Disposition ;
+        rdfs:range  ufob:AtomicEvent ;
+        rdfs:comment
+            """Relateert een Disposition aan het AtomicEvent waarin ze zich manifesteert.
+             UFO-B-2013 §3.5 axioma D2."""@nl .
+    
+    
+    ###############################################################################
+    # ── 4. CAUSALITEIT ────────────────────────────────────────────────────────────
+    ###############################################################################
+    
+    ufob:directlyCauses
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "historicalDependence" ;
+        rdfs:subPropertyOf gufo:historicallyDependsOn ;
+        rdfs:label "directly causes"@en , "veroorzaakt direct"@nl ;
+        rdfs:domain gufo:Event ;
+        rdfs:range  gufo:Event ;
+        rdfs:comment
+            """Directe causaliteitsrelatie: e1 veroorzaakt e2 als er een gedeelde Situation s
+             bestaat waarvoor: broughtAbout(e1,s) ∧ wasTriggeredBy(e2,s).
+             UFO-B-2013 §3.4 axioma S6. [DD-010]"""@nl .
+    
+    ufob:causes
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "historicalDependence" ;
+        rdfs:subPropertyOf ufob:directlyCauses ;
+        rdfs:label "causes"@en , "veroorzaakt (transitief)"@nl ;
+        rdfs:comment
+            """Transitieve causaliteitsrelatie: de transitieve sluiting van directlyCauses.
+             UFO-B-2013 §3.4 axioma S7. [DD-010] BEWUSTE AFWIJKING: niet als
+             owl:TransitiveProperty gedeclareerd."""@nl .
+    
+    
+    ###############################################################################
+    # ── 5. CAUSAL LOOP DIAGRAM EIGENSCHAPPEN ─────────────────────────────────────
+    ###############################################################################
+    
+    ufob:CausalRelation
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "CausalRelation"@en , "Causale relatie (CLD)"@nl ;
+        rdfs:comment
+            """Reïficatie van een causale relatie in een Causal Loop Diagram.
+             Een CausalRelation is een Situation (toestand dát X bijdraagt aan Y)."""@nl .
+    
+    ufob:hasCausalPolarity
+        a owl:DatatypeProperty ;
+        rdfs:label "has causal polarity"@en , "heeft causale polariteit"@nl ;
+        rdfs:domain ufob:CausalRelation ;
+        rdfs:range  xsd:string .
+    
+    ufob:hasDelay
+        a owl:DatatypeProperty ;
+        rdfs:label "has delay"@en , "heeft vertraging"@nl ;
+        rdfs:domain ufob:CausalRelation ;
+        rdfs:range  xsd:boolean .
+    
+    ufob:hasUncertaintyLevel
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:hasQuality ;
+        rdfs:label "has uncertainty level"@en , "heeft onzekerheidsniveau"@nl ;
+        rdfs:domain ufob:CausalRelation ;
+        rdfs:range  ufob:UncertaintyLevel .
+    
+    ufob:UncertaintyLevel
+        a owl:Class ;
+        valor:ontoumlStereotype "quality" ;
+        rdfs:subClassOf gufo:Quality ;
+        rdfs:label "UncertaintyLevel"@en , "Onzekerheidsniveau"@nl ;
+        rdfs:comment
+            """Kwaliteitsdimensie voor het onzekerheidsniveau van een CausalRelation.
+             [DD-052] Geen rdf:type in Taxonomy of Types (quality-klasse)."""@nl .
+    
+    ufob:StatisticalRisk
+        a ufob:UncertaintyLevel ;
+        rdfs:label "StatisticalRisk"@en .
+    
+    ufob:ScenarioUncertainty
+        a ufob:UncertaintyLevel ;
+        rdfs:label "ScenarioUncertainty"@en .
+    
+    ufob:RecognizedIgnorance
+        a ufob:UncertaintyLevel ;
+        rdfs:label "RecognizedIgnorance"@en .
+    
+    ufob:DeepUncertainty
+        a ufob:UncertaintyLevel ;
+        rdfs:label "DeepUncertainty"@en .
+    
+    
+    ###############################################################################
+    # ── 6. ONTOUML 2019 STEREOTYPEN ──────────────────────────────────────────────
+    ###############################################################################
+    
+    ufob:HistoricalRolePattern
+        rdfs:comment
+            """[DD-011] «historicalRole» stereotype-patroon: een klasse met
+             valor:ontoumlStereotype 'historicalRole' moet rdfs:subClassOf gufo:Role
+             zijn en verbonden zijn met een event-klasse via een participation-associatie."""@nl .
+    
+    ufob:ParticipationalDecomposition
+        rdfs:comment
+            """[DD-012] «participational» relatie-patroon: mereologische relatie tussen
+             events waarbij de decompositie wordt bepaald door wie er participeert."""@nl .
+    
+    ufob:TemporalDecomposition
+        rdfs:comment
+            """[DD-012] «temporal» relatie-patroon: mereologische relatie tussen events
+             waarbij de decompositie wordt bepaald door temporele referentie."""@nl .
+    
+    
+    ###############################################################################
+    # ── 7. FEEDBACK LOOPS ────────────────────────────────────────────────────────
+    ###############################################################################
+    
+    ufob:FeedbackLoop
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "FeedbackLoop"@en , "Terugkoppelingslus"@nl .
+    
+    ufob:ReinforcingLoop
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf ufob:FeedbackLoop ;
+        rdfs:label "ReinforcingLoop"@en , "Versterkende terugkoppelingslus"@nl .
+    
+    ufob:BalancingLoop
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf ufob:FeedbackLoop ;
+        rdfs:label "BalancingLoop"@en , "Dempende terugkoppelingslus"@nl .
+    
+    ufob:containsRelation
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "historicalDependence" ;
+        rdfs:subPropertyOf gufo:historicallyDependsOn ;
+        rdfs:label "contains relation"@en , "bevat relatie"@nl ;
+        rdfs:domain ufob:FeedbackLoop ;
+        rdfs:range  ufob:CausalRelation .
+    
+    
+    ###############################################################################
+    # ── 8. ALLEN-RELATIES (documentatie) ──────────────────────────────────────────
+    # [DD-005] Allen-relaties als SPARQL-queries, niet als OWL-properties.
+    ###############################################################################
+    
+    ufob:_allen_documentation
+        rdfs:comment
+            """[DD-005] Allen-tijdrelaties zijn als SPARQL-queries geïmplementeerd.
+             Zie Causa-querybibliotheek. Bron: UFO-B-2013 §3.3."""@nl .
+    
+    
+    ###############################################################################
+    # END OF MODULE 00b — UFO-B Events & Causality  (v0.2)
+    ###############################################################################
+}

@@ -1,0 +1,242 @@
+# TRiG version of 00f-cover.ttl
+<https://valor-ecosystem.nl/ontology/cover> {
+    ###############################################################################
+    #  VALOR-O — Module 00f: COVER Value Ascription Ontology (uitbouw)
+    #  Versie 0.2 — gUFO-typefouten gecorrigeerd (DD-049)
+    #
+    #  Correcties t.o.v. v0.1:
+    #   [F-001] cover:VAComponent: rdf:type gufo:RelationshipType VERWIJDERD
+    #           gufo:RelationshipType is voor object-properties, niet voor klassen.
+    #           VAComponent is een Relator-subklasse via rdfs:subClassOf gufo:Relator. (DD-049)
+    #   [F-002] cover:Benefit: rdf:type gufo:SubKind VERWIJDERD
+    #           SubKind vereist een Kind in de hiërarchie voor sortale identiteit.
+    #           VAComponent (en daarmee Benefit) is rdfs:subClassOf gufo:Relator —
+    #           een Relator is geen Kind, en biedt geen identiteitsprincipe voor SubKind.
+    #           (DD-049/DD-050)
+    #   [F-003] cover:Sacrifice: rdf:type gufo:SubKind VERWIJDERD (zelfde reden)
+    #   [F-004] cover:ValueProposition: rdf:type gufo:SubKind VERWIJDERD
+    #           ValueProposition is subklasse van ValueAssertion (Relator). (DD-049)
+    #   [F-005] cover:BusinessValueProposition: rdf:type gufo:SubKind VERWIJDERD
+    #   [F-006] cover:OfferingValueProposition: rdf:type gufo:SubKind VERWIJDERD
+    #
+    #  Ongewijzigd correct:
+    #   - cover:ValueBearer/ValueObject: rdf:type gufo:RoleMixin ✓
+    ###############################################################################
+    
+    @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+    @prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
+    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+    
+    vo:cover
+        a owl:Ontology ;
+        rdfs:label "VALOR-O Module 00f — COVER Value Ascription Ontology (uitbouw)"@en ;
+        owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/ufo-b> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+        owl:imports <https://valor-ecosystem.nl/ontology/coodm> ;
+        owl:versionInfo "0.2" ;
+        rdfs:comment
+            """Uitbouw van de VAO conform Sales et al. (2017): ValueObject,
+             VAComponent (Benefit/Sacrifice) en ValueProposition.
+             Fundeert het Axia-perspectief in VALOR volledig."""@nl .
+    
+    
+    ###############################################################################
+    #  §A — ValueObject en ValueBearer
+    ###############################################################################
+    
+    cover:ValueBearer
+        a owl:Class ;
+        rdf:type gufo:RoleMixin ;
+        valor:ontoumlStereotype "roleMixin" ;
+        rdfs:subClassOf gufo:RoleMixin ;
+        rdfs:label "ValueBearer"@en , "Waarde-drager"@nl ;
+        rdfs:comment
+            """Het overkoepelende concept voor entiteiten waaraan waarde kan worden
+             toegeschreven. Twee subtypen conform Sales et al. (2017) Fig. 1:
+             (a) cover:ValueExperience — een event (in 00e);
+             (b) cover:ValueObject — een substantial. (DD-039)"""@nl .
+    
+    cover:ValueObject
+        a owl:Class ;
+        rdf:type gufo:RoleMixin ;
+        valor:ontoumlStereotype "roleMixin" ;
+        rdfs:subClassOf gufo:RoleMixin ;
+        rdfs:label "ValueObject"@en , "Waardeobject"@nl ;
+        rdfs:comment
+            """Een substantial (goed, dienst, besluit) dat de rol van waarde-drager
+             speelt. Conform Sales et al. (2017) §4. (DD-039)"""@nl .
+    
+    
+    ###############################################################################
+    #  §B — VAComponent, Benefit, Sacrifice
+    #
+    #  [F-001] cover:VAComponent: rdf:type gufo:RelationshipType VERWIJDERD (v0.2)
+    #    gufo:RelationshipType classificeert object-properties, niet klassen.
+    #    rdfs:subClassOf gufo:Relator positioneert VAComponent correct. (DD-049)
+    #
+    #  [F-002/F-003] cover:Benefit/Sacrifice: rdf:type gufo:SubKind VERWIJDERD (v0.2)
+    #    SubKind vereist een Kind boven in de hiërarchie die het identiteitsprincipe
+    #    draagt. VAComponent erft van gufo:Relator (ExtrinsicAspect), niet van een
+    #    Kind. Er is geen geldige SubKind-classificatie mogelijk voor Relator-subklassen.
+    #    rdfs:subClassOf cover:VAComponent volstaat. (DD-049/DD-050)
+    ###############################################################################
+    
+    cover:VAComponent
+        a owl:Class ;
+        valor:ontoumlStereotype "relator" ;
+        rdfs:subClassOf gufo:Relator ;
+        rdfs:label "VAComponent"@en , "Waarde-ascriptiecomponent"@nl ;
+        rdfs:comment
+            """Een component van een ValueAscription: een deelbeoordeling die
+             focust op één MentalAspect van de ValueBeholder.
+             [F-001] rdf:type gufo:RelationshipType verwijderd (DD-049).
+             Conform Sales et al. (2017) §4/Fig. 2. (DD-038)"""@nl .
+    
+    cover:Benefit
+        a owl:Class ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf cover:VAComponent ;
+        rdfs:label "Benefit"@en , "Baat"@nl ;
+        rdfs:comment
+            """Een positief VAComponent: de ValueExperience voldoet (geheel of
+             gedeeltelijk) aan het relevante MentalAspect van de ValueBeholder.
+             [F-002] rdf:type gufo:SubKind verwijderd (DD-049/DD-050):
+             SubKind vereist een Kind-hiërarchie; VAComponent is een Relator.
+             Conform Sales et al. (2017) §4. (DD-038)"""@nl .
+    
+    cover:Sacrifice
+        a owl:Class ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf cover:VAComponent ;
+        rdfs:label "Sacrifice"@en , "Offer"@nl ;
+        rdfs:comment
+            """Een negatief VAComponent: de ValueExperience vereist een opoffering
+             van de ValueBeholder/ValueBeneficiary.
+             [F-003] rdf:type gufo:SubKind verwijderd (DD-049/DD-050).
+             Conform Sales et al. (2017) §3. (DD-038)"""@nl .
+    
+    
+    ###############################################################################
+    #  §C — ValueProposition
+    #
+    #  [F-004/F-005/F-006] ValueProposition-subklassen: rdf:type gufo:SubKind
+    #    VERWIJDERD (v0.2, DD-049/DD-050):
+    #    ValueProposition is subklasse van ValueAssertion, die subklasse is van
+    #    ValueAscription (gufo:Relator). Relators zijn ExtrinsicAspects, geen
+    #    Endurant-sortalen — SubKind is hier niet van toepassing.
+    #    rdfs:subClassOf cover:ValueAssertion positioneert ValueProposition correct.
+    ###############################################################################
+    
+    cover:ValueProposition
+        a owl:Class ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf cover:ValueAssertion ;
+        rdfs:label "ValueProposition"@en , "Waardepropositie"@nl ;
+        rdfs:comment
+            """Een ValueAssertion waarbij een organisatie (ValueBeholder) stelt
+             dat een doelgroep (ValueBeneficiary) een bepaalde waarde zal toekennen
+             aan de ervaringen die een dienst mogelijk maakt.
+             In VALOR: de expliciete waardeclaim van een publieke organisatie
+             over haar dienstverlening — brug tussen Axia en Acta. (DD-037)
+             [F-004] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."""@nl .
+    
+    cover:BusinessValueProposition
+        a owl:Class ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf cover:ValueProposition ;
+        rdfs:label "BusinessValueProposition"@en , "Organisatiewaardepropositie"@nl ;
+        rdfs:comment
+            """Een ValueProposition op het niveau van de totale portefeuille van
+             een organisatie voor een breed marktsegment. (DD-037)
+             [F-005] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."""@nl .
+    
+    cover:OfferingValueProposition
+        a owl:Class ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf cover:ValueProposition ;
+        rdfs:label "OfferingValueProposition"@en , "Dienstwaardepropositie"@nl ;
+        rdfs:comment
+            """Een ValueProposition op het niveau van één specifieke dienst of
+             regeling. (DD-037)
+             [F-006] rdf:type gufo:SubKind verwijderd (DD-049/DD-050)."""@nl .
+    
+    
+    ###############################################################################
+    #  §D — Properties
+    ###############################################################################
+    
+    cover:enabledBy
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "enabled by"@en ;
+        rdfs:domain cover:ValueExperience ;
+        rdfs:range  cover:ValueObject ;
+        rdfs:comment
+            "Het ValueObject dat de ValueExperience mogelijk maakt. (DD-039)"@nl .
+    
+    cover:hasComponent
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "componentOf" ;
+        rdfs:subPropertyOf gufo:hasProperPart ;
+        rdfs:label "has component"@en ;
+        rdfs:domain cover:ValueAscription ;
+        rdfs:range  cover:VAComponent .
+    
+    cover:hasBenefit
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "componentOf" ;
+        rdfs:subPropertyOf cover:hasComponent ;
+        rdfs:label "has benefit"@en ;
+        rdfs:domain cover:ValueAscription ;
+        rdfs:range  cover:Benefit .
+    
+    cover:hasSacrifice
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "componentOf" ;
+        rdfs:subPropertyOf cover:hasComponent ;
+        rdfs:label "has sacrifice"@en ;
+        rdfs:domain cover:ValueAscription ;
+        rdfs:range  cover:Sacrifice .
+    
+    cover:isFocusOf
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "is focus of"@en ;
+        rdfs:domain cover:VAComponent ;
+        rdfs:range  ufoc:IntentionalMode .
+    
+    cover:concernsExperience
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf gufo:mediates ;
+        rdfs:label "concerns experience"@en ;
+        rdfs:domain cover:VAComponent ;
+        rdfs:range  cover:ValueExperience .
+    
+    cover:targetsSegment
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:subPropertyOf gufo:mediates ;
+        rdfs:label "targets segment"@en ;
+        rdfs:domain cover:ValueProposition ;
+        rdfs:range  ufoc:Agent .
+    
+    cover:conformsTo
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "conforms to"@en ;
+        rdfs:domain cover:OfferingValueProposition ;
+        rdfs:range  cover:BusinessValueProposition .
+    
+    ###############################################################################
+    #  Einde module 00f-cover.ttl  (v0.2)
+    ###############################################################################
+}

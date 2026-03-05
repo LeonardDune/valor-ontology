@@ -1,0 +1,313 @@
+# TRiG version of 00h-causa.shacl.ttl
+<https://valor-ecosystem.nl/shacl/causa> {
+    ###############################################################################
+    #  VALOR-O — Module 00h SHACL: CAUSA Causal Loop Diagram Ontologie
+    #
+    #  Versie : 0.1 (maart 2026)
+    #
+    #  Constraints:
+    #    §A  Issue
+    #      I1   Issue.hasConcernedAgent — minimaal 1 Agent
+    #      I2   Issue.concernedWithSituation — minimaal 1 Situation
+    #    §B  CausalVariable
+    #      CV1  CausalVariable.hasMeasurementScale — aanbevolen (Warning)
+    #      CV2  CausalVariable.inheresInSituation — verplicht, precies 1
+    #    §C  CausalSituation
+    #      CS1  CausalSituation.fromVariable — verplicht, precies 1
+    #      CS2  CausalSituation.toVariable   — verplicht, precies 1
+    #      CS3  CausalSituation.hasPolarity  — verplicht, precies 1
+    #      CS4  fromVariable ≠ toVariable (geen zelfreferentie)
+    #    §D  CausalClaim
+    #      CC1  CausalClaim.hasPropositionalContent — verplicht CausalSituation
+    #      CC2  CausalClaim.hasEpistemicStatus — verplicht
+    #      CC3  CausalClaim.claimedAt — aanbevolen (Warning)
+    #    §E  CausalModel
+    #      CM1  CausalModel.hasClaim — minimaal 1
+    #      CM2  CausalModel.addressesIssue — verplicht, precies 1
+    #      CM3  CausalModel.modelAuthor — minimaal 1
+    #      CM4  CausalModel.modelEpistemicStatus — verplicht
+    #    §F  FeedbackLoop
+    #      FL1  FeedbackLoop.loopIncludesClaim — minimaal 2
+    #    §G  Ontologische laag — manifestsAsRelation alleen bij Accepted
+    ###############################################################################
+    
+    @prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
+    @prefix shcausa: <https://valor-ecosystem.nl/shacl/causa#> .
+    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
+    @prefix gufo:  <http://purl.org/nemo/gufo#> .
+    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+    @prefix sh:    <http://www.w3.org/ns/shacl#> .
+    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+    @prefix dcterms: <http://purl.org/dc/terms/> .
+    
+    shcausa:
+        a owl:Ontology ;
+        dcterms:title "VALOR-O SHACL — CAUSA Causal Loop Diagram Ontologie"@nl ;
+        owl:versionInfo "0.1" .
+    
+    
+    ###############################################################################
+    #  §A — Issue constraints
+    ###############################################################################
+    
+    shcausa:IssueShape
+        a sh:NodeShape ;
+        sh:targetClass valor:Issue ;
+        sh:name "IssueShape" ;
+        sh:description
+            """I1–I2: Een Issue vereist minimaal één betrokken Agent en
+             minimaal één Situation waar het betrekking op heeft.
+             Fundering: een Issue bestaat doordat agents een Concern hebben
+             over een Situation. (DD-054)""" ;
+    
+        sh:property [
+            sh:path     causa:hasConcernedAgent ;
+            sh:minCount 1 ;
+            sh:class    ufoc:Agent ;
+            sh:severity sh:Violation ;
+            sh:message  "I1: Issue.hasConcernedAgent vereist minimaal één ufoc:Agent."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:concernedWithSituation ;
+            sh:minCount 1 ;
+            sh:class    gufo:Situation ;
+            sh:severity sh:Violation ;
+            sh:message  "I2: Issue.concernedWithSituation vereist minimaal één gufo:Situation."
+        ] .
+    
+    
+    ###############################################################################
+    #  §B — CausalVariable constraints
+    ###############################################################################
+    
+    shcausa:CausalVariableShape
+        a sh:NodeShape ;
+        sh:targetClass causa:CausalVariable ;
+        sh:name "CausalVariableShape" ;
+        sh:description
+            """CV1–CV2: Een CausalVariable moet inhereren in een Situation
+             (verplicht) en heeft idealiter een MeasurementScale (aanbevolen).
+             (DD-055)""" ;
+    
+        sh:property [
+            sh:path     causa:inheresInSituation ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    gufo:Situation ;
+            sh:severity sh:Violation ;
+            sh:message  "CV2: CausalVariable.inheresInSituation vereist precies één gufo:Situation."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:hasMeasurementScale ;
+            sh:minCount 1 ;
+            sh:class    causa:MeasurementScale ;
+            sh:severity sh:Warning ;
+            sh:message  "CV1 (aanbeveling): CausalVariable zonder MeasurementScale vermindert de meetbaarheid — overweeg causa:QuantitativeScale of causa:QualitativeScale toe te voegen."
+        ] .
+    
+    
+    ###############################################################################
+    #  §C — CausalSituation constraints
+    ###############################################################################
+    
+    shcausa:CausalSituationShape
+        a sh:NodeShape ;
+        sh:targetClass causa:CausalSituation ;
+        sh:name "CausalSituationShape" ;
+        sh:description
+            """CS1–CS4: Een CausalSituation beschrijft een causale relatie
+             van precies één bronvariabele naar precies één doelvariabele
+             met precies één polariteit. Geen zelfreferentie. (DD-056)""" ;
+    
+        sh:property [
+            sh:path     causa:fromVariable ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    causa:CausalVariable ;
+            sh:severity sh:Violation ;
+            sh:message  "CS1: CausalSituation.fromVariable vereist precies één causa:CausalVariable."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:toVariable ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    causa:CausalVariable ;
+            sh:severity sh:Violation ;
+            sh:message  "CS2: CausalSituation.toVariable vereist precies één causa:CausalVariable."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:hasPolarity ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    causa:Polarity ;
+            sh:severity sh:Violation ;
+            sh:message  "CS3: CausalSituation.hasPolarity vereist precies één causa:Polarity."
+        ] ;
+    
+        sh:sparql [
+            sh:message  "CS4: CausalSituation.fromVariable en toVariable mogen niet dezelfde CausalVariable zijn (geen zelfreferentie)." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [
+                sh:declare [ sh:prefix "causa" ;
+                    sh:namespace "https://valor-ecosystem.nl/ontology/causa#" ]
+            ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this causa:fromVariable ?from ;
+                          causa:toVariable   ?to .
+                    FILTER (?from = ?to)
+                }"""
+        ] .
+    
+    
+    ###############################################################################
+    #  §D — CausalClaim constraints
+    ###############################################################################
+    
+    shcausa:CausalClaimShape
+        a sh:NodeShape ;
+        sh:targetClass causa:CausalClaim ;
+        sh:name "CausalClaimShape" ;
+        sh:description
+            """CC1–CC3: Een CausalClaim vereist een CausalSituation als
+             propositional content en een EpistemicStatus. Tijdstempel
+             is aanbevolen. (DD-057, DD-058)""" ;
+    
+        sh:property [
+            sh:path     gufo:hasPropositionalContent ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    causa:CausalSituation ;
+            sh:severity sh:Violation ;
+            sh:message  "CC1: CausalClaim.hasPropositionalContent vereist precies één causa:CausalSituation."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:hasEpistemicStatus ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    causa:EpistemicStatus ;
+            sh:severity sh:Violation ;
+            sh:message  "CC2: CausalClaim.hasEpistemicStatus vereist precies één causa:EpistemicStatus."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:claimedAt ;
+            sh:minCount 1 ;
+            sh:datatype xsd:dateTime ;
+            sh:severity sh:Warning ;
+            sh:message  "CC3 (aanbeveling): CausalClaim zonder tijdstempel — overweeg causa:claimedAt toe te voegen voor traceerbaarheid."
+        ] .
+    
+    
+    ###############################################################################
+    #  §E — CausalModel constraints
+    ###############################################################################
+    
+    shcausa:CausalModelShape
+        a sh:NodeShape ;
+        sh:targetClass causa:CausalModel ;
+        sh:name "CausalModelShape" ;
+        sh:description
+            """CM1–CM4: Een CausalModel vereist minimaal 1 Claim, precies 1
+             adresserend Issue, minimaal 1 auteur en een EpistemicStatus.
+             (DD-053)""" ;
+    
+        sh:property [
+            sh:path     causa:hasClaim ;
+            sh:minCount 1 ;
+            sh:class    causa:CausalClaim ;
+            sh:severity sh:Violation ;
+            sh:message  "CM1: CausalModel.hasClaim vereist minimaal één causa:CausalClaim."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:addressesIssue ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    valor:Issue ;
+            sh:severity sh:Violation ;
+            sh:message  "CM2: CausalModel.addressesIssue vereist precies één valor:Issue."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:modelAuthor ;
+            sh:minCount 1 ;
+            sh:class    ufoc:Agent ;
+            sh:severity sh:Violation ;
+            sh:message  "CM3: CausalModel.modelAuthor vereist minimaal één ufoc:Agent."
+        ] ;
+    
+        sh:property [
+            sh:path     causa:modelEpistemicStatus ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    causa:EpistemicStatus ;
+            sh:severity sh:Violation ;
+            sh:message  "CM4: CausalModel.modelEpistemicStatus vereist precies één causa:EpistemicStatus."
+        ] .
+    
+    
+    ###############################################################################
+    #  §F — FeedbackLoop constraints
+    ###############################################################################
+    
+    shcausa:FeedbackLoopShape
+        a sh:NodeShape ;
+        sh:targetClass causa:FeedbackLoop ;
+        sh:name "FeedbackLoopShape" ;
+        sh:description
+            """FL1: Een FeedbackLoop vereist minimaal 2 CausalClaims
+             (Weak Supplementation: een loop van 1 claim is geen cyclus).
+             (DD-060)""" ;
+    
+        sh:property [
+            sh:path     causa:loopIncludesClaim ;
+            sh:minCount 2 ;
+            sh:class    causa:CausalClaim ;
+            sh:severity sh:Violation ;
+            sh:message  "FL1: FeedbackLoop.loopIncludesClaim vereist minimaal 2 causa:CausalClaim-leden (een cyclus vereist minstens 2 relaties)."
+        ] .
+    
+    
+    ###############################################################################
+    #  §G — Ontologische laag: manifestsAsRelation alleen bij Accepted
+    ###############################################################################
+    
+    shcausa:ManifestationShape
+        a sh:NodeShape ;
+        sh:targetClass causa:CausalClaim ;
+        sh:name "ManifestationShape" ;
+        sh:description
+            """GL1: causa:manifestsAsRelation mag alleen aanwezig zijn als de
+             EpistemicStatus van de claim Accepted is. Een niet-aanvaarde
+             claim die al een ontologische relatie instantieert, is een
+             modelleerinconsistentie. (DD-057)""" ;
+    
+        sh:sparql [
+            sh:message  "GL1: causa:manifestsAsRelation is aanwezig terwijl EpistemicStatus niet Accepted is. Verwijder de manifestatie of aanvaard de claim eerst." ;
+            sh:severity sh:Violation ;
+            sh:prefixes [
+                sh:declare [ sh:prefix "causa" ;
+                    sh:namespace "https://valor-ecosystem.nl/ontology/causa#" ]
+            ] ;
+            sh:select """
+                SELECT $this WHERE {
+                    $this causa:manifestsAsRelation ?rel .
+                    FILTER NOT EXISTS {
+                        $this causa:hasEpistemicStatus causa:AcceptedStatus .
+                    }
+                }"""
+        ] .
+    
+    ###############################################################################
+    #  Einde 00h-causa.shacl.ttl (v0.1)
+    ###############################################################################
+}
