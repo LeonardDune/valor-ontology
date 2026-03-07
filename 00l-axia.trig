@@ -1,0 +1,259 @@
+# TRiG version of 00l-axia.trig
+<https://valor-ecosystem.nl/ontology/axia> {
+###############################################################################
+#  VALOR-O — Module 00l: AXIA Waardeperspectief Ontologie
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/axia#  (prefix axia:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00a-gufo-core, 00c-ufo-c, 00f-cover, 00j-tessera, 00k-application
+#
+#  Theoretische basis:
+#    COVER — Common Ontology of Value and Risk (Guizzardi et al. 2022)
+#    Value Sensitive Design (Friedman et al. 2019)
+#    Waarde-pluralisme (Berlin, Williams)
+#    Public Service Ecosystem (Osborne 2022)
+#
+#  Ontologische grondslag:
+#    Axia bouwt volledig op 00f-cover. De module voegt drie elementen toe:
+#    (1) axia:ValueClaim — een valor:Tessera over een waarde-implicatie
+#        van een ontwerpelement (welke ValueType(s) raakt deze keuze?)
+#    (2) axia:ValueTensionClaim — een valor:Tessera over een spanning
+#        tussen twee of meer ValueTypes
+#    (3) axia:DesignImplication — een Relator die een Tessera (ontwerp-
+#        keuze) verbindt met de ValueType(s) die ze beïnvloedt
+#
+#    ValueTypes zijn objectieve typen (cover:ValueType uit 00f-cover).
+#    Value experiences zijn kwaliteiten die inhereren aan agents in
+#    concrete situaties (cover:ValueExperience uit 00e-coodm).
+#    Axia maakt de spanning tussen beide zichtbaar als waarde-implicatie.
+#
+#  Structuur:
+#    §A  ValueClaim — waarde-implicatieclaim als Tessera
+#    §B  ValueTensionClaim — waardespanningsclaim als Tessera
+#    §C  DesignImplication — Relator: Tessera ↔ ValueType
+#    §D  ClaimPolarity — ondersteunend of ondermijnend
+#    §E  Properties
+###############################################################################
+
+@prefix axia:  <https://valor-ecosystem.nl/ontology/axia#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+vo:axia
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00l — AXIA Waardeperspectief Ontologie"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/cover> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/coodm> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/application> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Formaliseert het Axia-perspectief: waarden die op het spel staan,
+         spanningen tussen waarden, en de waarde-implicaties van ontwerp-
+         keuzes. Bouwt op 00f-cover; voegt valor:Tessera subklassen toe
+         voor epistemisch bevraagbare waarde-claims."""@nl .
+
+
+###############################################################################
+#  §A — ValueClaim (waarde-implicatieclaim als Tessera)
+#
+#  Een ValueClaim is een bewering dat een ontwerpelement (uitgedrukt als
+#  Tessera) een bepaalde ValueType ondersteunt of ondermijnt. Als valor:Tessera:
+#  epistemisch bevraagbaar, betwistbaar, met bewijs onderbouwbaar.
+#
+#  Voorbeeld: "Geautomatiseerde schuldsignalering ondersteunt Efficiëntie
+#  maar ondermijnt Privacy" → twee ValueClaims met verschillende polarity.
+###############################################################################
+
+axia:ValueClaim
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf valor:Tessera ;
+    rdfs:label "ValueClaim"@en , "Waardeclaim"@nl ;
+    rdfs:comment
+        """Een valor:Tessera die een waarde-implicatie beschrijft: de bewering
+         dat een ontwerpelement een bepaalde cover:ValueType ondersteunt of
+         ondermijnt. Epistemisch bevraagbaar via de Tessera-infrastructuur.
+         Voorbeeld: 'Geautomatiseerde signalering ondersteunt Efficiëntie.'
+         (Axia-perspectief)"""@nl .
+
+
+###############################################################################
+#  §B — ValueTensionClaim (waardespanningsclaim als Tessera)
+#
+#  Een ValueTensionClaim is de bewering dat twee of meer ValueTypes
+#  structureel in spanning staan in de context van een Issue of een
+#  specifiek ontwerpelement. Als Tessera: kan worden betwist ("de spanning
+#  is niet onoplosbaar"), ondersteund met bewijs, of heroverwogen.
+###############################################################################
+
+axia:ValueTensionClaim
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf valor:Tessera ;
+    rdfs:label "ValueTensionClaim"@en , "Waardespanningsclaim"@nl ;
+    rdfs:comment
+        """Een valor:Tessera die een spanning tussen twee of meer ValueTypes
+         beschrijft in de context van een Issue of ontwerpelement.
+         Voorbeeld: 'Er bestaat een spanning tussen Zelfredzaamheid en
+         Bescherming in de context van schuldhulpverlening.' (Axia)"""@nl .
+
+
+###############################################################################
+#  §C — DesignImplication (Relator: Tessera ↔ ValueType)
+#
+#  DesignImplication is een Relator die een ontwerp-Tessera verbindt met
+#  de ValueType(s) die ze beïnvloedt. Als Relator: existentieel afhankelijk
+#  van zowel de Tessera als de ValueType — bestaat alleen als beide bestaan.
+#
+#  De polarity (ondersteunend of ondermijnend) is een eigenschap van de
+#  DesignImplication, niet van de Tessera of de ValueType.
+###############################################################################
+
+axia:DesignImplication
+    a owl:Class ;
+    valor:ontoumlStereotype "relator" ;
+    rdfs:subClassOf gufo:Relator ;
+    rdfs:label "DesignImplication"@en , "Ontwerp-implicatie"@nl ;
+    rdfs:comment
+        """Een Relator die een Tessera (ontwerpelement of -keuze) verbindt
+         met de cover:ValueType(s) die ze beïnvloedt. Heeft een axia:ClaimPolarity
+         (ondersteunend of ondermijnend). Als Relator: existentieel afhankelijk
+         van zowel de Tessera als de ValueType. (Axia-perspectief)"""@nl .
+
+
+###############################################################################
+#  §D — ClaimPolarity (ondersteunend of ondermijnend)
+###############################################################################
+
+axia:ClaimPolarity
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ClaimPolarity"@en , "Claimpolariteit"@nl ;
+    rdfs:comment
+        """De polariteit van een DesignImplication: ondersteunt het
+         ontwerpelement de ValueType (positief) of ondermijnt het
+         haar (negatief)?"""@nl .
+
+axia:SupportingPolarity
+    a axia:ClaimPolarity ;
+    rdfs:label "Supporting"@en , "Ondersteunend"@nl ;
+    rdfs:comment "Het ontwerpelement ondersteunt of versterkt de ValueType."@nl .
+
+axia:UnderminingPolarity
+    a axia:ClaimPolarity ;
+    rdfs:label "Undermining"@en , "Ondermijnend"@nl ;
+    rdfs:comment "Het ontwerpelement ondermijnt of verzwakt de ValueType."@nl .
+
+axia:AmbiguousPolarity
+    a axia:ClaimPolarity ;
+    rdfs:label "Ambiguous"@en , "Dubbelzinnig"@nl ;
+    rdfs:comment
+        """Het ontwerpelement heeft zowel ondersteunende als ondermijnende
+         effecten op de ValueType, afhankelijk van de context of
+         deelnemer."""@nl .
+
+
+###############################################################################
+#  §E — Properties
+###############################################################################
+
+# ── Properties op axia:ValueClaim ────────────────────────────────────────────
+
+axia:concernsValueType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerns value type"@en , "betreft waardetype"@nl ;
+    rdfs:domain axia:ValueClaim ;
+    rdfs:range  coodm:ValueType ;
+    rdfs:comment
+        """De cover:ValueType waarop deze ValueClaim betrekking heeft.
+         Verplicht (SHACL AX1)."""@nl .
+
+axia:claimPolarity
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "claim polarity"@en , "claimpolariteit"@nl ;
+    rdfs:domain axia:ValueClaim ;
+    rdfs:range  axia:ClaimPolarity ;
+    rdfs:comment
+        """De polariteit van de waarde-implicatie: ondersteunend of
+         ondermijnend. Verplicht (SHACL AX1)."""@nl .
+
+axia:concernsDesignElement
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerns design element"@en , "betreft ontwerpelement"@nl ;
+    rdfs:domain axia:ValueClaim ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment
+        """De Tessera (ontwerpelement of -keuze) waarover deze ValueClaim
+         een waarde-implicatie beschrijft."""@nl .
+
+# ── Properties op axia:ValueTensionClaim ─────────────────────────────────────
+
+axia:tensionBetween
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "tension between"@en , "spanning tussen"@nl ;
+    rdfs:domain axia:ValueTensionClaim ;
+    rdfs:range  coodm:ValueType ;
+    rdfs:comment
+        """De ValueTypes die in spanning staan. Minimaal 2 (SHACL AX2)."""@nl .
+
+axia:tensionContext
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "tension context"@en , "spanningscontext"@nl ;
+    rdfs:domain axia:ValueTensionClaim ;
+    rdfs:range  valor:Issue ;
+    rdfs:comment
+        """Het Issue in de context waarvan de waardespanning speelt.
+         Optioneel; als afwezig geldt de spanning algemeen."""@nl .
+
+# ── Properties op axia:DesignImplication ─────────────────────────────────────
+
+axia:implicationSource
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "implication source"@en , "implicatiebron"@nl ;
+    rdfs:domain axia:DesignImplication ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment "De Tessera (ontwerpelement) die de implicatie heeft."@nl .
+
+axia:implicationTarget
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "implication target"@en , "implicatiedoel"@nl ;
+    rdfs:domain axia:DesignImplication ;
+    rdfs:range  coodm:ValueType ;
+    rdfs:comment "De ValueType die wordt beïnvloed door de Tessera."@nl .
+
+axia:implicationPolarity
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "implication polarity"@en , "implicatiepolariteit"@nl ;
+    rdfs:domain axia:DesignImplication ;
+    rdfs:range  axia:ClaimPolarity ;
+    rdfs:comment "De polariteit van de implicatie. Verplicht."@nl .
+
+###############################################################################
+#  Einde module 00l-axia.trig (v0.1)
+###############################################################################
+}
