@@ -1,7 +1,7 @@
 # VALOR-O Ontologie — Ontwerpbeslissingen
 
-**Versie:** 0.3  
-**Datum:** februari 2026  
+**Versie:** 0.4  
+**Datum:** 7 maart 2026  
 **Status:** Levend document — wordt bijgewerkt bij elke module
 
 ---
@@ -971,3 +971,177 @@ Er is **geen** `gufo:ModeType`, `gufo:QualityType` of `gufo:RelatorType` in de T
 
 ---
 
+
+## Module 10 — Tessera, Application & Architectuurkeuzen (2026-03-07)
+
+Deze beslissingen zijn genomen tijdens de implementatie van de VALOR-O v2.0 ontologielaag (Laag 3: Tessera, Laag 4: Application) en de bijbehorende perspectief-modules Axia, Delibera en Forma.
+
+---
+
+### DD-053 · Centrale valor:Tessera superklasse voor alle perspectief-claims
+
+**Besluit:** Alle perspectief-specifieke claim-klassen (causa:CausalClaim, socia:StakeholderClaim, axia:ValueClaim, delib:ProcessClaim, forma:EngineerTessera) zijn **subklassen van `valor:Tessera`**. `valor:Tessera` is zelf subklasse van `ufoc:Belief`.
+
+**Alternatieven overwogen:**
+1. *Per-module epistemische klassen* — elke module definieert zijn eigen EpistemicStatus + Evidence. Nadeel: duplicatie, geen cross-perspectief queries mogelijk.
+2. *Centrale mixin via owl:unionOf* — technisch mogelijk maar minder expressief en geen OWL DL compliance.
+
+**Gekozen vanwege:**
+- Architectonische zuiverheid: één enkel punt voor epistemische eigenschappen (status, evidence, claimedBy, inPhase)
+- Cross-perspectief SPARQL queries worden triviaal: `?x a valor:Tessera` matcht alle claims ongeacht perspectief
+- OWL DL-compliant door enkelvoudige subklasse-hiërarchie
+- Consistent met UFO-C: `ufoc:Belief` is de juiste foundational basis voor propositional attitudes
+
+**Impact:** causa v0.2, socia v0.2 herschreven; causa:EpistemicStatus deprecated (zie DD-060).
+
+**Bron:** UFO-C-2013 §3.2 (Beliefs als propositional attitudes); IBIS (Rittel & Webber, 1973).
+
+---
+
+### DD-054 · 5-state epistemische machine
+
+**Besluit:** `valor:EpistemicStatus` heeft **vijf** instanties: `ProposedStatus`, `ContestedStatus`, `AcceptedStatus`, `RejectedStatus`, `ReconsideredStatus`. Geldige transities:
+
+```
+Proposed → Contested | Accepted | Rejected
+Contested → Accepted | Rejected
+Accepted → Reconsidered
+Rejected → Reconsidered
+Reconsidered → Proposed
+```
+
+**Alternatieven overwogen:**
+1. *3-state* (Proposed/Accepted/Rejected) — te beperkt voor deliberatieve praktijk; geen ruimte voor contestatie en heroverweging.
+2. *Vrije string* — geen validatie mogelijk, geen SPARQL-filtering op status.
+3. *Boolean accepted* — binaire logica past niet bij deliberatief model.
+
+**Gekozen vanwege:**
+- `ContestedStatus` geeft ruimte voor argumentatie vóór besluitvorming (IBIS-patroon)
+- `ReconsideredStatus` maakt revisie na besluit formeel traceerbaar
+- Vijf vaste instanties = SHACL-valideerbaar, SPARQL-filterbaar
+
+**SHACL:** Constraint T6 vereist dat Accepted/Rejected-status gekoppeld is aan een `valor:DecisionEpisode`.
+
+**Bron:** Deliberatieve democratietheorie (Habermas, 1981); IBIS (Rittel & Webber, 1973); COoDM §4.
+
+---
+
+### DD-055 · valor:Issue verplaatst van CAUSA naar Application ontology
+
+**Besluit:** `valor:Issue` is gedefinieerd in `00k-application.trig` (Laag 4), niet in `00h-causa.trig` (Laag 2).
+
+**Rationale:** Een `valor:Issue` is de overkoepelende beleidsoproep die een heel `app:DesignSpace` motiveert — het heeft geen causaal-inhoudelijke betekenis en hoort niet thuis in de CAUSA-perspectief module. CAUSA modelleert *causale relaties tussen factoren*; een Issue is een applicatie-niveau construct dat meerdere perspectieven overspant.
+
+**Impact:** causa v0.1 had `valor:Issue` gedefinieerd — verwijderd in v0.2 en vervangen door `owl:imports` op application module. Backward compatibility: geen breaking change voor bestaande data want causa:Issue was nog niet in productie.
+
+**Bron:** Scheiding van concerns: perspectief-ontologieën (Laag 2) vs. applicatie-ontologie (Laag 4).
+
+---
+
+### DD-056 · Laag 4 Application ontology als DesignSpace/Phase/Alternative patroon
+
+**Besluit:** De applicatie-ontologie (Laag 4, `00k-application.trig`) modelleert het huidige Valor `ThemeVersion`-patroon als:
+
+| Valor (Neo4j huidig) | VALOR-O Laag 4 |
+|---------------------|----------------|
+| `Organization` | `app:DesignSpace` (gedeeltelijk) |
+| `Project` | `app:DesignSpace` |
+| `ThemeBase` | `app:DesignSpace` identity |
+| `ThemeVersion` | `app:DesignAlternative` |
+| Deliberation phase | `app:DesignPhase` |
+| Phase transition vote | `app:PhaseTransition` (subklasse van `valor:DecisionEpisode`) |
+
+**Rationale:** Het Base/Version-patroon in Neo4j is functioneel equivalent aan DesignSpace + DesignAlternative. Door deze mapping expliciet te maken in Laag 4 kan de migratie van Neo4j naar Fuseki incrementeel gebeuren.
+
+**Phasemodellen opgenomen:** DesignThinkingModel, DoubleDiamondModel, AgileModel, PolicyCycleModel als instanties — organisaties kiezen hun fasering.
+
+**Bron:** Design thinking literatuur; Double Diamond (Design Council, 2005); Beleidscyclus (Howlett et al., 2009).
+
+---
+
+### DD-057 · Apache Jena Fuseki als triplestore (i.p.v. GraphDB)
+
+**Besluit:** VALOR-O wordt opgeslagen in **Apache Jena Fuseki** (open-source SPARQL 1.1 endpoint) in combinatie met **ELK** (OWL EL reasoning, real-time) en **HermiT** (OWL DL reasoning, async batch).
+
+**Alternatieven overwogen:**
+1. *GraphDB Free* — OWL 2 RL redeneren, goede performance, maar geen OWL DL; enterprise features (full OWL DL, SPARQL federation, visual exploration) achter betaalmuur.
+2. *GraphDB Enterprise* — volledig OWL DL, maar kostbaar voor open-source project.
+3. *Oxigraph* — lichtgewicht, Rust-based, maar beperkte SPARQL-ondersteuning en geen OWL reasoning.
+4. *Stardog* — krachtig maar commercieel.
+
+**Gekozen vanwege:**
+- Volledig open-source (Apache 2.0), geen vendor lock-in
+- SPARQL 1.1 Update + Named Graphs native
+- SHACL-validatie via Apache Jena SHACL library
+- ELK: sub-seconde OWL EL reasoning voor real-time UI-feedback
+- HermiT: volledige OWL DL voor nachtelijke batch-validatie
+- Deploy via Docker op Coolify VPS (gelijk aan overige services)
+
+**Endpoint:** `https://begrippen.valor-ecosystem.nl/sparql`
+
+**Bron:** Apache Jena documentatie; Steigmüller et al. (2014), ELK reasoner; Shearer et al. (2008), HermiT.
+
+---
+
+### DD-058 · Per-perspectief Tessera-subklassen als primaire claim-types
+
+**Besluit:** Elk perspectief definieert **eigen subklassen van `valor:Tessera`** in plaats van één generieke claim-klasse:
+
+| Perspectief | Module | Tessera-subklasse(n) |
+|-------------|--------|---------------------|
+| Causa | 00h | `causa:CausalClaim` |
+| Socia | 00i | `socia:StakeholderClaim`, `socia:InterestClaim`, `socia:GoalClaim`, `socia:PowerClaim` |
+| Axia | 00l | `axia:ValueClaim`, `axia:ValueTensionClaim` |
+| Delibera | 00m | `delib:ProcessClaim`, `delib:FairnessClaim`, `delib:ArgumentQualityClaim` |
+| Forma | 00n | `forma:EngineerTessera` (subtypen: TechnicalObjection, OntologicalObservation, ModelRecommendation) |
+
+**Rationale:** Perspectief-specifieke subklassen kunnen perspectief-specifieke eigenschappen dragen (bijv. `causa:hasCausalPolarity`, `axia:concernsValueType`) terwijl ze alle gedeelde Tessera-eigenschappen erven.
+
+**Bron:** DD-053 (Tessera architectuur); OntoUML 2.0 subkind-patroon.
+
+---
+
+### DD-059 · Named graph structuur per DesignSpace
+
+**Besluit:** Elke `app:DesignSpace` krijgt een **set van named graphs** in Fuseki:
+
+| Graph IRI | Inhoud |
+|-----------|--------|
+| `valor:{ds}/ontology` | Module-imports voor deze DesignSpace |
+| `valor:{ds}/asis` | As-is situatie (CausalClaims in AcceptedStatus) |
+| `valor:{ds}/alt/{id}` | DesignAlternative (ToBeType claims) |
+| `valor:{ds}/decisions` | DecisionEpisodes en Votes |
+| `valor:{ds}/agents` | Participants en rollen |
+| `valor:{ds}/provenance` | PROV-O herkomst-metadata |
+
+**Rationale:** Named graphs bieden isolatie per DesignSpace en maken SPARQL-queries per fase/alternatief mogelijk zonder joins over alle data. Tevens biedt dit een natuurlijk backup/export-granulariteit.
+
+**Alternatief overwogen:** Alles in één default graph met `dcterms:isPartOf`-triples. Nadeel: geen query-isolatie, moeilijker toegangsbeheer.
+
+**Bron:** SPARQL 1.1 Named Graphs (W3C, 2013); PROV-O (W3C, 2013).
+
+---
+
+### DD-060 · Deprecation causa:EpistemicStatus en causa:Evidence
+
+**Besluit:** De volgende klassen en properties uit `00h-causa.trig` v0.1 zijn als `owl:deprecated true` gemarkeerd in v0.2, en worden verwijderd in v0.3:
+
+**Deprecated klassen:**
+- `causa:EpistemicStatus` → vervangen door `valor:EpistemicStatus`
+- `causa:ProposedStatus`, `causa:AcceptedStatus`, `causa:RejectedStatus` → vervangen door `valor:ProposedStatus` etc.
+- `causa:Evidence` → vervangen door `valor:Evidence` (causa:Evidence blijft als subklasse voor BC)
+- `causa:EvidenceType` → vervangen door `valor:EvidenceType`
+
+**Deprecated properties:**
+- `causa:hasEpistemicStatus` → vervangen door `valor:epistemicStatus`
+- `causa:claimedAt` → vervangen door `valor:claimedAt`
+- `causa:groundedInEvidence` → vervangen door `valor:hasEvidence`
+- `causa:evidenceType`, `causa:evidenceSource` → vervangen door `valor:evidenceType`, `valor:evidenceSource`
+
+**Migratiestrategie:**
+1. v0.2: deprecated + behouden voor backwards compatibility
+2. v0.3: verwijderd; migratiegids beschikbaar in `MIGRATION.md`
+
+**Bron:** DD-053 (Tessera architectuur); OWL 2 Specification §owl:deprecated.
+
+---
