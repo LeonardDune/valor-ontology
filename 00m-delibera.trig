@@ -1,0 +1,287 @@
+# TRiG version of 00m-delibera.trig
+<https://valor-ecosystem.nl/ontology/delibera> {
+###############################################################################
+#  VALOR-O — Module 00m: DELIBERA Besluitvormingsperspectief Ontologie
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/delibera#  (prefix delib:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00a-gufo-core, 00c-ufo-c, 00e-coodm, 00j-tessera, 00k-application
+#
+#  Theoretische basis:
+#    Decision ontology / COoDM (Guizzardi, Carneiro & Porello 2020)
+#    Deliberatieve democratietheorie (Habermas, Fishkin)
+#    IBIS — Issue-Based Information System (Rittel & Webber 1973)
+#
+#  Ontologische grondslag:
+#    Delibera is het perspectief dat de democratische besluitvormings-
+#    dimensie van VALOR zichtbaar maakt. Het werkt met de centrale
+#    valor:DecisionEpisode en valor:Tessera uit 00j-tessera.
+#
+#    Delibera voegt toe:
+#    (1) delib:ArgumentationNetwork — een samenhangende verzameling
+#        Tesserae + argumentatierelaties als bevraagbaar object
+#    (2) delib:ProcessClaim — een Tessera over de kwaliteit van het
+#        besluitvormingsproces zelf (is het eerlijk? zijn alle stemmen
+#        gehoord? zijn de argumenten helder?)
+#    (3) delib:AgentInfluenceReport — metadata over de relatieve
+#        invloed van AgentTesserae in een DesignSpace
+#
+#  Structuur:
+#    §A  ArgumentationNetwork
+#    §B  ProcessClaim (Tessera over het proces zelf)
+#    §C  AgentInfluenceReport
+#    §D  Properties
+###############################################################################
+
+@prefix delib: <https://valor-ecosystem.nl/ontology/delibera#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+vo:delibera
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00m — DELIBERA Besluitvormingsperspectief Ontologie"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/coodm> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/application> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Formaliseert het Delibera-perspectief: besluitvormingsepisodes,
+         argumentatienetwerken en de democratische kwaliteit van het
+         ontwerpproces. Bouwt op valor:DecisionEpisode uit 00j-tessera."""@nl .
+
+
+###############################################################################
+#  §A — ArgumentationNetwork
+#
+#  Een ArgumentationNetwork is een samenhangende verzameling van Tesserae
+#  en hun argumentatierelaties (supports/undermines/qualifies/presupposes)
+#  als een bevraagbaar, benoembaar object.
+#
+#  In de Delibera-view: zichtbaar als een IBIS-diagram (Issues, Positions,
+#  Arguments). De network-structuur kan worden bevraagd via SPARQL om de
+#  sterkste argumentatiepaden te vinden.
+#
+#  Als gufo:Situation: een toestand van de DesignSpace waarbij een coherent
+#  argumentatienetwerk bestaat rondom een set Tesserae.
+###############################################################################
+
+delib:ArgumentationNetwork
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "ArgumentationNetwork"@en , "Argumentatienetwerk"@nl ;
+    rdfs:comment
+        """Een samenhangende verzameling Tesserae en hun argumentatierelaties
+         (valor:supports/undermines/qualifies/presupposes) als bevraagbaar
+         object. Zichtbaar als IBIS-diagram in de Delibera-view.
+         Als gufo:Situation: een coherente structuur in de DesignSpace."""@nl .
+
+delib:NetworkScope
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "NetworkScope"@en , "Netwerkbereik"@nl ;
+    rdfs:comment "Het bereik van een ArgumentationNetwork. Drie waarden. (Delibera)"@nl .
+
+delib:IssueNetwork
+    a delib:NetworkScope ;
+    rdfs:label "Issue"@en , "Vraagstuk-niveau"@nl ;
+    rdfs:comment "Netwerk omvat alle Tesserae voor het gehele Issue."@nl .
+
+delib:PhaseNetwork
+    a delib:NetworkScope ;
+    rdfs:label "Phase"@en , "Fase-niveau"@nl ;
+    rdfs:comment "Netwerk omvat Tesserae uit één specifieke DesignPhase."@nl .
+
+delib:TopicNetwork
+    a delib:NetworkScope ;
+    rdfs:label "Topic"@en , "Thema-niveau"@nl ;
+    rdfs:comment "Netwerk omvat Tesserae rondom een specifiek deelthema."@nl .
+
+
+###############################################################################
+#  §B — ProcessClaim (Tessera over de kwaliteit van het besluitvormingsproces)
+#
+#  Een ProcessClaim is een valor:Tessera over het besluitvormingsproces zelf:
+#  is het eerlijk verlopen? zijn alle stemmen gehoord? zijn de argumenten
+#  voldoende onderbouwd? is er voldoende tijd genomen?
+#
+#  De Delibera-agent (Socratische AI) stelt typisch ProcessClaims als
+#  valor:AgentTessera: "Drie deelnemers hebben deze claim betwist maar
+#  nog geen tegenargument ingediend. Willen jullie die ruimte geven?"
+#
+#  Twee subtypen:
+#    FairnessProcessClaim  — bewering over eerlijkheid/inclusiviteit
+#    QualityClaim          — bewering over argumentatiekwaliteit
+###############################################################################
+
+delib:ProcessClaim
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf valor:Tessera ;
+    rdfs:label "ProcessClaim"@en , "Procesclaim"@nl ;
+    rdfs:comment
+        """Een valor:Tessera over de kwaliteit van het besluitvormings-
+         proces zelf. Maakt procesmatige zorgen epistemisch zichtbaar:
+         eerlijkheid, inclusiviteit, argumentatiekwaliteit, tijddruk.
+         Typisch als valor:AgentTessera door de Delibera-agent ingediend."""@nl .
+
+delib:FairnessClaim
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf delib:ProcessClaim ;
+    rdfs:label "FairnessClaim"@en , "Eerlijkheidsclaim"@nl ;
+    rdfs:comment
+        """Een ProcessClaim over de eerlijkheid of inclusiviteit van het
+         proces: zijn alle relevante stemmen gehoord, is er geen dominantie
+         van bepaalde deelnemers?"""@nl .
+
+delib:ArgumentQualityClaim
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf delib:ProcessClaim ;
+    rdfs:label "ArgumentQualityClaim"@en , "Argumentatiekwaliteitsclaim"@nl ;
+    rdfs:comment
+        """Een ProcessClaim over de kwaliteit van de argumentatie: zijn
+         de claims voldoende onderbouwd, zijn tegenargumenten adequaat
+         behandeld?"""@nl .
+
+
+###############################################################################
+#  §C — AgentInfluenceReport
+#
+#  Na afloop van een DecisionEpisode of bij een faseovergang genereert het
+#  systeem een AgentInfluenceReport: hoeveel van de aangenomen Tesserae zijn
+#  voorgesteld of actief gestimuleerd door een AgentTessera?
+#
+#  Als informatie-object (SocialObject): bestaat in virtue van collectieve
+#  toegankelijkheid; dient als feedback voor facilitators over de mate
+#  van AI-invloed op het ontwerp.
+###############################################################################
+
+delib:AgentInfluenceReport
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "AgentInfluenceReport"@en , "Agent-invloedrapport"@nl ;
+    rdfs:comment
+        """Een rapport over de relatieve invloed van AgentTesserae op
+         aangenomen Tesserae in een DesignSpace of Episode. Feedback
+         voor facilitators: als het percentage structureel hoog is,
+         wordt de Socratische rol niet goed ingevuld. (Delibera)"""@nl .
+
+
+###############################################################################
+#  §D — Properties
+###############################################################################
+
+# ── Properties op delib:ArgumentationNetwork ─────────────────────────────────
+
+delib:networkContainsTessera
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "network contains tessera"@en , "netwerk bevat tessera"@nl ;
+    rdfs:domain delib:ArgumentationNetwork ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment "De Tesserae die deel uitmaken van dit ArgumentationNetwork."@nl .
+
+delib:networkForDesignSpace
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "network for design space"@en , "netwerk voor design space"@nl ;
+    rdfs:domain delib:ArgumentationNetwork ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace waarbinnen dit netwerk bestaat."@nl .
+
+delib:networkScope
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "network scope"@en , "netwerkbereik"@nl ;
+    rdfs:domain delib:ArgumentationNetwork ;
+    rdfs:range  delib:NetworkScope ;
+    rdfs:comment "Het bereik van dit ArgumentationNetwork."@nl .
+
+delib:networkRootTessera
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "network root tessera"@en , "netwerk-root tessera"@nl ;
+    rdfs:domain delib:ArgumentationNetwork ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment
+        """De centrale Tessera waaromheen het netwerk is opgebouwd.
+         Optioneel: netwerken kunnen ook plat zijn. (IBIS: Issue)"""@nl .
+
+# ── Properties op delib:ProcessClaim ─────────────────────────────────────────
+
+delib:concernsEpisode
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerns episode"@en , "betreft episode"@nl ;
+    rdfs:domain delib:ProcessClaim ;
+    rdfs:range  valor:DecisionEpisode ;
+    rdfs:comment "De DecisionEpisode waarop deze ProcessClaim betrekking heeft."@nl .
+
+delib:concernsDesignSpace
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerns design space"@en , "betreft design space"@nl ;
+    rdfs:domain delib:ProcessClaim ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace waarop deze ProcessClaim betrekking heeft."@nl .
+
+# ── Properties op delib:AgentInfluenceReport ─────────────────────────────────
+
+delib:reportForDesignSpace
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "report for design space"@en ;
+    rdfs:domain delib:AgentInfluenceReport ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace waarop dit rapport betrekking heeft."@nl .
+
+delib:reportGeneratedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "report generated at"@en ;
+    rdfs:domain delib:AgentInfluenceReport ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop het rapport is gegenereerd."@nl .
+
+delib:agentInfluenceRatio
+    a owl:DatatypeProperty ;
+    rdfs:label "agent influence ratio"@en , "agent-invloedratio"@nl ;
+    rdfs:domain delib:AgentInfluenceReport ;
+    rdfs:range  xsd:decimal ;
+    rdfs:comment
+        """Het aandeel aangenomen Tesserae dat is voorgesteld of gestimuleerd
+         door AgentTesserae (0.0–1.0). Bij structureel hoge waarden is
+         de Socratische rol niet goed ingevuld."""@nl .
+
+delib:agentSilenceModeActive
+    a owl:DatatypeProperty ;
+    rdfs:label "agent silence mode active"@en , "agent-stilte modus actief"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        """Of de agent-stilte modus actief is: agents spreken niet tenzij
+         expliciet uitgenodigd. Configureerbaar door de Facilitator."""@nl .
+
+###############################################################################
+#  Einde module 00m-delibera.trig (v0.1)
+###############################################################################
+}
