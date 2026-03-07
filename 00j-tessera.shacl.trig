@@ -1,0 +1,241 @@
+# TRiG version of 00j-tessera.shacl.ttl
+<https://valor-ecosystem.nl/shacl/tessera> {
+###############################################################################
+#  VALOR-O — SHACL Shapes voor Module 00j: Tessera
+#
+#  Versie  : 0.1  (maart 2026)
+#
+#  Constraints:
+#    T1  — elke Tessera heeft precies 1 valor:epistemicStatus
+#    T2  — elke Tessera heeft precies 1 valor:claimedBy (Agent)
+#    T3  — elke Tessera heeft precies 1 valor:claimedAt (dateTime)
+#           + precies 1 valor:inPhase
+#    T4  — elke Tessera heeft precies 1 valor:claimType
+#    T5  — valor:undermines mag niet reflexief zijn (A undermines A)
+#    T6  — Tessera met status Accepted of Rejected vereist link naar
+#           minimaal 1 valor:DecisionEpisode (via valor:concernsTessera)
+#    DE1 — elke DecisionEpisode heeft precies 1 valor:episodeType
+#           en precies 1 valor:episodeAt
+#    DE2 — elke DecisionEpisode heeft minimaal 1 valor:hasParticipant
+#           en minimaal 1 valor:concernsTessera
+#    V1  — elke Vote heeft precies 1 valor:votePosition
+#           en precies 1 valor:forTessera
+###############################################################################
+
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  T1 — Elke Tessera heeft precies 1 epistemicStatus
+###############################################################################
+
+vo:T1-EpistemicStatusShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "T1 — EpistemicStatus verplicht" ;
+    sh:description
+        """Elke Tessera moet precies één valor:epistemicStatus hebben.
+         (DD-061, DD-065)""" ;
+    sh:property [
+        sh:path valor:epistemicStatus ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class valor:EpistemicStatus ;
+        sh:message "T1: Een Tessera vereist precies één valor:epistemicStatus."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  T2 — Elke Tessera heeft precies 1 claimedBy (Agent)
+###############################################################################
+
+vo:T2-ClaimedByShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "T2 — claimedBy verplicht" ;
+    sh:description "Elke Tessera moet precies één auteur (valor:claimedBy) hebben. (DD-061)" ;
+    sh:property [
+        sh:path valor:claimedBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "T2: Een Tessera vereist precies één valor:claimedBy (Agent)."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  T3 — Elke Tessera heeft precies 1 claimedAt en 1 inPhase
+###############################################################################
+
+vo:T3-TemporalShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "T3 — Temporele metadata verplicht" ;
+    sh:description "Elke Tessera vereist claimedAt en inPhase. (DD-061)" ;
+    sh:property [
+        sh:path valor:claimedAt ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "T3: Een Tessera vereist precies één valor:claimedAt (xsd:dateTime)."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path valor:inPhase ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "T3: Een Tessera vereist precies één valor:inPhase."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  T4 — Elke Tessera heeft precies 1 claimType (AsIs of ToBe)
+###############################################################################
+
+vo:T4-ClaimTypeShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "T4 — ClaimType verplicht" ;
+    sh:description "Elke Tessera moet AsIs of ToBe zijn. (DD-061)" ;
+    sh:property [
+        sh:path valor:claimType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class valor:ClaimType ;
+        sh:message "T4: Een Tessera vereist precies één valor:claimType (AsIs of ToBe)."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  T5 — valor:undermines mag niet reflexief zijn
+###############################################################################
+
+vo:T5-NonReflexiveUnderminesShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "T5 — undermines niet reflexief" ;
+    sh:description "Een Tessera mag zichzelf niet ondermijnen. (DD-061)" ;
+    sh:sparql [
+        sh:message "T5: valor:undermines mag niet reflexief zijn (A ondermijnt A)."@nl ;
+        sh:severity sh:Violation ;
+        sh:prefixes vo:tessera ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this valor:undermines $this .
+            }
+        """ ;
+    ] .
+
+###############################################################################
+#  T6 — Accepted/Rejected Tessera vereist link naar een DecisionEpisode
+###############################################################################
+
+vo:T6-DecisionEpisodeLinkShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "T6 — DecisionEpisode vereist bij Accepted/Rejected" ;
+    sh:description
+        """Een Tessera met status Accepted of Rejected moet gekoppeld zijn
+         aan minimaal één DecisionEpisode via valor:concernsTessera (invers). (DD-061)""" ;
+    sh:sparql [
+        sh:message "T6: Accepted/Rejected Tessera vereist koppeling aan een valor:DecisionEpisode."@nl ;
+        sh:severity sh:Violation ;
+        sh:prefixes vo:tessera ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this valor:epistemicStatus ?status .
+                FILTER (?status IN (valor:AcceptedStatus, valor:RejectedStatus))
+                FILTER NOT EXISTS {
+                    ?episode valor:concernsTessera $this .
+                }
+            }
+        """ ;
+    ] .
+
+###############################################################################
+#  DE1 — Elke DecisionEpisode heeft 1 episodeType en 1 episodeAt
+###############################################################################
+
+vo:DE1-DecisionEpisodeShape
+    a sh:NodeShape ;
+    sh:targetClass valor:DecisionEpisode ;
+    sh:name "DE1 — DecisionEpisode metadata verplicht" ;
+    sh:description "Elke DecisionEpisode vereist episodeType en episodeAt. (DD-061)" ;
+    sh:property [
+        sh:path valor:episodeType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class valor:EpisodeType ;
+        sh:message "DE1: Een DecisionEpisode vereist precies één valor:episodeType."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path valor:episodeAt ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "DE1: Een DecisionEpisode vereist precies één valor:episodeAt (dateTime)."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  DE2 — Elke DecisionEpisode heeft >= 1 deelnemer en >= 1 Tessera
+###############################################################################
+
+vo:DE2-DecisionEpisodeParticipationShape
+    a sh:NodeShape ;
+    sh:targetClass valor:DecisionEpisode ;
+    sh:name "DE2 — DecisionEpisode participatie verplicht" ;
+    sh:description "Minimaal 1 Participant en 1 Tessera per DecisionEpisode. (DD-061)" ;
+    sh:property [
+        sh:path valor:hasParticipant ;
+        sh:minCount 1 ;
+        sh:message "DE2: Een DecisionEpisode vereist minimaal één valor:hasParticipant."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path valor:concernsTessera ;
+        sh:minCount 1 ;
+        sh:message "DE2: Een DecisionEpisode vereist minimaal één valor:concernsTessera."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  V1 — Elke Vote heeft 1 votePosition en 1 forTessera
+###############################################################################
+
+vo:V1-VoteShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Vote ;
+    sh:name "V1 — Vote structuur verplicht" ;
+    sh:description "Elke Vote vereist een votePosition en een forTessera. (DD-061)" ;
+    sh:property [
+        sh:path valor:votePosition ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class valor:VotePosition ;
+        sh:message "V1: Een Vote vereist precies één valor:votePosition."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path valor:forTessera ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class valor:Tessera ;
+        sh:message "V1: Een Vote vereist precies één valor:forTessera."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  Einde 00j-tessera.shacl.trig (v0.1)
+###############################################################################
+}
