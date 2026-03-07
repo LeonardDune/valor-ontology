@@ -1,0 +1,589 @@
+# TRiG version of 00k-application.ttl
+<https://valor-ecosystem.nl/ontology/application> {
+###############################################################################
+#  VALOR-O — Module 00k: VALOR Toepassingsontologie (Application)
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/application#  (prefix app:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00a-gufo-core, 00c-ufo-c, 00j-tessera
+#
+#  Architectuurprincipe (DD-062):
+#    Deze module definieert de VALOR-specifieke toepassingsstructuren
+#    die het ontwerpproces organiseren: DesignSpace, DesignPhase,
+#    DesignAlternative en Participant. valor:Issue is hier gedefinieerd
+#    en niet in 00h-causa, omdat Issue de top-level entiteit is die
+#    alle perspectieven verbindt.
+#
+#    valor:Issue typ: ufoc:SocialObject (DD-054/DD-062): een vraagstuk
+#    bestaat in virtue van het gedeelde ufoc:Concern van een gemeenschap.
+#    Bewuste keuze: het plan suggereert gufo:Situation maar een Issue
+#    is een sociaal construct, geen contingente toestand van de wereld.
+#    Zie DD-062 voor de afweging.
+#
+#  Structuur:
+#    §A  Issue — het maatschappelijk vraagstuk (verplaatst vanuit 00h)
+#    §B  DesignSpace — ontwerp-omgeving voor één Issue
+#    §C  DesignPhase — afgebakende periode in de DesignSpace lifecycle
+#    §D  PhaseTransition — faseovergang als DecisionEpisode
+#    §E  DesignAlternative — een oplossingsrichting (named graph)
+#    §F  Participant — deelnemer met rol in een DesignSpace
+#    §G  ParticipantRole — de zes rollen
+#    §H  Properties
+###############################################################################
+
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+vo:application
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00k — VALOR Toepassingsontologie"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Definieert de VALOR-O toepassingsstructuren: Issue, DesignSpace,
+         DesignPhase, DesignAlternative en Participant. Alle perspectieven
+         opereren binnen de structuren van deze module. (DD-062)"""@nl .
+
+
+###############################################################################
+#  §A — Issue (maatschappelijk vraagstuk)
+#
+#  DD-062: valor:Issue is verplaatst vanuit 00h-causa (v0.1) naar deze
+#  toepassingsontologie omdat Issue het verbindingspunt is van ALLE
+#  perspectieven — niet alleen Causa. Een Issue behoort architectonisch
+#  in Laag 4 (toepassingsontologie), niet in een perspectief-module.
+#
+#  Ontologisch type: ufoc:SocialObject (DD-054, DD-062).
+#  Een Issue bestaat in virtue van het gedeelde ufoc:Concern van een
+#  gemeenschap van agents over een problematische gufo:Situation.
+#  Keuze voor SocialObject boven gufo:Situation omdat een Issue een
+#  sociaal construct is: het bestaat doordat agents het als zodanig
+#  constitueeren, niet door de toestand van de wereld zelf.
+###############################################################################
+
+valor:Issue
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "Issue"@en , "Vraagstuk"@nl ;
+    rdfs:comment
+        """Een maatschappelijk vraagstuk dat om onderzoek en ontwerp vraagt.
+         Ontologische fundering: een ufoc:SocialObject dat bestaat doordat
+         een gemeenschap van agents een gedeeld ufoc:Concern heeft over een
+         problematische gufo:Situation (de toestand van de wereld die als
+         problematisch wordt ervaren).
+
+         Verplaatst vanuit 00h-causa (v0.1) naar de toepassingsontologie
+         (v0.1) omdat Issue het verbindingspunt is van alle zeven
+         perspectieven. (DD-054, DD-062)"""@nl .
+
+valor:concernedWithSituation
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerned with situation"@en , "betreft situatie"@nl ;
+    rdfs:domain valor:Issue ;
+    rdfs:range  gufo:Situation ;
+    rdfs:comment
+        """De gufo:Situation (toestand van de wereld) die het Issue
+         aanleiding geeft. (DD-054, DD-062)"""@nl .
+
+valor:hasConcernedAgent
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has concerned agent"@en , "heeft betrokken agent"@nl ;
+    rdfs:domain valor:Issue ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        """De Agent(s) wiens ufoc:Concern dit Issue constitueert.
+         Minimaal één (SHACL I1). (DD-054, DD-062)"""@nl .
+
+valor:hasDesignSpace
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has design space"@en , "heeft design space"@nl ;
+    rdfs:domain valor:Issue ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace(s) die voor dit Issue zijn aangemaakt. (DD-062)"@nl .
+
+
+###############################################################################
+#  §B — DesignSpace
+#
+#  DD-062: De DesignSpace is de ontwerp-omgeving voor één Issue.
+#  Als gufo:FunctionalComplex: een geheel dat bestaat uit samenstellende
+#  delen — Tesserae, Fasen, Alternatieven, Deelnemers — die samen
+#  functioneren als ontwerp-omgeving.
+#
+#  In Fuseki: elke DesignSpace heeft een vaste set named graphs
+#  (ontology/asis/alt/decisions/agents/provenance).
+###############################################################################
+
+app:DesignSpace
+    a owl:Class ;
+    rdf:type gufo:Kind ;
+    valor:ontoumlStereotype "kind" ;
+    rdfs:subClassOf gufo:FunctionalComplex ;
+    rdfs:label "DesignSpace"@en , "Ontwerpruimte"@nl ;
+    rdfs:comment
+        """De gestructureerde ontwerpomgeving voor één valor:Issue.
+         Bevat alle Tesserae, Fasen, Alternatieven en Deelnemers die
+         betrekking hebben op het Issue. Als gufo:FunctionalComplex:
+         de onderdelen functioneren samen als één ontwerp-omgeving.
+
+         In Fuseki: geïmplementeerd als een vaste set named graphs.
+         (DD-062, DD-066)"""@nl .
+
+app:DesignSpaceStatus
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "DesignSpaceStatus"@en , "Status van de DesignSpace"@nl ;
+    rdfs:comment "De status van de DesignSpace: Active, Completed of Archived. (DD-062)"@nl .
+
+app:ActiveDesignSpace     a app:DesignSpaceStatus ; rdfs:label "Active"@en , "Actief"@nl .
+app:CompletedDesignSpace  a app:DesignSpaceStatus ; rdfs:label "Completed"@en , "Afgerond"@nl .
+app:ArchivedDesignSpace   a app:DesignSpaceStatus ; rdfs:label "Archived"@en , "Gearchiveerd"@nl .
+
+
+###############################################################################
+#  §C — DesignPhase
+#
+#  Een DesignPhase is een afgebakende periode in de lifecycle van een
+#  DesignSpace met temporele begrenzing, een status en fase-specifieke
+#  criteria. Het standaardfasemodel volgt Design Thinking maar is
+#  configureerbaar per DesignSpace.
+###############################################################################
+
+app:DesignPhase
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "DesignPhase"@en , "Ontwerpfase"@nl ;
+    rdfs:comment
+        """Een afgebakende periode in de lifecycle van een DesignSpace,
+         met temporele begrenzing en een status. Als gufo:Situation:
+         een contingente toestand van de DesignSpace.
+
+         Standaardfasemodel (configureerbaar): Verkenning → Probleemanalyse
+         → Ontwerp → Afweging → Documentatie.
+         Andere modellen: DoubleDiamond, Agile, Beleidslevenscyclus.
+         (DD-062)"""@nl .
+
+app:PhaseStatus
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "PhaseStatus"@en , "Fasestatus"@nl ;
+    rdfs:comment "De status van een DesignPhase: Active, Closed of Archived. (DD-062)"@nl .
+
+app:ActivePhase    a app:PhaseStatus ; rdfs:label "Active"@en , "Actief"@nl .
+app:ClosedPhase    a app:PhaseStatus ; rdfs:label "Closed"@en , "Gesloten"@nl .
+app:ArchivedPhase  a app:PhaseStatus ; rdfs:label "Archived"@en , "Gearchiveerd"@nl .
+
+app:PhaseModel
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "PhaseModel"@en , "Fasemodel"@nl ;
+    rdfs:comment "Het fasemodel dat voor deze DesignSpace wordt gehanteerd. (DD-062)"@nl .
+
+app:DesignThinkingModel  a app:PhaseModel ; rdfs:label "Design Thinking"@en .
+app:DoubleDiamondModel   a app:PhaseModel ; rdfs:label "Double Diamond"@en .
+app:AgileModel           a app:PhaseModel ; rdfs:label "Agile"@en .
+app:PolicyCycleModel     a app:PhaseModel ; rdfs:label "Policy Cycle"@en , "Beleidslevenscyclus"@nl .
+
+
+###############################################################################
+#  §D — PhaseTransition (faseovergang als DecisionEpisode)
+#
+#  Een PhaseTransition is een specialisatie van valor:DecisionEpisode
+#  die de lifecycle van een DesignSpace naar de volgende fase brengt.
+#  Het is het zwaarste besluitvormingsmoment: alle actieve Tesserae
+#  worden beoordeeld.
+###############################################################################
+
+app:PhaseTransition
+    a owl:Class ;
+    rdf:type gufo:EventType ;
+    valor:ontoumlStereotype "event" ;
+    rdfs:subClassOf valor:DecisionEpisode ;
+    rdfs:label "PhaseTransition"@en , "Faseovergang"@nl ;
+    rdfs:comment
+        """Een formeel besluitvormingsmoment dat de lifecycle van een
+         DesignSpace naar de volgende fase brengt. Specialisatie van
+         valor:DecisionEpisode. Alle actieve Tesserae worden beoordeeld.
+         SHACL-validatie via Forma is vereist voor acceptatie. (DD-062)"""@nl .
+
+
+###############################################################################
+#  §E — DesignAlternative
+#
+#  DD-062: Een DesignAlternative is een coherente verzameling ToBe-
+#  Tesserae die een mogelijke oplossingsrichting beschrijft. Alternatieven
+#  zijn geïmplementeerd als named graphs in Fuseki (DD-066):
+#    valor:{designspace}/alt/{id}
+#
+#  Alternatieven delen de AsIs-Tesserae (valor:{designspace}/asis)
+#  maar bevatten elk hun eigen ToBe-Tesserae. SPARQL-queries kunnen
+#  over meerdere named graphs heen vergelijken.
+###############################################################################
+
+app:DesignAlternative
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "DesignAlternative"@en , "Ontwerpalternatief"@nl ;
+    rdfs:comment
+        """Een coherente verzameling ToBe-Tesserae die één mogelijke
+         oplossingsrichting beschrijft. Geïmplementeerd als named graph
+         in Fuseki. Alternatieven delen de AsIs-Tesserae maar bevatten
+         elk hun eigen ToBe-Tesserae.
+
+         Aangemaakt bij de overgang naar de Ontwerpfase (Fase 3). Kunnen
+         parallel worden uitgewerkt en vergeleken via SPARQL. (DD-062, DD-066)"""@nl .
+
+app:AlternativeStatus
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "AlternativeStatus"@en , "Alternatiefstatus"@nl ;
+    rdfs:comment "De status van een DesignAlternative. (DD-062)"@nl .
+
+app:ActiveAlternative    a app:AlternativeStatus ; rdfs:label "Active"@en , "Actief"@nl .
+app:SelectedAlternative  a app:AlternativeStatus ; rdfs:label "Selected"@en , "Geselecteerd"@nl .
+app:ArchivedAlternative  a app:AlternativeStatus ; rdfs:label "Archived"@en , "Gearchiveerd"@nl .
+
+
+###############################################################################
+#  §F — Participant (deelnemer in een DesignSpace)
+#
+#  DD-062: Een Participant is een ufoc:Agent met een contextafhankelijke
+#  rol in een DesignSpace. Elke Participant heeft precies één rol per
+#  DesignSpace. De zes rollen zijn subklassen van app:ParticipantRole.
+#
+#  Stemrecht:
+#    Met stemrecht: Initiator, Contributor
+#    Zonder stemrecht: Facilitator, Expert, Observer, Engineer
+###############################################################################
+
+app:Participant
+    a owl:Class ;
+    rdf:type gufo:Role ;
+    valor:ontoumlStereotype "role" ;
+    rdfs:subClassOf ufoc:Agent ;
+    rdfs:label "Participant"@en , "Deelnemer"@nl ;
+    rdfs:comment
+        """Een ufoc:Agent met een rol in een DesignSpace. Deelname is
+         per uitnodiging en rol-afhankelijk voor besluitvorming.
+         Elke Participant heeft precies één rol per DesignSpace (SHACL P1).
+         Gebruikers kunnen aan meerdere DesignSpaces deelnemen met
+         verschillende rollen. (DD-062)"""@nl .
+
+
+###############################################################################
+#  §G — ParticipantRole (zes rollen)
+###############################################################################
+
+app:ParticipantRole
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ParticipantRole"@en , "Deelnemersrol"@nl ;
+    rdfs:comment
+        """De rol van een Participant in een DesignSpace. Zes rollen,
+         elk met eigen schrijf- en stemrechten. (DD-062)"""@nl .
+
+app:InitiatorRole
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf app:ParticipantRole ;
+    rdfs:label "Initiator"@en , "Initiator"@nl ;
+    rdfs:comment
+        """De partij die een DesignSpace aanmaakt en de initiële framing
+         van het Issue bepaalt. Heeft stemrecht en bepaalt de governance-
+         configuratie (fasemodel, stemmechanisme, uitnodigingsbeleid).
+         Geen bijzondere besluitvormingsbevoegdheid boven Contributors.
+         (DD-062)"""@nl .
+
+app:FacilitatorRole
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf app:ParticipantRole ;
+    rdfs:label "Facilitator"@en , "Facilitator"@nl ;
+    rdfs:comment
+        """Verantwoordelijk voor sessiebegeleid, democratische kwaliteit
+         en agent-configuratie. Heeft GEEN stemrecht maar kan procedurele
+         beslissingen nemen (agent-stilte, uitstel van stemming). (DD-062)"""@nl .
+
+app:ContributorRole
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf app:ParticipantRole ;
+    rdfs:label "Contributor"@en , "Bijdrager"@nl ;
+    rdfs:comment
+        """Actieve deelnemer die Tesserae kan toevoegen, betwisten en
+         onderbouwen. Heeft stemrecht in DecisionEpisodes. Primaire
+         rol voor domeinexperts, burgers en uitvoerders. (DD-062)"""@nl .
+
+app:ExpertRole
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf app:ParticipantRole ;
+    rdfs:label "Expert"@en , "Expert"@nl ;
+    rdfs:comment
+        """Domein- of methodologisch expert die Tesserae kan toevoegen
+         en beoordelen maar GEEN stemrecht heeft in DecisionEpisodes.
+         Experts dragen bij aan de kwaliteit zonder de democratische
+         besluitvorming te domineren. (DD-062)"""@nl .
+
+app:ObserverRole
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf app:ParticipantRole ;
+    rdfs:label "Observer"@en , "Waarnemer"@nl ;
+    rdfs:comment
+        """Leestoegang tot alle Tesserae en DecisionEpisodes. Geen
+         schrijftoegang en geen stemrecht. Geschikt voor bestuurders,
+         journalisten en onderzoekers. (DD-062)"""@nl .
+
+app:EngineerRole
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf app:ParticipantRole ;
+    rdfs:label "Engineer"@en , "Engineer"@nl ;
+    rdfs:comment
+        """Toegang tot Forma (ontologische view), SHACL-validator en
+         SPARQL-editor. Geen stemrecht maar kan technische bezwaren
+         registreren als Tessera. (DD-062)"""@nl .
+
+
+###############################################################################
+#  §H — Properties
+###############################################################################
+
+# ── Properties op app:DesignSpace ────────────────────────────────────────────
+
+app:addressesIssue
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "addresses issue"@en , "adresseert vraagstuk"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  valor:Issue ;
+    rdfs:comment "Het Issue waarop deze DesignSpace betrekking heeft. Verplicht (SHACL DS1). (DD-062)"@nl .
+
+app:hasPhase
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has phase"@en , "heeft fase"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  app:DesignPhase ;
+    rdfs:comment "De Fasen van deze DesignSpace. Minimaal 1 (SHACL DS1). (DD-062)"@nl .
+
+app:hasAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has alternative"@en , "heeft alternatief"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  app:DesignAlternative ;
+    rdfs:comment "De Alternatieven van deze DesignSpace. Optioneel in Fasen 1-2. (DD-062)"@nl .
+
+app:hasParticipantMember
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has participant member"@en , "heeft deelnemer"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  app:Participant ;
+    rdfs:comment "De Participants van deze DesignSpace. Minimaal 1 (SHACL DS1). (DD-062)"@nl .
+
+app:designSpaceStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "design space status"@en , "status van de design space"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  app:DesignSpaceStatus ;
+    rdfs:comment "De status van de DesignSpace. Verplicht (SHACL DS1). (DD-062)"@nl .
+
+app:usesPhaseModel
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "uses phase model"@en , "gebruikt fasemodel"@nl ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  app:PhaseModel ;
+    rdfs:comment "Het fasemodel van deze DesignSpace. Standaard: DesignThinkingModel. (DD-062)"@nl .
+
+app:fusekiNamedGraphBase
+    a owl:DatatypeProperty ;
+    rdfs:label "Fuseki named graph base IRI"@en ;
+    rdfs:domain app:DesignSpace ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:comment
+        """De basis-IRI voor de named graphs van deze DesignSpace in Fuseki.
+         Patroon: valor:{designspace}/. Hiervan worden afgeleid:
+         .../ontology, .../asis, .../alt/{id}, .../decisions,
+         .../agents, .../provenance. (DD-066)"""@nl .
+
+# ── Properties op app:DesignPhase ────────────────────────────────────────────
+
+app:phaseStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "phase status"@en , "fasestatus"@nl ;
+    rdfs:domain app:DesignPhase ;
+    rdfs:range  app:PhaseStatus ;
+    rdfs:comment "De status van de DesignPhase. Verplicht (SHACL PH1). (DD-062)"@nl .
+
+app:phaseBeginPoint
+    a owl:DatatypeProperty ;
+    rdfs:label "phase begin point"@en , "fase beginpunt"@nl ;
+    rdfs:domain app:DesignPhase ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop de fase begon. Verplicht bij status Closed of Archived. (DD-062)"@nl .
+
+app:phaseEndPoint
+    a owl:DatatypeProperty ;
+    rdfs:label "phase end point"@en , "fase eindpunt"@nl ;
+    rdfs:domain app:DesignPhase ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop de fase werd afgesloten. Verplicht bij status Closed of Archived. (DD-062)"@nl .
+
+app:hasPhaseTransition
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has phase transition"@en , "heeft faseovergang"@nl ;
+    rdfs:domain app:DesignPhase ;
+    rdfs:range  app:PhaseTransition ;
+    rdfs:comment "De PhaseTransition waarmee deze fase werd afgesloten. (DD-062)"@nl .
+
+app:phaseSequenceNumber
+    a owl:DatatypeProperty ;
+    rdfs:label "phase sequence number"@en , "fasenummer"@nl ;
+    rdfs:domain app:DesignPhase ;
+    rdfs:range  xsd:integer ;
+    rdfs:comment "Het volgnummer van de fase in de DesignSpace-lifecycle (1, 2, 3, ...). (DD-062)"@nl .
+
+# ── Properties op app:DesignAlternative ──────────────────────────────────────
+
+app:alternativeStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "alternative status"@en , "alternatiefstatus"@nl ;
+    rdfs:domain app:DesignAlternative ;
+    rdfs:range  app:AlternativeStatus ;
+    rdfs:comment "De status van het alternatief. Verplicht (SHACL ALT1). (DD-062)"@nl .
+
+app:alternativeNamedGraphIRI
+    a owl:DatatypeProperty ;
+    rdfs:label "alternative named graph IRI"@en ;
+    rdfs:domain app:DesignAlternative ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:comment
+        """De IRI van de named graph in Fuseki voor dit alternatief.
+         Patroon: valor:{designspace}/alt/{id}. (DD-066)"""@nl .
+
+app:alternativeCreatedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "alternative created at"@en , "alternatief aangemaakt op"@nl ;
+    rdfs:domain app:DesignAlternative ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop het alternatief is aangemaakt. (DD-062)"@nl .
+
+app:alternativeCreatedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "alternative created by"@en , "alternatief aangemaakt door"@nl ;
+    rdfs:domain app:DesignAlternative ;
+    rdfs:range  app:Participant ;
+    rdfs:comment "De Participant die dit alternatief heeft aangemaakt. (DD-062)"@nl .
+
+# ── Properties op app:Participant ────────────────────────────────────────────
+
+app:hasRole
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "has role"@en , "heeft rol"@nl ;
+    rdfs:domain app:Participant ;
+    rdfs:range  app:ParticipantRole ;
+    rdfs:comment "De rol van de Participant in de DesignSpace. Verplicht (SHACL P1). (DD-062)"@nl .
+
+app:participatesIn
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "participates in"@en , "neemt deel aan"@nl ;
+    rdfs:domain app:Participant ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace(s) waaraan deze Participant deelneemt. (DD-062)"@nl .
+
+app:hasVotingRight
+    a owl:DatatypeProperty ;
+    rdfs:label "has voting right"@en , "heeft stemrecht"@nl ;
+    rdfs:domain app:ParticipantRole ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        """Of deze ParticipantRole stemrecht heeft in DecisionEpisodes.
+         Initiator en Contributor: true. Overige rollen: false. (DD-062)"""@nl .
+
+app:participantInvitedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "participant invited at"@en , "deelnemer uitgenodigd op"@nl ;
+    rdfs:domain app:Participant ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip van uitnodiging van de Participant. (DD-062)"@nl .
+
+app:participantInvitedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "participant invited by"@en , "deelnemer uitgenodigd door"@nl ;
+    rdfs:domain app:Participant ;
+    rdfs:range  app:Participant ;
+    rdfs:comment "De Participant die deze Participant heeft uitgenodigd. (DD-062)"@nl .
+
+app:isPseudonymised
+    a owl:DatatypeProperty ;
+    rdfs:label "is pseudonymised"@en , "is gepseudonimiseerd"@nl ;
+    rdfs:domain app:Participant ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        """Of de bijdragen van deze Participant worden weergegeven als
+         pseudoniem voor andere deelnemers. Configureerbaar per
+         DesignSpace. (DD-062)"""@nl .
+
+# ── Stemmrecht instanties ────────────────────────────────────────────────────
+
+app:InitiatorRole  app:hasVotingRight  true .
+app:ContributorRole app:hasVotingRight true .
+app:FacilitatorRole app:hasVotingRight false .
+app:ExpertRole      app:hasVotingRight false .
+app:ObserverRole    app:hasVotingRight false .
+app:EngineerRole    app:hasVotingRight false .
+
+###############################################################################
+#  Einde module 00k-application.trig (v0.1)
+###############################################################################
+}
