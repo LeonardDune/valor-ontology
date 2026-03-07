@@ -1,0 +1,379 @@
+# TRiG version of 00n-forma.trig
+<https://valor-ecosystem.nl/ontology/forma> {
+###############################################################################
+#  VALOR-O — Module 00n: FORMA Ontologisch Perspectief Ontologie
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/forma#  (prefix forma:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00a-gufo-core, 00j-tessera, 00k-application
+#
+#  Theoretische basis:
+#    gUFO v1.0 (Almeida et al. 2019)
+#    OntoUML 2.0 (Guizzardi et al. 2018)
+#    SHACL (W3C 2017)
+#
+#  Ontologische grondslag:
+#    Forma is het expert-perspectief: de technische, ontologisch-precieze
+#    representatie van het VALOR-O model. Het maakt de onderliggende
+#    ontologische structuur bevraagbaar via SPARQL en valideerbaar via SHACL.
+#
+#    Forma voegt toe:
+#    (1) forma:OntologicalElement — elk klasse/property-element in de
+#        VALOR-O graph als bevraagbare entiteit met stereotype en status
+#    (2) forma:EngineerTessera — een Tessera waarmee een Engineer een
+#        technisch bezwaar of ontologische observatie registreert
+#    (3) forma:ValidationReport — de uitkomst van een SHACL-validatierun
+#        als onderdeel van de DesignSpace provenance
+#
+#  Structuur:
+#    §A  OntologicalElement
+#    §B  EngineerTessera
+#    §C  ValidationReport
+#    §D  OntoUML stereotypen (annotation properties)
+#    §E  Properties
+###############################################################################
+
+@prefix forma: <https://valor-ecosystem.nl/ontology/forma#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+vo:forma
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00n — FORMA Ontologisch Perspectief Ontologie"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/application> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Formaliseert het Forma-perspectief: de technische, ontologisch-
+         precieze weergave van de VALOR-O graph. Maakt ontologische
+         elementen bevraagbaar en SHACL-validatie onderdeel van de
+         DesignSpace provenance."""@nl .
+
+
+###############################################################################
+#  §A — OntologicalElement
+#
+#  Elk klasse- of property-element in de VALOR-O graph is als
+#  forma:OntologicalElement bevraagbaar via SPARQL. Dit maakt het mogelijk
+#  om in de Forma-view de volledige ontologische structuur te tonen als
+#  OntoUML-diagram, inclusief stereotypen, kardinaliteiten en validatiestatus.
+#
+#  OntologicalElement is zelf een FunctionalComplex (een samengesteld geheel
+#  dat de ontologische definitie en haar metadata omvat).
+###############################################################################
+
+forma:OntologicalElement
+    a owl:Class ;
+    rdf:type gufo:Kind ;
+    valor:ontoumlStereotype "kind" ;
+    rdfs:subClassOf gufo:FunctionalComplex ;
+    rdfs:label "OntologicalElement"@en , "Ontologisch element"@nl ;
+    rdfs:comment
+        """Een klasse, property of instantie in de VALOR-O graph als
+         bevraagbaar object. Heeft een stereotype (conform OntoUML 2.0),
+         een validatiestatus en kan worden gelinkt aan EngineerTesserae.
+         Primaire entiteit in de Forma-view."""@nl .
+
+forma:ElementType
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ElementType"@en , "Elementtype"@nl ;
+    rdfs:comment "Het type van een OntologicalElement: Class, ObjectProperty of DatatypeProperty."@nl .
+
+forma:ClassElement      a forma:ElementType ; rdfs:label "Class"@en .
+forma:ObjectPropElement a forma:ElementType ; rdfs:label "ObjectProperty"@en .
+forma:DataPropElement   a forma:ElementType ; rdfs:label "DatatypeProperty"@en .
+forma:InstanceElement   a forma:ElementType ; rdfs:label "Instance"@en .
+
+forma:ValidationStatus
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ValidationStatus"@en , "Validatiestatus"@nl ;
+    rdfs:comment "De SHACL-validatiestatus van een OntologicalElement. Drie waarden."@nl .
+
+forma:ValidElement   a forma:ValidationStatus ; rdfs:label "Valid"@en , "Geldig"@nl .
+forma:WarningElement a forma:ValidationStatus ; rdfs:label "Warning"@en , "Waarschuwing"@nl .
+forma:ErrorElement   a forma:ValidationStatus ; rdfs:label "Error"@en , "Fout"@nl .
+
+
+###############################################################################
+#  §B — EngineerTessera
+#
+#  Een EngineerTessera is een valor:Tessera ingediend door een Engineer:
+#  een technisch bezwaar, een ontologische observatie, of een aanbeveling
+#  voor modelverbetering. Engineers hebben geen stemrecht maar hun
+#  EngineerTesserae zijn zichtbaar voor alle deelnemers.
+#
+#  Een EngineerTessera kan verwijzen naar de SHACL-shape die wordt geschonden,
+#  zodat de technische grondslag van het bezwaar altijd traceerbaar is.
+###############################################################################
+
+forma:EngineerTessera
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf valor:Tessera ;
+    rdfs:label "EngineerTessera"@en , "Engineer-Tessera"@nl ;
+    rdfs:comment
+        """Een valor:Tessera ingediend door een Engineer: een technisch
+         bezwaar, ontologische observatie, of modelaanbeveling. Verwijst
+         optioneel naar de SHACL-shape die wordt geschonden. Engineers
+         hebben geen stemrecht maar hun Tesserae zijn volledig zichtbaar
+         in alle perspectieven."""@nl .
+
+forma:EngineerTesseraType
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "EngineerTesseraType"@en , "Engineer-Tessera-type"@nl ;
+    rdfs:comment "Het type van een EngineerTessera. Drie waarden."@nl .
+
+forma:TechnicalObjection
+    a forma:EngineerTesseraType ;
+    rdfs:label "TechnicalObjection"@en , "Technisch bezwaar"@nl ;
+    rdfs:comment "Een bezwaar tegen een specifieke ontologische keuze of modellering."@nl .
+
+forma:OntologicalObservation
+    a forma:EngineerTesseraType ;
+    rdfs:label "OntologicalObservation"@en , "Ontologische observatie"@nl ;
+    rdfs:comment "Een observatie over de ontologische structuur zonder normatieve lading."@nl .
+
+forma:ModelRecommendation
+    a forma:EngineerTesseraType ;
+    rdfs:label "ModelRecommendation"@en , "Modelaanbeveling"@nl ;
+    rdfs:comment "Een aanbeveling voor verbetering van de ontologische modellering."@nl .
+
+
+###############################################################################
+#  §C — ValidationReport
+#
+#  Na elke SHACL-validatierun (bij aanmaken van een Tessera, bij een
+#  faseovergang, of op verzoek) wordt een ValidationReport aangemaakt.
+#  Het rapport is onderdeel van de DesignSpace provenance (named graph
+#  valor:{designspace}/provenance).
+#
+#  Als PhaseTransition-eis: voor de overgang naar Fase 4 (Afweging) moet
+#  de SHACL-validatie slagen voor alle aangenomen Tesserae in de actieve
+#  alternatieven (geen Violations; Warnings zijn toegestaan).
+###############################################################################
+
+forma:ValidationReport
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "ValidationReport"@en , "Validatierapport"@nl ;
+    rdfs:comment
+        """De uitkomst van een SHACL-validatierun als onderdeel van de
+         DesignSpace provenance. Bevat het aantal Violations, Warnings
+         en Infos, plus een link naar de volledige sh:ValidationReport.
+         Vereist bij PhaseTransition: geen Violations voor overgang naar
+         Fase 4."""@nl .
+
+forma:ValidationTrigger
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ValidationTrigger"@en , "Validatietrigger"@nl ;
+    rdfs:comment "Wat heeft de validatierun getriggerd? Drie waarden."@nl .
+
+forma:TesseraCreationTrigger
+    a forma:ValidationTrigger ;
+    rdfs:label "TesseraCreation"@en , "Tessera aanmaken"@nl .
+
+forma:PhaseTransitionTrigger
+    a forma:ValidationTrigger ;
+    rdfs:label "PhaseTransition"@en , "Faseovergang"@nl .
+
+forma:ManualTrigger
+    a forma:ValidationTrigger ;
+    rdfs:label "Manual"@en , "Handmatig"@nl .
+
+
+###############################################################################
+#  §D — OntoUML stereotype annotation property
+#
+#  valor:ontoumlStereotype is in alle modules gebruikt als annotation
+#  property om het OntoUML-stereotype te documenteren. De Forma-module
+#  formaliseert de geldige waarden als bevraagbaar vocabulaire.
+###############################################################################
+
+forma:OntoUMLStereotype
+    a owl:Class ;
+    rdfs:label "OntoUMLStereotype"@en , "OntoUML-stereotype"@nl ;
+    rdfs:comment
+        """De geldige OntoUML 2.0 klasse-stereotypen. Gebruikt als waarden
+         voor valor:ontoumlStereotype in alle VALOR-O modules."""@nl .
+
+forma:KindStereotype        a forma:OntoUMLStereotype ; rdfs:label "kind"@en .
+forma:SubKindStereotype     a forma:OntoUMLStereotype ; rdfs:label "subkind"@en .
+forma:RoleStereotype        a forma:OntoUMLStereotype ; rdfs:label "role"@en .
+forma:RoleMixinStereotype   a forma:OntoUMLStereotype ; rdfs:label "roleMixin"@en .
+forma:ModeStereotype        a forma:OntoUMLStereotype ; rdfs:label "mode"@en .
+forma:RelatorStereotype     a forma:OntoUMLStereotype ; rdfs:label "relator"@en .
+forma:SituationStereotype   a forma:OntoUMLStereotype ; rdfs:label "situation"@en .
+forma:EventStereotype       a forma:OntoUMLStereotype ; rdfs:label "event"@en .
+forma:MixinStereotype       a forma:OntoUMLStereotype ; rdfs:label "mixin"@en .
+forma:CategoryStereotype    a forma:OntoUMLStereotype ; rdfs:label "category"@en .
+forma:PhaseStereotype       a forma:OntoUMLStereotype ; rdfs:label "phase"@en .
+forma:CollectiveStereotype  a forma:OntoUMLStereotype ; rdfs:label "collective"@en .
+forma:QuantityStereotype    a forma:OntoUMLStereotype ; rdfs:label "quantity"@en .
+forma:QualityStereotype     a forma:OntoUMLStereotype ; rdfs:label "quality"@en .
+forma:TypeStereotype        a forma:OntoUMLStereotype ; rdfs:label "type"@en .
+
+
+###############################################################################
+#  §E — Properties
+###############################################################################
+
+# ── Properties op forma:OntologicalElement ───────────────────────────────────
+
+forma:elementType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "element type"@en , "elementtype"@nl ;
+    rdfs:domain forma:OntologicalElement ;
+    rdfs:range  forma:ElementType ;
+    rdfs:comment "Het type van dit OntologicalElement."@nl .
+
+forma:hasStereotype
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "has stereotype"@en , "heeft stereotype"@nl ;
+    rdfs:domain forma:OntologicalElement ;
+    rdfs:range  forma:OntoUMLStereotype ;
+    rdfs:comment "Het OntoUML-stereotype van dit element."@nl .
+
+forma:validationStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "validation status"@en , "validatiestatus"@nl ;
+    rdfs:domain forma:OntologicalElement ;
+    rdfs:range  forma:ValidationStatus ;
+    rdfs:comment "De laatste SHACL-validatiestatus van dit element."@nl .
+
+forma:hasEngineerTessera
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has engineer tessera"@en , "heeft engineer-tessera"@nl ;
+    rdfs:domain forma:OntologicalElement ;
+    rdfs:range  forma:EngineerTessera ;
+    rdfs:comment "EngineerTesserae die betrekking hebben op dit element."@nl .
+
+forma:representedByIRI
+    a owl:DatatypeProperty ;
+    rdfs:label "represented by IRI"@en , "gerepresenteerd door IRI"@nl ;
+    rdfs:domain forma:OntologicalElement ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:comment "De IRI van het OWL-element (klasse, property) dat dit element vertegenwoordigt."@nl .
+
+forma:inModule
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "in module"@en , "in module"@nl ;
+    rdfs:domain forma:OntologicalElement ;
+    rdfs:range  owl:Ontology ;
+    rdfs:comment "De VALOR-O module (owl:Ontology) waarin dit element is gedefinieerd."@nl .
+
+# ── Properties op forma:EngineerTessera ──────────────────────────────────────
+
+forma:engineerTesseraType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "engineer tessera type"@en , "engineer-tessera-type"@nl ;
+    rdfs:domain forma:EngineerTessera ;
+    rdfs:range  forma:EngineerTesseraType ;
+    rdfs:comment "Het type van deze EngineerTessera."@nl .
+
+forma:violatesConstraint
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "violates constraint"@en , "schendt beperking"@nl ;
+    rdfs:domain forma:EngineerTessera ;
+    rdfs:range  sh:NodeShape ;
+    rdfs:comment
+        """De SHACL-shape die door het bekritiseerde element wordt geschonden.
+         Optioneel: maakt de technische grondslag van het bezwaar traceerbaar."""@nl .
+
+forma:concernsElement
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerns element"@en , "betreft element"@nl ;
+    rdfs:domain forma:EngineerTessera ;
+    rdfs:range  forma:OntologicalElement ;
+    rdfs:comment "Het OntologicalElement waarop deze EngineerTessera betrekking heeft."@nl .
+
+# ── Properties op forma:ValidationReport ─────────────────────────────────────
+
+forma:reportForDesignSpace
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "report for design space"@en ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace waarop dit rapport betrekking heeft."@nl .
+
+forma:reportGeneratedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "report generated at"@en ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Tijdstip van de validatierun."@nl .
+
+forma:validationTrigger
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "validation trigger"@en , "validatietrigger"@nl ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  forma:ValidationTrigger ;
+    rdfs:comment "Wat heeft de validatierun getriggerd."@nl .
+
+forma:violationCount
+    a owl:DatatypeProperty ;
+    rdfs:label "violation count"@en , "aantal overtredingen"@nl ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  xsd:integer ;
+    rdfs:comment "Het aantal SHACL Violations in dit rapport."@nl .
+
+forma:warningCount
+    a owl:DatatypeProperty ;
+    rdfs:label "warning count"@en , "aantal waarschuwingen"@nl ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  xsd:integer ;
+    rdfs:comment "Het aantal SHACL Warnings in dit rapport."@nl .
+
+forma:shaclReportIRI
+    a owl:DatatypeProperty ;
+    rdfs:label "shacl report IRI"@en ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:comment "De IRI van het volledige sh:ValidationReport in de provenance graph."@nl .
+
+forma:phaseTransitionBlocked
+    a owl:DatatypeProperty ;
+    rdfs:label "phase transition blocked"@en , "faseovergang geblokkeerd"@nl ;
+    rdfs:domain forma:ValidationReport ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        """Of dit rapport een faseovergang blokkeert (true als violationCount > 0
+         en trigger = PhaseTransition)."""@nl .
+
+###############################################################################
+#  Einde module 00n-forma.trig (v0.1)
+###############################################################################
+}
