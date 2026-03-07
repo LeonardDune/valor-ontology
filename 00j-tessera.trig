@@ -1,0 +1,620 @@
+# TRiG version of 00j-tessera.ttl
+<https://valor-ecosystem.nl/ontology/tessera> {
+###############################################################################
+#  VALOR-O — Module 00j: Epistemische Module (Tessera)
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/tessera#  (prefix tess:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00a-gufo-core, 00c-ufo-c
+#
+#  Architectuurprincipe (DD-061):
+#    Alle claims in VALOR-O — causale beweringen, stakeholder-analyses,
+#    waarde-implicaties, juridische claims — zijn specialisaties van
+#    valor:Tessera. Tessera is de centrale epistemische eenheid.
+#    Module-specifieke claim-klassen (causa:CausalClaim, socia:StakeholderClaim,
+#    enz.) subclasseeren valor:Tessera en erven haar epistemische infrastructuur.
+#
+#    Tessera is een ufoc:Belief: een IntentionalMode van een Agent met een
+#    Situation als hasPropositionalContent. Dit volgt rechtstreeks uit de
+#    UFO-C BDI-architectuur. (DD-061)
+#
+#  Epistemische statusmachine (DD-065):
+#    5 statussen: Proposed / Contested / Accepted / Rejected / Reconsidered
+#    Contested en Reconsidered ontbraken in causa v0.1; hier gecorrigeerd.
+#
+#  Structuur:
+#    §A  Tessera — centrale claim-klasse
+#    §B  EpistemicStatus — 5-waardige statusmachine
+#    §C  ClaimType — AsIs / ToBe
+#    §D  Evidence — bewijs-klasse (centraal)
+#    §E  Argumentatierelaties
+#    §F  DecisionEpisode — besluitvormingsepisode als gufo:Event
+#    §G  Vote — stem als gufo:IntrinsicMode
+#    §H  AgentTessera — claim van een Socratische Agent
+#    §I  Properties
+###############################################################################
+
+@prefix tess:  <https://valor-ecosystem.nl/ontology/tessera#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+vo:tessera
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00j — Epistemische Module (Tessera)"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Centraliseert de epistemische infrastructuur van VALOR-O.
+         Alle module-specifieke claim-klassen subclasseeren valor:Tessera
+         en erven daarmee een uniforme epistemische status, bewijs-
+         koppeling en argumentatiestructuur. (DD-061, DD-065)"""@nl .
+
+
+###############################################################################
+#  §A — Tessera (centrale claim-klasse)
+#
+#  DD-061: valor:Tessera is de gemeenschappelijke superklasse van alle
+#  VALOR-O claims. Architectonische fundering: ufoc:Belief (een
+#  IntentionalMode van een Agent met een Situation als hasPropositionalContent).
+#  Module-specifieke claims specialiseren Tessera en voegen domeinspecifieke
+#  propositional content en properties toe.
+#
+#  Naam: 'tessera' — het Latijnse tegeltje als toegangsbewijs tot een
+#  vergadering en bouwsteen van een mozaïek. Elke claim is een bouwsteen
+#  van het gezamenlijke ontwerp. (VALOR-ecosysteem20.md §1.4)
+###############################################################################
+
+valor:Tessera
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:Belief ;
+    rdfs:label "Tessera"@en , "Tessera"@nl ;
+    rdfs:comment
+        """De centrale epistemische eenheid in VALOR-O: een reïficatie
+         van een statement over de werkelijkheid. Elke Tessera is een
+         ufoc:Belief van een Agent (menselijk of AI) met een Situation
+         als propositionele inhoud.
+
+         Module-specifieke claims (causa:CausalClaim, socia:StakeholderClaim,
+         axia:ValueClaim, enz.) zijn subklassen van valor:Tessera en erven
+         haar epistemische infrastructuur: status, bewijs, argumentatie,
+         fase- en alternatief-context.
+
+         Etymologie: tessera (Latijn) — toegangsbewijs tot een vergadering;
+         tegeltje als bouwsteen van een mozaïek. (DD-061)"""@nl .
+
+
+###############################################################################
+#  §B — EpistemicStatus (5-waardige statusmachine)
+#
+#  DD-065: 5 statussen. Contested en Reconsidered toegevoegd t.o.v.
+#  de 3-waardige machine in causa v0.1 (Proposed/Accepted/Rejected).
+#
+#  Transities:
+#    Proposed      -> Contested | Accepted | Rejected
+#    Contested     -> Accepted | Rejected
+#    Accepted      -> Reconsidered
+#    Rejected      -> Reconsidered
+#    Reconsidered  -> Proposed  (herstart cyclus)
+###############################################################################
+
+valor:EpistemicStatus
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "EpistemicStatus"@en , "Epistemische status"@nl ;
+    rdfs:comment
+        """De epistemische status van een Tessera. 5 mogelijke waarden:
+         Proposed, Contested, Accepted, Rejected, Reconsidered.
+         Inhereert aan een Tessera. (DD-065)"""@nl .
+
+valor:ProposedStatus
+    a valor:EpistemicStatus ;
+    rdfs:label "Proposed"@en , "Voorgesteld"@nl ;
+    rdfs:comment
+        """Initiële status. De Tessera is ingediend en zichtbaar voor
+         alle deelnemers maar nog niet beoordeeld. (DD-065)"""@nl .
+
+valor:ContestedStatus
+    a valor:EpistemicStatus ;
+    rdfs:label "Contested"@en , "Betwist"@nl ;
+    rdfs:comment
+        """Één of meer deelnemers hebben een tegenwerping ingediend
+         (valor:undermines-relatie van een andere Tessera).
+         De Tessera wacht op nadere deliberatie. (DD-065)"""@nl .
+
+valor:AcceptedStatus
+    a valor:EpistemicStatus ;
+    rdfs:label "Accepted"@en , "Aanvaard"@nl ;
+    rdfs:comment
+        """De Tessera is aanvaard via een valor:DecisionEpisode.
+         Aanvaarde Tesserae vormen de canonieke representatie van
+         het ontwerp in de betreffende fase. (DD-065)"""@nl .
+
+valor:RejectedStatus
+    a valor:EpistemicStatus ;
+    rdfs:label "Rejected"@en , "Verworpen"@nl ;
+    rdfs:comment
+        """De Tessera is verworpen via een valor:DecisionEpisode.
+         Bewaard in de redeneergeschiedenis; draagt niet bij aan
+         het canonieke model. (DD-065)"""@nl .
+
+valor:ReconsideredStatus
+    a valor:EpistemicStatus ;
+    rdfs:label "Reconsidered"@en , "Heroverwogen"@nl ;
+    rdfs:comment
+        """Een eerder Accepted of Rejected Tessera wordt heroverwogen
+         op basis van nieuw bewijs of gewijzigde context. De Tessera
+         keert terug naar Proposed. Een valor:reconsideredFrom-link
+         verbindt de Tessera met de oorspronkelijke DecisionEpisode.
+         (DD-065)"""@nl .
+
+
+###############################################################################
+#  §C — ClaimType (AsIs / ToBe)
+###############################################################################
+
+valor:ClaimType
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ClaimType"@en , "Claimtype"@nl ;
+    rdfs:comment
+        """Het type van een Tessera: AsIs (huidige werkelijkheid) of
+         ToBe (gewenste toekomstige toestand). AsIs-Tesserae zijn
+         gedeeld over alle alternatieven; ToBe-Tesserae zijn
+         alternatief-specifiek. (DD-061)"""@nl .
+
+valor:AsIsType
+    a valor:ClaimType ;
+    rdfs:label "AsIs"@en , "Huidige toestand"@nl ;
+    rdfs:comment
+        """De Tessera beschrijft de huidige werkelijkheid. Gedeeld
+         over alle alternatieven in een DesignSpace. (DD-061)"""@nl .
+
+valor:ToBeType
+    a valor:ClaimType ;
+    rdfs:label "ToBe"@en , "Gewenste toestand"@nl ;
+    rdfs:comment
+        """De Tessera beschrijft een gewenste toekomstige werkelijkheid.
+         Specifiek voor één DesignAlternative. (DD-061)"""@nl .
+
+
+###############################################################################
+#  §D — Evidence (centraal bewijs-concept)
+#
+#  Vervangt de module-specifieke causa:Evidence uit v0.1.
+#  Vier bewijs-typen conform PAMS-taxonomie (Enserink et al. 2022).
+###############################################################################
+
+valor:Evidence
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "Evidence"@en , "Bewijs"@nl ;
+    rdfs:comment
+        """Een informatieobject (publicatie, rapport, dataset, ervarings-
+         verslag) dat een Tessera ondersteunt of ondermijnt. Als
+         SocialObject: bestaat in virtue van collectieve acceptatie
+         als relevant kennisdocument. Centraal concept; vervangt
+         de module-specifieke causa:Evidence. (DD-061)"""@nl .
+
+valor:EvidenceType
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "EvidenceType"@en , "Bewijstype"@nl ;
+    rdfs:comment "Het type bewijs conform PAMS-taxonomie. Vier waarden. (DD-061)"@nl .
+
+valor:EmpiricalEvidence
+    a valor:EvidenceType ;
+    rdfs:label "Empirical"@en , "Empirisch"@nl ;
+    rdfs:comment "Kwantitatief of kwalitatief onderzoeksresultaat. (DD-061)"@nl .
+
+valor:TheoreticalEvidence
+    a valor:EvidenceType ;
+    rdfs:label "Theoretical"@en , "Theoretisch"@nl ;
+    rdfs:comment "Wetenschappelijke theorie of model dat de claim onderbouwt. (DD-061)"@nl .
+
+valor:ExpertEvidence
+    a valor:EvidenceType ;
+    rdfs:label "Expert Judgement"@en , "Expert-oordeel"@nl ;
+    rdfs:comment "Beargumenteerd oordeel van een domeinexpert. (DD-061)"@nl .
+
+valor:ExperientialEvidence
+    a valor:EvidenceType ;
+    rdfs:label "Experiential"@en , "Ervaringskennis"@nl ;
+    rdfs:comment
+        """Kennis opgedaan door directe ervaring met het vraagstuk
+         (burgers, uitvoerders, professionals). (DD-061)"""@nl .
+
+
+###############################################################################
+#  §E — Argumentatierelaties (IBIS-geïnspireerd)
+#
+#  Vier typen: supports | undermines | qualifies | presupposes
+#  valor:undermines is de trigger voor ContestedStatus op de object-Tessera.
+###############################################################################
+
+valor:supports
+    a owl:ObjectProperty ;
+    rdfs:label "supports"@en , "ondersteunt"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment
+        """De subject-Tessera versterkt de plausibiliteit van de
+         object-Tessera. IBIS: Argument pro. (DD-061)"""@nl .
+
+valor:undermines
+    a owl:ObjectProperty ;
+    rdfs:label "undermines"@en , "ondermijnt"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment
+        """De subject-Tessera verzwakt de plausibiliteit van de
+         object-Tessera. Trigger voor ContestedStatus op de
+         object-Tessera. IBIS: Argument contra. (DD-061, DD-065)"""@nl .
+
+valor:qualifies
+    a owl:ObjectProperty ;
+    rdfs:label "qualifies"@en , "nuanceert"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment
+        """De subject-Tessera nuanceert, begrenst of preciseert de
+         object-Tessera zonder haar te ondersteunen of te
+         ondermijnen. (DD-061)"""@nl .
+
+valor:presupposes
+    a owl:ObjectProperty ;
+    rdfs:label "presupposes"@en , "veronderstelt"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment
+        """De subject-Tessera veronderstelt de object-Tessera als waar.
+         Als de object-Tessera wordt verworpen, is de subject-Tessera
+         inhoudelijk beïnvloed. (DD-061)"""@nl .
+
+
+###############################################################################
+#  §F — DecisionEpisode (gufo:Event)
+#
+#  Drie episodetypen: PhaseTransition | InSessionVoting | AsyncVoting
+###############################################################################
+
+valor:DecisionEpisode
+    a owl:Class ;
+    rdf:type gufo:EventType ;
+    valor:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:Event ;
+    rdfs:label "DecisionEpisode"@en , "Besluitvormingsepisode"@nl ;
+    rdfs:comment
+        """Een formeel besluitvormingsmoment als gufo:Event. Deelnemers
+         besluiten over de epistemische status van een set Tesserae.
+         De volledige episode-history is de democratische provenance
+         van het ontwerp. (DD-061)"""@nl .
+
+valor:EpisodeType
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "EpisodeType"@en , "Episodetype"@nl ;
+    rdfs:comment "Het type van een DecisionEpisode. (DD-061)"@nl .
+
+valor:PhaseTransitionEpisode
+    a valor:EpisodeType ;
+    rdfs:label "PhaseTransition"@en , "Faseovergang"@nl ;
+    rdfs:comment
+        """Een DecisionEpisode die de lifecycle van een DesignSpace
+         naar de volgende fase brengt. Alle actieve Tesserae worden
+         beoordeeld. (DD-061)"""@nl .
+
+valor:InSessionVotingEpisode
+    a valor:EpisodeType ;
+    rdfs:label "InSessionVoting"@en , "Synchrone stemronde"@nl ;
+    rdfs:comment "Een synchrone stemronde tijdens een sessie. (DD-061)"@nl .
+
+valor:AsyncVotingEpisode
+    a valor:EpisodeType ;
+    rdfs:label "AsyncVoting"@en , "Asynchrone stemronde"@nl ;
+    rdfs:comment "Een asynchrone stemronde buiten een sessie. (DD-061)"@nl .
+
+
+###############################################################################
+#  §G — Vote (gufo:IntrinsicMode van een Participant)
+###############################################################################
+
+valor:Vote
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "Vote"@en , "Stem"@nl ;
+    rdfs:comment
+        """De positie van een Participant ten aanzien van een Tessera
+         in een DecisionEpisode. Als IntrinsicMode: inhereert aan de
+         Participant in de episode-context.
+         VotePosition: Accept | Reject | Defer. (DD-061)"""@nl .
+
+valor:VotePosition
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "VotePosition"@en , "Stempositie"@nl ;
+    rdfs:comment "De positie uitgedrukt in een Vote. (DD-061)"@nl .
+
+valor:AcceptVote
+    a valor:VotePosition ;
+    rdfs:label "Accept"@en , "Accepteer"@nl ;
+    rdfs:comment "De Participant aanvaardt de Tessera. (DD-061)"@nl .
+
+valor:RejectVote
+    a valor:VotePosition ;
+    rdfs:label "Reject"@en , "Verwerp"@nl ;
+    rdfs:comment "De Participant verwerpt de Tessera. (DD-061)"@nl .
+
+valor:DeferVote
+    a valor:VotePosition ;
+    rdfs:label "Defer"@en , "Stel uit"@nl ;
+    rdfs:comment
+        """De Participant wil de stemming uitstellen voor nader beraad.
+         Uitgestelde Tesserae worden opnieuw geagendeerd. (DD-061)"""@nl .
+
+
+###############################################################################
+#  §H — AgentTessera (claim van een Socratische Agent)
+###############################################################################
+
+valor:AgentTessera
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf valor:Tessera ;
+    rdfs:label "AgentTessera"@en , "Agent-Tessera"@nl ;
+    rdfs:comment
+        """Een Tessera uitgedrukt door een Socratische AI-agent.
+         Agents hebben geen stemrecht maar hun vragen en suggesties
+         worden gelogd als AgentTesserae. Visueel onderscheiden van
+         menselijke Tesserae in de UI. (DD-061)"""@nl .
+
+valor:AgentPerspective
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "AgentPerspective"@en , "Agentperspectief"@nl ;
+    rdfs:comment
+        """Het perspectief van de agent. Zeven waarden conform de
+         zeven VALOR-O perspectieven. (DD-061)"""@nl .
+
+valor:CausaAgentPerspective     a valor:AgentPerspective ; rdfs:label "Causa"@en .
+valor:LexaAgentPerspective      a valor:AgentPerspective ; rdfs:label "Lexa"@en .
+valor:ActaAgentPerspective      a valor:AgentPerspective ; rdfs:label "Acta"@en .
+valor:SociaAgentPerspective     a valor:AgentPerspective ; rdfs:label "Socia"@en .
+valor:AxiaAgentPerspective      a valor:AgentPerspective ; rdfs:label "Axia"@en .
+valor:DelibraAgentPerspective   a valor:AgentPerspective ; rdfs:label "Delibera"@en .
+valor:FormaAgentPerspective     a valor:AgentPerspective ; rdfs:label "Forma"@en .
+
+
+###############################################################################
+#  §I — Properties
+###############################################################################
+
+# ── Properties op valor:Tessera ──────────────────────────────────────────────
+
+valor:epistemicStatus
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "epistemic status"@en , "epistemische status"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:EpistemicStatus ;
+    rdfs:comment
+        """De huidige epistemische status van de Tessera. Verplicht
+         (SHACL T1). Vervangt causa:hasEpistemicStatus. (DD-061, DD-065)"""@nl .
+
+valor:claimType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "claim type"@en , "claimtype"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:ClaimType ;
+    rdfs:comment
+        """Het type: AsIs of ToBe. Verplicht (SHACL T4). (DD-061)"""@nl .
+
+valor:claimedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "claimed by"@en , "geclaimd door"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        """De Agent die de Tessera heeft ingediend. Verplicht (SHACL T2).
+         (DD-061)"""@nl .
+
+valor:claimedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "claimed at"@en , "geclaimd op"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment
+        """Het tijdstip van indiening. Verplicht (SHACL T3). Vervangt
+         causa:claimedAt. (DD-061)"""@nl .
+
+valor:inAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "in alternative"@en , "in alternatief"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  <https://valor-ecosystem.nl/ontology/application#DesignAlternative> ;
+    rdfs:comment
+        """Het alternatief waarbinnen een ToBe-Tessera geldt. Optioneel:
+         Tesserae zonder inAlternative gelden voor alle alternatieven
+         (typisch AsIs-Tesserae). (DD-061)"""@nl .
+
+valor:inPhase
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "in phase"@en , "in fase"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  <https://valor-ecosystem.nl/ontology/application#DesignPhase> ;
+    rdfs:comment "De ontwerpfase waarin de Tessera is ingediend. Verplicht (SHACL T3). (DD-061)"@nl .
+
+valor:hasEvidence
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has evidence"@en , "heeft bewijs"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:Evidence ;
+    rdfs:comment
+        """Bewijs dat deze Tessera ondersteunt of ondermijnt. Optioneel.
+         Vervangt causa:groundedInEvidence. (DD-061)"""@nl .
+
+valor:reconsideredFrom
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "reconsidered from"@en , "heroverwogen vanuit"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:DecisionEpisode ;
+    rdfs:comment
+        """Link van een Reconsidered Tessera naar de DecisionEpisode
+         waaruit de heroverweging voortkomt. (DD-065)"""@nl .
+
+# ── Properties op valor:Evidence ─────────────────────────────────────────────
+
+valor:evidenceType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "evidence type"@en , "bewijstype"@nl ;
+    rdfs:domain valor:Evidence ;
+    rdfs:range  valor:EvidenceType ;
+    rdfs:comment "Het type van dit bewijs conform PAMS-taxonomie. (DD-061)"@nl .
+
+valor:evidenceSource
+    a owl:DatatypeProperty ;
+    rdfs:label "evidence source"@en , "bewijsbron"@nl ;
+    rdfs:domain valor:Evidence ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:comment "URI van het brondocument of de dataset. (DD-061)"@nl .
+
+valor:evidenceStrength
+    a owl:DatatypeProperty ;
+    rdfs:label "evidence strength"@en , "bewijskracht"@nl ;
+    rdfs:domain valor:Evidence ;
+    rdfs:range  xsd:decimal ;
+    rdfs:comment "Bewijskracht als decimaal (0.0-1.0). Optioneel. (DD-061)"@nl .
+
+# ── Properties op valor:DecisionEpisode ──────────────────────────────────────
+
+valor:episodeType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "episode type"@en , "episodetype"@nl ;
+    rdfs:domain valor:DecisionEpisode ;
+    rdfs:range  valor:EpisodeType ;
+    rdfs:comment "Het type van de DecisionEpisode. Verplicht (SHACL DE1). (DD-061)"@nl .
+
+valor:episodeAt
+    a owl:DatatypeProperty ;
+    rdfs:label "episode at"@en , "episode op"@nl ;
+    rdfs:domain valor:DecisionEpisode ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Tijdstip van de DecisionEpisode. Verplicht (SHACL DE1). (DD-061)"@nl .
+
+valor:hasParticipant
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has participant"@en , "heeft deelnemer"@nl ;
+    rdfs:domain valor:DecisionEpisode ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment "Deelnemende Agents. Minimaal 1 (SHACL DE2). (DD-061)"@nl .
+
+valor:concernsTessera
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "concerns tessera"@en , "betreft tessera"@nl ;
+    rdfs:domain valor:DecisionEpisode ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment "Tesserae waarover in deze episode wordt beslist. Minimaal 1 (SHACL DE2). (DD-061)"@nl .
+
+valor:hasVote
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has vote"@en , "heeft stem"@nl ;
+    rdfs:domain valor:DecisionEpisode ;
+    rdfs:range  valor:Vote ;
+    rdfs:comment "De uitgebrachte stemmen in de DecisionEpisode. (DD-061)"@nl .
+
+valor:isAnonymous
+    a owl:DatatypeProperty ;
+    rdfs:label "is anonymous"@en , "is anoniem"@nl ;
+    rdfs:domain valor:DecisionEpisode ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment "Of stemmen anoniem zijn. Configureerbaar per DesignSpace. (DD-061)"@nl .
+
+# ── Properties op valor:Vote ──────────────────────────────────────────────────
+
+valor:votePosition
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "vote position"@en , "stempositie"@nl ;
+    rdfs:domain valor:Vote ;
+    rdfs:range  valor:VotePosition ;
+    rdfs:comment "De positie: Accept | Reject | Defer. (DD-061)"@nl .
+
+valor:castBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "cast by"@en , "uitgebracht door"@nl ;
+    rdfs:domain valor:Vote ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment "De Agent die deze Vote heeft uitgebracht. Verplicht (SHACL V1). (DD-061)"@nl .
+
+valor:forTessera
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "for tessera"@en , "voor tessera"@nl ;
+    rdfs:domain valor:Vote ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment "De Tessera waarop deze Vote betrekking heeft. Verplicht (SHACL V1). (DD-061)"@nl .
+
+# ── Properties op valor:AgentTessera ─────────────────────────────────────────
+
+valor:agentPerspective
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "agent perspective"@en , "agentperspectief"@nl ;
+    rdfs:domain valor:AgentTessera ;
+    rdfs:range  valor:AgentPerspective ;
+    rdfs:comment "Het perspectief van de agent. (DD-061)"@nl .
+
+valor:isQuestion
+    a owl:DatatypeProperty ;
+    rdfs:label "is question"@en , "is vraag"@nl ;
+    rdfs:domain valor:AgentTessera ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        """Of de AgentTessera een vraag is (true) of een alternatief/
+         suggestie (false). Socratische agents stellen vragen. (DD-061)"""@nl .
+
+###############################################################################
+#  Einde module 00j-tessera.trig (v0.1)
+###############################################################################
+}
