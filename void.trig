@@ -3,16 +3,22 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix vo: <https://valor-ecosystem.nl/ontology/> .
 @prefix gufo: <http://purl.org/nemo/gufo#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# catalog dataset
+# ============================================================
+# VALOR-O VoID Catalog — versie 0.2 (2026-03-07)
+# SPARQL endpoint: https://begrippen.valor-ecosystem.nl/sparql
+# ============================================================
+
 <https://valor-ecosystem.nl/void/catalog> a void:Dataset ;
     dcterms:title "VALOR-O ontology & shapes catalog"@nl ;
     dcterms:description "VoID metadata voor alle VALOR-O module graphs"@nl ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
+    dcterms:modified "2026-03-07"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
-    void:triples 10000 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:triples 11000 ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/valor-void.trig> ;
     void:subset
         <https://valor-ecosystem.nl/ontology/gufo-core> ,
@@ -24,6 +30,11 @@
         <https://valor-ecosystem.nl/ontology/acta> ,
         <https://valor-ecosystem.nl/ontology/causa> ,
         <https://valor-ecosystem.nl/ontology/socia> ,
+        <https://valor-ecosystem.nl/ontology/axia> ,
+        <https://valor-ecosystem.nl/ontology/delibera> ,
+        <https://valor-ecosystem.nl/ontology/forma> ,
+        <https://valor-ecosystem.nl/ontology/tessera> ,
+        <https://valor-ecosystem.nl/ontology/application> ,
         <https://valor-ecosystem.nl/shacl/gufo-core> ,
         <https://valor-ecosystem.nl/shacl/ufo-b> ,
         <https://valor-ecosystem.nl/shacl/ufo-c> ,
@@ -32,9 +43,13 @@
         <https://valor-ecosystem.nl/shacl/cover> ,
         <https://valor-ecosystem.nl/shacl/acta> ,
         <https://valor-ecosystem.nl/shacl/causa> ,
-        <https://valor-ecosystem.nl/shacl/socia> .
+        <https://valor-ecosystem.nl/shacl/socia> ,
+        <https://valor-ecosystem.nl/shacl/tessera> ,
+        <https://valor-ecosystem.nl/shacl/application> .
 
-# individual datasets
+# ============================================================
+# Laag 1 — Foundational ontologies
+# ============================================================
 
 <https://valor-ecosystem.nl/ontology/gufo-core> a void:Dataset ;
     dcterms:title "gUFO Core ontology" ;
@@ -43,202 +58,286 @@
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 5270 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/gufo-core.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/gufo-core> a void:Dataset ;
     dcterms:title "SHACL shapes for gUFO Core" ;
-    dcterms:description "Constraints for gUFO core classes and properties." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 830 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/gufo-core> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/gufo-core.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/ufo-b> a void:Dataset ;
     dcterms:title "UFO-B ontology" ;
-    dcterms:description "Events & causality extension; fundeert Causa/Acta." ;
+    dcterms:description "Events en causaliteit; fundeert Causa/Acta." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 51 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/ufo-b.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/ufo-b> a void:Dataset ;
     dcterms:title "SHACL shapes for UFO-B" ;
-    dcterms:description "C1–B7 constraints for UFO-B events and causal relations." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 31 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/ufo-b> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/ufo-b.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/ufo-c> a void:Dataset ;
     dcterms:title "UFO-C ontology" ;
-    dcterms:description "Social entities: agents, commitments, norms." ;
+    dcterms:description "Sociale entiteiten: agenten, commitments, normen." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 78 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/ufo-c.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/ufo-c> a void:Dataset ;
     dcterms:title "SHACL shapes for UFO-C" ;
-    dcterms:description "Constraints C1–C8 op sociale entiteiten." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 27 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/ufo-c> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/ufo-c.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/ufo-l> a void:Dataset ;
     dcterms:title "UFO-L ontology" ;
-    dcterms:description "Legal relations: norms, rights, delegations." ;
+    dcterms:description "Juridische relaties: normen, rechten, delegaties." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 113 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/ufo-l.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/ufo-l> a void:Dataset ;
     dcterms:title "SHACL shapes for UFO-L" ;
-    dcterms:description "L1–L12 constraints op juridische relators." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 31 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/ufo-l> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/ufo-l.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/coodm> a void:Dataset ;
     dcterms:title "COoDM decision ontology" ;
-    dcterms:description "Decision modelling core: deliberation, preferences." ;
+    dcterms:description "Besluitvorming: deliberatie, voorkeuren." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 63 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/coodm.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/coodm> a void:Dataset ;
     dcterms:title "SHACL shapes for COoDM" ;
-    dcterms:description "Constraints E1–E4 for COoDM" ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 22 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/coodm> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/coodm.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/cover> a void:Dataset ;
     dcterms:title "COVER value ascription ontology" ;
-    dcterms:description "Value experience/types framework for Axia." ;
+    dcterms:description "Waarde-ascriptie framework voor Axia." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 35 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/cover.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/cover> a void:Dataset ;
     dcterms:title "SHACL shapes for COVER" ;
-    dcterms:description "F1–F6 value ascription constraints." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 19 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/cover> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/cover.shacl.trig> ;
     void:vocabulary sh: .
 
+# ============================================================
+# Laag 2 — Perspectief modules
+# ============================================================
+
 <https://valor-ecosystem.nl/ontology/acta> a void:Dataset ;
     dcterms:title "ACTA transaction ontology" ;
-    dcterms:description "DEMO-transactions & transactor roles." ;
+    dcterms:description "DEMO-transacties en transactor-rollen." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 96 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/acta.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/acta> a void:Dataset ;
     dcterms:title "SHACL shapes for ACTA" ;
-    dcterms:description "G1–G... constraints voor ACTA." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 46 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/acta> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/acta.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/causa> a void:Dataset ;
     dcterms:title "CAUSA causal-loop ontology" ;
-    dcterms:description "CausalVariables/Situations/Claims." ;
+    dcterms:description "CausalVariables, CausalSituations, CausalClaims. v0.2: CausalClaim is subklasse van valor:Tessera; causa:EpistemicStatus deprecated." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
+    dcterms:modified "2026-03-07"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 95 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/causa.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/causa> a void:Dataset ;
     dcterms:title "SHACL shapes for CAUSA" ;
-    dcterms:description "I–G constraints voor CAUSA." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 26 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/causa> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/causa.shacl.trig> ;
     void:vocabulary sh: .
 
 <https://valor-ecosystem.nl/ontology/socia> a void:Dataset ;
     dcterms:title "SOCIA actor-analysis ontology" ;
-    dcterms:description "Intentional dependency / stakeholder analysis." ;
+    dcterms:description "Intentional dependency en stakeholder-analyse. v0.2: StakeholderClaim subklasse van valor:Tessera." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
+    dcterms:modified "2026-03-07"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 66 ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/socia.trig> ;
     void:vocabulary gufo: .
 
 <https://valor-ecosystem.nl/shacl/socia> a void:Dataset ;
     dcterms:title "SHACL shapes for SOCIA" ;
-    dcterms:description "S1–SM constraints for SOCIA" ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 43 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/socia> ;
-    void:sparqlEndpoint <https://valor-ecosystem.nl/sparql> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/socia.shacl.trig> ;
+    void:vocabulary sh: .
+
+<https://valor-ecosystem.nl/ontology/axia> a void:Dataset ;
+    dcterms:title "AXIA value-judgment ontology" ;
+    dcterms:description "ValueClaim en ValueTensionClaim als subklassen van valor:Tessera; COVER-integratie voor waarde-ascriptie." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 62 ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/axia.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/ontology/delibera> a void:Dataset ;
+    dcterms:title "DELIBERA deliberation-quality ontology" ;
+    dcterms:description "ArgumentationNetwork, ProcessClaim, AgentInfluenceReport; COoDM/UFO-C-integratie." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 57 ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/delibera.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/ontology/forma> a void:Dataset ;
+    dcterms:title "FORMA ontological engineering ontology" ;
+    dcterms:description "OntologicalElement, EngineerTessera, ValidationReport; OntoUML 2.0 stereotype vocabulary; SHACL-integratie." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 71 ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/forma.trig> ;
+    void:vocabulary gufo: .
+
+# ============================================================
+# Laag 3 — Epistemische module
+# ============================================================
+
+<https://valor-ecosystem.nl/ontology/tessera> a void:Dataset ;
+    dcterms:title "TESSERA epistemic superclass module" ;
+    dcterms:description "Centrale Laag 3: valor:Tessera als superklasse van alle perspectief-claims. Definieert 5-state epistemische machine, DecisionEpisode, Vote, Evidence, IBIS-argumentatierelaties." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 87 ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/tessera.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/shacl/tessera> a void:Dataset ;
+    dcterms:title "SHACL shapes for TESSERA" ;
+    dcterms:description "T1-T6 Tessera + DE1-DE2 DecisionEpisode + V1 Vote constraints." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 63 ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/tessera> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/tessera.shacl.trig> ;
+    void:vocabulary sh: .
+
+# ============================================================
+# Laag 4 — Applicatie-ontologie
+# ============================================================
+
+<https://valor-ecosystem.nl/ontology/application> a void:Dataset ;
+    dcterms:title "APPLICATION application ontology" ;
+    dcterms:description "Laag 4: DesignSpace, DesignPhase, DesignAlternative, Issue, Participant en rollen. Mapt op het ThemeVersion-patroon in Valor." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 78 ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/application.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/shacl/application> a void:Dataset ;
+    dcterms:title "SHACL shapes for APPLICATION" ;
+    dcterms:description "I1 Issue, DS1 DesignSpace, PH1 DesignPhase, ALT1 DesignAlternative, P1 Participant constraints." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:triples 57 ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/application> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/application.shacl.trig> ;
     void:vocabulary sh: .
