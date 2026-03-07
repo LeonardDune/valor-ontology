@@ -1,0 +1,164 @@
+# TRiG version of 00k-application.shacl.ttl
+<https://valor-ecosystem.nl/shacl/application> {
+###############################################################################
+#  VALOR-O — SHACL Shapes voor Module 00k: Application
+#
+#  Versie  : 0.1  (maart 2026)
+#
+#  Constraints:
+#    I1   — elk Issue heeft >= 1 hasConcernedAgent
+#    DS1  — elke DesignSpace heeft 1 addressesIssue, >= 1 hasPhase,
+#            >= 1 hasParticipantMember en 1 designSpaceStatus
+#    PH1  — elke DesignPhase heeft 1 phaseStatus
+#           + phaseBeginPoint/EndPoint verplicht als Closed/Archived
+#    ALT1 — elke DesignAlternative heeft 1 alternativeStatus
+#    P1   — elke Participant heeft precies 1 hasRole
+###############################################################################
+
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+
+###############################################################################
+#  I1 — elk Issue heeft >= 1 hasConcernedAgent
+###############################################################################
+
+vo:I1-IssueAgentShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Issue ;
+    sh:name "I1 — Issue vereist betrokken agent" ;
+    sh:description "Een Issue vereist minimaal één valor:hasConcernedAgent. (DD-062)" ;
+    sh:property [
+        sh:path valor:hasConcernedAgent ;
+        sh:minCount 1 ;
+        sh:class ufoc:Agent ;
+        sh:message "I1: Een valor:Issue vereist minimaal één valor:hasConcernedAgent."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  DS1 — elke DesignSpace heeft verplichte metadata
+###############################################################################
+
+vo:DS1-DesignSpaceShape
+    a sh:NodeShape ;
+    sh:targetClass app:DesignSpace ;
+    sh:name "DS1 — DesignSpace metadata verplicht" ;
+    sh:description "Elke DesignSpace vereist Issue, minstens 1 fase, 1 deelnemer en een status. (DD-062)" ;
+    sh:property [
+        sh:path app:addressesIssue ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class valor:Issue ;
+        sh:message "DS1: Een DesignSpace vereist precies één app:addressesIssue."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path app:hasPhase ;
+        sh:minCount 1 ;
+        sh:class app:DesignPhase ;
+        sh:message "DS1: Een DesignSpace vereist minimaal één app:hasPhase."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path app:hasParticipantMember ;
+        sh:minCount 1 ;
+        sh:class app:Participant ;
+        sh:message "DS1: Een DesignSpace vereist minimaal één app:hasParticipantMember."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path app:designSpaceStatus ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class app:DesignSpaceStatus ;
+        sh:message "DS1: Een DesignSpace vereist precies één app:designSpaceStatus."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  PH1 — elke DesignPhase heeft een status
+#          + temporele bounds verplicht als Closed of Archived
+###############################################################################
+
+vo:PH1-DesignPhaseShape
+    a sh:NodeShape ;
+    sh:targetClass app:DesignPhase ;
+    sh:name "PH1 — DesignPhase status verplicht" ;
+    sh:description "Elke DesignPhase vereist een phaseStatus. (DD-062)" ;
+    sh:property [
+        sh:path app:phaseStatus ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class app:PhaseStatus ;
+        sh:message "PH1: Een DesignPhase vereist precies één app:phaseStatus."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+vo:PH1b-ClosedPhaseTemporalShape
+    a sh:NodeShape ;
+    sh:targetClass app:DesignPhase ;
+    sh:name "PH1b — Gesloten fase vereist temporele bounds" ;
+    sh:description
+        """Een DesignPhase met status Closed of Archived vereist phaseBeginPoint
+         en phaseEndPoint. (DD-062)""" ;
+    sh:sparql [
+        sh:message "PH1b: Closed/Archived DesignPhase vereist app:phaseBeginPoint en app:phaseEndPoint."@nl ;
+        sh:severity sh:Violation ;
+        sh:prefixes vo:application ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this app:phaseStatus ?status .
+                FILTER (?status IN (app:ClosedPhase, app:ArchivedPhase))
+                FILTER NOT EXISTS { $this app:phaseBeginPoint ?begin }
+            }
+        """ ;
+    ] .
+
+###############################################################################
+#  ALT1 — elke DesignAlternative heeft een status
+###############################################################################
+
+vo:ALT1-DesignAlternativeShape
+    a sh:NodeShape ;
+    sh:targetClass app:DesignAlternative ;
+    sh:name "ALT1 — DesignAlternative status verplicht" ;
+    sh:description "Elke DesignAlternative vereist een alternativeStatus. (DD-062)" ;
+    sh:property [
+        sh:path app:alternativeStatus ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class app:AlternativeStatus ;
+        sh:message "ALT1: Een DesignAlternative vereist precies één app:alternativeStatus."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  P1 — elke Participant heeft precies 1 rol
+###############################################################################
+
+vo:P1-ParticipantRoleShape
+    a sh:NodeShape ;
+    sh:targetClass app:Participant ;
+    sh:name "P1 — Participant rol verplicht" ;
+    sh:description "Elke Participant heeft precies één app:hasRole per DesignSpace. (DD-062)" ;
+    sh:property [
+        sh:path app:hasRole ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class app:ParticipantRole ;
+        sh:message "P1: Een Participant vereist precies één app:hasRole."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  Einde 00k-application.shacl.trig (v0.1)
+###############################################################################
+}
