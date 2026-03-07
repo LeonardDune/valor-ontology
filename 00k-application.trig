@@ -171,8 +171,8 @@ app:ArchivedDesignSpace   a app:DesignSpaceStatus ; rdfs:label "Archived"@en , "
 
 app:DesignPhase
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    valor:ontoumlStereotype "subkind" ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "DesignPhase"@en , "Ontwerpfase"@nl ;
     rdfs:comment
@@ -248,8 +248,8 @@ app:PhaseTransition
 
 app:DesignAlternative
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    valor:ontoumlStereotype "subkind" ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "DesignAlternative"@en , "Ontwerpalternatief"@nl ;
     rdfs:comment

@@ -1,0 +1,150 @@
+# TRiG version of 00m-delibera.shacl.ttl
+<https://valor-ecosystem.nl/shacl/delibera> {
+###############################################################################
+#  VALOR-O — Module 00m SHACL: DELIBERA Besluitvormingsperspectief Ontologie
+#
+#  Versie : 0.1 (maart 2026)
+#
+#  Constraints:
+#    §A  ArgumentationNetwork
+#      AN1  networkForDesignSpace — verplicht, precies 1
+#      AN2  networkScope — verplicht, precies 1
+#    §B  AgentInfluenceReport
+#      AIR1  reportForDesignSpace — verplicht, precies 1
+#      AIR2  reportGeneratedAt — verplicht, precies 1
+#      AIR3  agentInfluenceRatio — verplicht, xsd:decimal in [0.0, 1.0]
+#    §C  ProcessClaim
+#      PC1  concernsEpisode of concernsDesignSpace — minimaal 1 van beide
+###############################################################################
+
+@prefix delib:   <https://valor-ecosystem.nl/ontology/delibera#> .
+@prefix shdelib: <https://valor-ecosystem.nl/shacl/delibera#> .
+@prefix app:     <https://valor-ecosystem.nl/ontology/application#> .
+@prefix valor:   <https://valor-ecosystem.nl/ontology/> .
+@prefix gufo:    <http://purl.org/nemo/gufo#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+shdelib:prefixes
+    sh:declare [ sh:prefix "delib" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/delibera#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "app" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/application#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] .
+
+shdelib:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — DELIBERA Besluitvormingsperspectief Ontologie"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+#  §A — ArgumentationNetwork constraints
+###############################################################################
+
+shdelib:ArgumentationNetworkShape
+    a sh:NodeShape ;
+    sh:targetClass delib:ArgumentationNetwork ;
+    sh:name "ArgumentationNetworkShape" ;
+    sh:description
+        """AN1–AN2: Een ArgumentationNetwork is alleen zinvol in de context
+         van een DesignSpace (anders is het een zwevend netwerk zonder
+         eigenaar) en heeft een scope die het bereik bepaalt. (Delibera)""" ;
+
+    sh:property [
+        sh:path     delib:networkForDesignSpace ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    app:DesignSpace ;
+        sh:severity sh:Violation ;
+        sh:message  "AN1: ArgumentationNetwork.networkForDesignSpace vereist precies één app:DesignSpace."
+    ] ;
+
+    sh:property [
+        sh:path     delib:networkScope ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    delib:NetworkScope ;
+        sh:severity sh:Violation ;
+        sh:message  "AN2: ArgumentationNetwork.networkScope vereist precies één delib:NetworkScope (Issue, Phase of Topic)."
+    ] .
+
+
+###############################################################################
+#  §B — AgentInfluenceReport constraints
+###############################################################################
+
+shdelib:AgentInfluenceReportShape
+    a sh:NodeShape ;
+    sh:targetClass delib:AgentInfluenceReport ;
+    sh:name "AgentInfluenceReportShape" ;
+    sh:description
+        """AIR1–AIR3: Een AgentInfluenceReport vereist een DesignSpace-
+         referentie, een tijdstempel en een ratio in [0.0, 1.0].
+         Zonder ratio is het rapport niet bruikbaar als governancefeedback.
+         (Delibera, §5.4)""" ;
+
+    sh:property [
+        sh:path     delib:reportForDesignSpace ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    app:DesignSpace ;
+        sh:severity sh:Violation ;
+        sh:message  "AIR1: AgentInfluenceReport.reportForDesignSpace vereist precies één app:DesignSpace."
+    ] ;
+
+    sh:property [
+        sh:path     delib:reportGeneratedAt ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:severity sh:Violation ;
+        sh:message  "AIR2: AgentInfluenceReport.reportGeneratedAt vereist precies één xsd:dateTime."
+    ] ;
+
+    sh:property [
+        sh:path     delib:agentInfluenceRatio ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:severity sh:Violation ;
+        sh:message  "AIR3: AgentInfluenceReport.agentInfluenceRatio vereist een xsd:decimal in [0.0, 1.0]."
+    ] .
+
+
+###############################################################################
+#  §C — ProcessClaim constraints
+###############################################################################
+
+shdelib:ProcessClaimShape
+    a sh:NodeShape ;
+    sh:targetClass delib:ProcessClaim ;
+    sh:name "ProcessClaimShape" ;
+    sh:description
+        """PC1: Een ProcessClaim over de kwaliteit van het besluitvormings-
+         proces moet altijd een episode of een DesignSpace als context
+         hebben — anders is onduidelijk over welk proces de claim gaat.
+         (Delibera)""" ;
+
+    sh:sparql [
+        sh:message  "PC1: ProcessClaim vereist delib:concernsEpisode of delib:concernsDesignSpace — minstens één contextverwijzing is verplicht." ;
+        sh:severity sh:Violation ;
+        sh:prefixes shdelib:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS { $this delib:concernsEpisode ?e }
+                FILTER NOT EXISTS { $this delib:concernsDesignSpace ?ds }
+            }"""
+    ] .
+
+###############################################################################
+#  Einde 00m-delibera.shacl.trig (v0.1)
+###############################################################################
+}

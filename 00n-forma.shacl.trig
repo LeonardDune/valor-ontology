@@ -1,0 +1,138 @@
+# TRiG version of 00n-forma.shacl.ttl
+<https://valor-ecosystem.nl/shacl/forma> {
+###############################################################################
+#  VALOR-O — Module 00n SHACL: FORMA Ontologisch Perspectief Ontologie
+#
+#  Versie : 0.1 (maart 2026)
+#
+#  Constraints:
+#    §A  EngineerTessera
+#      ET1  engineerTesseraType — verplicht, precies 1
+#    §B  ValidationReport
+#      VR1  reportForDesignSpace — verplicht, precies 1
+#      VR2  reportGeneratedAt — verplicht, precies 1
+#      VR3  violationCount — verplicht, precies 1, xsd:integer >= 0
+#      VR4  phaseTransitionBlocked consistent met violationCount
+###############################################################################
+
+@prefix forma:   <https://valor-ecosystem.nl/ontology/forma#> .
+@prefix shforma: <https://valor-ecosystem.nl/shacl/forma#> .
+@prefix app:     <https://valor-ecosystem.nl/ontology/application#> .
+@prefix valor:   <https://valor-ecosystem.nl/ontology/> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+shforma:prefixes
+    sh:declare [ sh:prefix "forma" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/forma#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "app" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/application#"^^xsd:anyURI ] .
+
+shforma:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — FORMA Ontologisch Perspectief Ontologie"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+#  §A — EngineerTessera constraints
+###############################################################################
+
+shforma:EngineerTesseraShape
+    a sh:NodeShape ;
+    sh:targetClass forma:EngineerTessera ;
+    sh:name "EngineerTesseraShape" ;
+    sh:description
+        """ET1: Een EngineerTessera vereist een type zodat ontvangers
+         direct kunnen zien of het een technisch bezwaar, een observatie
+         of een modelaanbeveling betreft. (Forma, §11.3)""" ;
+
+    sh:property [
+        sh:path     forma:engineerTesseraType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    forma:EngineerTesseraType ;
+        sh:severity sh:Violation ;
+        sh:message  "ET1: EngineerTessera.engineerTesseraType vereist precies één forma:EngineerTesseraType (TechnicalObjection, OntologicalObservation of ModelRecommendation)."
+    ] .
+
+
+###############################################################################
+#  §B — ValidationReport constraints
+###############################################################################
+
+shforma:ValidationReportShape
+    a sh:NodeShape ;
+    sh:targetClass forma:ValidationReport ;
+    sh:name "ValidationReportShape" ;
+    sh:description
+        """VR1–VR3: Een ValidationReport vereist een DesignSpace-referentie,
+         een tijdstempel en een violationCount. Zonder deze drie velden
+         is het rapport niet bruikbaar als provenance-record. (Forma, §11.4)""" ;
+
+    sh:property [
+        sh:path     forma:reportForDesignSpace ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    app:DesignSpace ;
+        sh:severity sh:Violation ;
+        sh:message  "VR1: ValidationReport.reportForDesignSpace vereist precies één app:DesignSpace."
+    ] ;
+
+    sh:property [
+        sh:path     forma:reportGeneratedAt ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:severity sh:Violation ;
+        sh:message  "VR2: ValidationReport.reportGeneratedAt vereist precies één xsd:dateTime."
+    ] ;
+
+    sh:property [
+        sh:path     forma:violationCount ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Violation ;
+        sh:message  "VR3: ValidationReport.violationCount vereist een xsd:integer >= 0."
+    ] .
+
+
+###############################################################################
+#  §C — Consistentiecheck: phaseTransitionBlocked consistent met violationCount
+#
+#  VR4: Als phaseTransitionBlocked = true, dan moet violationCount > 0.
+#       Een rapport dat beweert een faseovergang te blokkeren zonder
+#       violations is intern inconsistent.
+###############################################################################
+
+shforma:PhaseTransitionBlockConsistencyShape
+    a sh:NodeShape ;
+    sh:targetClass forma:ValidationReport ;
+    sh:name "PhaseTransitionBlockConsistencyShape" ;
+    sh:description
+        """VR4: phaseTransitionBlocked = true vereist violationCount > 0.
+         Een rapport zonder violations mag een faseovergang niet blokkeren.
+         (Forma, §11.4)""" ;
+
+    sh:sparql [
+        sh:message  "VR4: ValidationReport heeft phaseTransitionBlocked = true maar violationCount = 0. Een rapport zonder violations mag een faseovergang niet blokkeren." ;
+        sh:severity sh:Violation ;
+        sh:prefixes shforma:prefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this forma:phaseTransitionBlocked true ;
+                      forma:violationCount ?count .
+                FILTER (?count = 0)
+            }"""
+    ] .
+
+###############################################################################
+#  Einde 00n-forma.shacl.trig (v0.1)
+###############################################################################
+}

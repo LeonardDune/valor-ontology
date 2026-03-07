@@ -458,6 +458,18 @@ valor:claimedAt
         """Het tijdstip van indiening. Verplicht (SHACL T3). Vervangt
          causa:claimedAt. (DD-061)"""@nl .
 
+valor:claimContent
+    a owl:DatatypeProperty ;
+    rdfs:label "claim content"@en , "claiminhoud"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  rdf:langString ;
+    rdfs:comment
+        """De mensleesbare propositionele inhoud van de Tessera: de
+         bewering zoals de indiener die heeft geformuleerd. Verplicht
+         (SHACL T5). Komt overeen met ufoc:hasPropositionalContent
+         maar dan als tekst — de formele ontologische structuur wordt
+         vastgelegd via perspectief-specifieke properties. (DD-061, SHACL T3)"""@nl .
+
 valor:inAlternative
     a owl:ObjectProperty ;
     valor:ontoumlStereotype "mediation" ;

@@ -104,8 +104,8 @@ socia:OrganisationalActor
 
 socia:StakeholderRole
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    valor:ontoumlStereotype "subkind" ;
+    rdf:type gufo:Role ;
+    valor:ontoumlStereotype "role" ;
     rdfs:subClassOf ufoc:SocialRole ;
     rdfs:label "StakeholderRole"@en , "Stakeholderrol"@nl ;
     rdfs:comment
@@ -410,7 +410,6 @@ socia:dependencyContext
 socia:boundaryContains
     a owl:ObjectProperty ;
     valor:ontoumlStereotype "componentOf" ;
-    rdfs:subPropertyOf gufo:hasProperPart ;
     rdfs:label "boundary contains"@en , "grens bevat"@nl ;
     rdfs:domain socia:ActorBoundary ;
     rdfs:range  socia:InternalElement ;

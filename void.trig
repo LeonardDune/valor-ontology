@@ -44,6 +44,9 @@
         <https://valor-ecosystem.nl/shacl/acta> ,
         <https://valor-ecosystem.nl/shacl/causa> ,
         <https://valor-ecosystem.nl/shacl/socia> ,
+        <https://valor-ecosystem.nl/shacl/axia> ,
+        <https://valor-ecosystem.nl/shacl/delibera> ,
+        <https://valor-ecosystem.nl/shacl/forma> ,
         <https://valor-ecosystem.nl/shacl/tessera> ,
         <https://valor-ecosystem.nl/shacl/application> .
 
@@ -287,6 +290,39 @@
     void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/forma.trig> ;
     void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/shacl/axia> a void:Dataset ;
+    dcterms:title "SHACL shapes for AXIA" ;
+    dcterms:description "AX1-AX2 ValueClaim, AX3 ValueTensionClaim, AX4-AX6 DesignImplication constraints." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-08"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/axia> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/axia.shacl.trig> ;
+    void:vocabulary sh: .
+
+<https://valor-ecosystem.nl/shacl/delibera> a void:Dataset ;
+    dcterms:title "SHACL shapes for DELIBERA" ;
+    dcterms:description "AN1-AN2 ArgumentationNetwork, AIR1-AIR3 AgentInfluenceReport, PC1 ProcessClaim constraints." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-08"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/delibera> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/delibera.shacl.trig> ;
+    void:vocabulary sh: .
+
+<https://valor-ecosystem.nl/shacl/forma> a void:Dataset ;
+    dcterms:title "SHACL shapes for FORMA" ;
+    dcterms:description "ET1 EngineerTessera, VR1-VR4 ValidationReport constraints." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-08"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/forma> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/forma.shacl.trig> ;
+    void:vocabulary sh: .
 
 # ============================================================
 # Laag 3 — Epistemische module

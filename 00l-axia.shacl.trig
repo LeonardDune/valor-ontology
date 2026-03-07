@@ -1,0 +1,142 @@
+# TRiG version of 00l-axia.shacl.ttl
+<https://valor-ecosystem.nl/shacl/axia> {
+###############################################################################
+#  VALOR-O — Module 00l SHACL: AXIA Waardeperspectief Ontologie
+#
+#  Versie : 0.1 (maart 2026)
+#
+#  Constraints:
+#    §A  ValueClaim
+#      AX1  concernsValueType — verplicht, precies 1
+#      AX2  claimPolarity — verplicht, precies 1
+#    §B  ValueTensionClaim
+#      AX3  tensionBetween — minimaal 2 ValueTypes
+#    §C  DesignImplication
+#      AX4  implicationSource — verplicht, precies 1, type Tessera
+#      AX5  implicationTarget — verplicht, precies 1
+#      AX6  implicationPolarity — verplicht, precies 1
+###############################################################################
+
+@prefix axia:   <https://valor-ecosystem.nl/ontology/axia#> .
+@prefix shaxia: <https://valor-ecosystem.nl/shacl/axia#> .
+@prefix coodm:  <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix gufo:   <http://purl.org/nemo/gufo#> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+shaxia:prefixes
+    sh:declare [ sh:prefix "axia" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/axia#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "coodm" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/coodm#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+        sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] .
+
+shaxia:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — AXIA Waardeperspectief Ontologie"@nl ;
+    owl:versionInfo "0.1" .
+
+
+###############################################################################
+#  §A — ValueClaim constraints
+###############################################################################
+
+shaxia:ValueClaimShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueClaim ;
+    sh:name "ValueClaimShape" ;
+    sh:description
+        """AX1–AX2: Een ValueClaim vereist precies één ValueType waarop
+         de claim betrekking heeft en precies één ClaimPolarity die
+         aangeeft of het ontwerpelement de waarde ondersteunt of
+         ondermijnt. (Axia-perspectief)""" ;
+
+    sh:property [
+        sh:path     axia:concernsValueType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message  "AX1: ValueClaim.concernsValueType vereist precies één ValueType."
+    ] ;
+
+    sh:property [
+        sh:path     axia:claimPolarity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    axia:ClaimPolarity ;
+        sh:severity sh:Violation ;
+        sh:message  "AX2: ValueClaim.claimPolarity vereist precies één axia:ClaimPolarity (Supporting, Undermining of Ambiguous)."
+    ] .
+
+
+###############################################################################
+#  §B — ValueTensionClaim constraints
+###############################################################################
+
+shaxia:ValueTensionClaimShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueTensionClaim ;
+    sh:name "ValueTensionClaimShape" ;
+    sh:description
+        """AX3: Een ValueTensionClaim beschrijft een spanning tussen
+         ValueTypes — die spanning bestaat per definitie alleen als er
+         minimaal twee ValueTypes in het geding zijn. (Axia-perspectief)""" ;
+
+    sh:property [
+        sh:path     axia:tensionBetween ;
+        sh:minCount 2 ;
+        sh:severity sh:Violation ;
+        sh:message  "AX3: ValueTensionClaim.tensionBetween vereist minimaal twee ValueTypes. Een spanning tussen minder dan twee waarden is ontologisch leeg."
+    ] .
+
+
+###############################################################################
+#  §C — DesignImplication constraints
+###############################################################################
+
+shaxia:DesignImplicationShape
+    a sh:NodeShape ;
+    sh:targetClass axia:DesignImplication ;
+    sh:name "DesignImplicationShape" ;
+    sh:description
+        """AX4–AX6: Een DesignImplication is een Relator en bestaat
+         alleen in virtue van beide uiteinden: de bron-Tessera en de
+         doel-ValueType. Zonder polariteit is de relatie ongedocumenteerd.
+         (Axia-perspectief)""" ;
+
+    sh:property [
+        sh:path     axia:implicationSource ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    valor:Tessera ;
+        sh:severity sh:Violation ;
+        sh:message  "AX4: DesignImplication.implicationSource vereist precies één valor:Tessera als bronontwerpelement."
+    ] ;
+
+    sh:property [
+        sh:path     axia:implicationTarget ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message  "AX5: DesignImplication.implicationTarget vereist precies één ValueType als doel."
+    ] ;
+
+    sh:property [
+        sh:path     axia:implicationPolarity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    axia:ClaimPolarity ;
+        sh:severity sh:Violation ;
+        sh:message  "AX6: DesignImplication.implicationPolarity vereist precies één axia:ClaimPolarity."
+    ] .
+
+###############################################################################
+#  Einde 00l-axia.shacl.trig (v0.1)
+###############################################################################
+}

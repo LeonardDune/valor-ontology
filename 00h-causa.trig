@@ -79,8 +79,8 @@ vo:causa
 
 causa:CausalVariable
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
-    valor:ontoumlStereotype "mode" ;
+    rdf:type gufo:QualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "CausalVariable"@en , "Causale variabele"@nl ;
     rdfs:comment
@@ -169,8 +169,8 @@ causa:BalancingPolarity
 
 causa:Delay
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
-    valor:ontoumlStereotype "mode" ;
+    rdf:type gufo:QualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "Delay"@en , "Vertraging"@nl ;
     rdfs:comment "Optionele vertraging in de causale doorwerking. CLD: '||'. (DD-056)"@nl .
@@ -254,8 +254,8 @@ causa:SolutionModel
 
 causa:Intervention
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    valor:ontoumlStereotype "subkind" ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "Intervention"@en , "Interventie"@nl ;
     rdfs:comment "Een doelbewuste ingreep op een of meer CausalVariables. (DD-053)"@nl .

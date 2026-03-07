@@ -154,8 +154,8 @@ causa:hasModel
 
 causa:CausalVariable
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
-    valor:ontoumlStereotype "mode" ;
+    rdf:type gufo:QualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "CausalVariable"@en , "Causale variabele"@nl ;
     rdfs:comment
@@ -285,8 +285,8 @@ causa:BalancingPolarity
 
 causa:Delay
     a owl:Class ;
-    rdf:type gufo:NonQualitativeIntrinsicAspect ;
-    valor:ontoumlStereotype "mode" ;
+    rdf:type gufo:QualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "Delay"@en , "Vertraging"@nl ;
     rdfs:comment
@@ -491,8 +491,8 @@ causa:SolutionModel
 
 causa:Intervention
     a owl:Class ;
-    rdf:type gufo:SubKind ;
-    valor:ontoumlStereotype "subkind" ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "Intervention"@en , "Interventie"@nl ;
     rdfs:comment

@@ -10,6 +10,7 @@
 #    T2  — elke Tessera heeft precies 1 valor:claimedBy (Agent)
 #    T3  — elke Tessera heeft precies 1 valor:claimedAt (dateTime)
 #           + precies 1 valor:inPhase
+#           + precies 1 valor:claimContent (rdf:langString)
 #    T4  — elke Tessera heeft precies 1 valor:claimType
 #    T5  — valor:undermines mag niet reflexief zijn (A undermines A)
 #    T6  — Tessera met status Accepted of Rejected vereist link naar
@@ -77,8 +78,8 @@ vo:T2-ClaimedByShape
 vo:T3-TemporalShape
     a sh:NodeShape ;
     sh:targetClass valor:Tessera ;
-    sh:name "T3 — Temporele metadata verplicht" ;
-    sh:description "Elke Tessera vereist claimedAt en inPhase. (DD-061)" ;
+    sh:name "T3 — Verplichte Tessera-metadata" ;
+    sh:description "Elke Tessera vereist claimedAt, inPhase en claimContent. (DD-061)" ;
     sh:property [
         sh:path valor:claimedAt ;
         sh:minCount 1 ;
@@ -92,6 +93,13 @@ vo:T3-TemporalShape
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:message "T3: Een Tessera vereist precies één valor:inPhase."@nl ;
+        sh:severity sh:Violation ;
+    ] ;
+    sh:property [
+        sh:path valor:claimContent ;
+        sh:minCount 1 ;
+        sh:datatype rdf:langString ;
+        sh:message "T3: Een Tessera vereist minimaal één valor:claimContent (rdf:langString)."@nl ;
         sh:severity sh:Violation ;
     ] .
 
