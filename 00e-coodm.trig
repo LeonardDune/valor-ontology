@@ -2,7 +2,7 @@
 <https://valor-ecosystem.nl/ontology/coodm> {
     ###############################################################################
     #  VALOR-O — Module 00e: COoDM Decision Ontology + COVER Value Ascription
-    #  Versie 0.2 — gUFO-typefouten gecorrigeerd (DD-049)
+    #  Versie 0.3 — owl:imports tessera toegevoegd (DD-053)
     #
     #  Correcties t.o.v. v0.1:
     #   [E-001] cover:ValueAscription: rdf:type gufo:RelationshipType VERWIJDERD
@@ -43,7 +43,8 @@
         owl:imports <https://valor-ecosystem.nl/ontology/ufo-b> ;
         owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
         owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
-        owl:versionInfo "0.2" ;
+        owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+        owl:versionInfo "0.3" ;
         rdfs:comment
             """Integreert COoDM (Guizzardi et al. 2020) en een eerste opzet van
              COVER (Guizzardi et al. 2022) in VALOR-O. Fundeert het
@@ -420,6 +421,6 @@
         rdfs:range  cover:ValueExperience .
     
     ###############################################################################
-    #  Einde module 00e-coodm.ttl  (v0.2)
+    #  Einde module 00e-coodm.trig  (v0.3)
     ###############################################################################
 }
