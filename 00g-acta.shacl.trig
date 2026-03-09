@@ -1,3 +1,14 @@
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix shacta: <https://valor-ecosystem.nl/shacl/acta#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 # TRiG version of 00g-acta.shacl.ttl
 <https://valor-ecosystem.nl/shacl/acta> {
     ###############################################################################
@@ -43,17 +54,6 @@
     #      G-OID1 Transaction is in precies één ALPHA-laag (O, I of D) (Warning)
     ###############################################################################
     
-    @prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
-    @prefix shacta: <https://valor-ecosystem.nl/shacl/acta#> .
-    @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
-    @prefix gufo:  <http://purl.org/nemo/gufo#> .
-    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
-    @prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
-    @prefix sh:    <http://www.w3.org/ns/shacl#> .
-    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
-    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
     
     
     ###############################################################################

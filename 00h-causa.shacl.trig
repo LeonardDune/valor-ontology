@@ -1,3 +1,14 @@
+@prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
+@prefix shcausa: <https://valor-ecosystem.nl/shacl/causa#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 # TRiG version of 00h-causa.shacl.ttl
 <https://valor-ecosystem.nl/shacl/causa> {
     ###############################################################################
@@ -31,17 +42,6 @@
     #    §G  Ontologische laag — manifestsAsRelation alleen bij Accepted
     ###############################################################################
     
-    @prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
-    @prefix shcausa: <https://valor-ecosystem.nl/shacl/causa#> .
-    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
-    @prefix gufo:  <http://purl.org/nemo/gufo#> .
-    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
-    @prefix sh:    <http://www.w3.org/ns/shacl#> .
-    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
-    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-    @prefix dcterms: <http://purl.org/dc/terms/> .
     
     shcausa:
         a owl:Ontology ;

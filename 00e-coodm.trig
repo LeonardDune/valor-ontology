@@ -1,3 +1,14 @@
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
 # TRiG version of 00e-coodm.ttl
 <https://valor-ecosystem.nl/ontology/coodm> {
     ###############################################################################
@@ -24,17 +35,6 @@
     #   - coodm:Decision/Preference: mode, GEEN rdf:type ✓ (DD-029)
     ###############################################################################
     
-    @prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
-    @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
-    @prefix gufo:  <http://purl.org/nemo/gufo#> .
-    @prefix valor: <https://valor-ecosystem.nl/ontology/> .
-    @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
-    @prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
-    @prefix owl:   <http://www.w3.org/2002/07/owl#> .
-    @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-    @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-    @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
     
     vo:coodm
         a owl:Ontology ;
