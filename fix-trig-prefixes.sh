@@ -1,19 +1,19 @@
 #!/bin/sh
-# fix-trig-prefixes.sh
-# Verplaatst @prefix-regels van binnen graph-blocks naar document-niveau
+# fix-trig-prefixes.sh (v2) — ook @prefix zonder inspringing
 
 for f in *.trig; do
-  # Controleer of het bestand @prefix binnenin een block heeft
-  if ! grep -qE '^\s+@prefix ' "$f"; then
+  [ -f "$f" ] || continue
+
+  # Extraheer ALLE @prefix-regels (ongeacht inspringing)
+  prefixes=$(grep -E '^[[:space:]]*@prefix ' "$f" | sed 's/^[[:space:]]*//')
+
+  if [ -z "$prefixes" ]; then
     echo "OK (geen fix nodig): $f"
     continue
   fi
 
-  # Extraheer alle @prefix-regels (inclusief inspringing weggooien)
-  prefixes=$(grep -E '^\s+@prefix ' "$f" | sed 's/^\s*//')
-
-  # Verwijder @prefix-regels uit de body
-  body=$(grep -v -E '^\s+@prefix ' "$f")
+  # Verwijder alle @prefix-regels uit de body
+  body=$(grep -v -E '^[[:space:]]*@prefix ' "$f")
 
   # Schrijf: prefixes bovenaan, dan rest
   printf '%s\n%s\n' "$prefixes" "$body" > "$f"

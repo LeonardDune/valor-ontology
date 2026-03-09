@@ -1,3 +1,14 @@
+@prefix delib:   <https://valor-ecosystem.nl/ontology/delibera#> .
+@prefix shdelib: <https://valor-ecosystem.nl/shacl/delibera#> .
+@prefix app:     <https://valor-ecosystem.nl/ontology/application#> .
+@prefix valor:   <https://valor-ecosystem.nl/ontology/> .
+@prefix gufo:    <http://purl.org/nemo/gufo#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 # TRiG version of 00m-delibera.shacl.ttl
 <https://valor-ecosystem.nl/shacl/delibera> {
 ###############################################################################
@@ -17,17 +28,6 @@
 #      PC1  concernsEpisode of concernsDesignSpace — minimaal 1 van beide
 ###############################################################################
 
-@prefix delib:   <https://valor-ecosystem.nl/ontology/delibera#> .
-@prefix shdelib: <https://valor-ecosystem.nl/shacl/delibera#> .
-@prefix app:     <https://valor-ecosystem.nl/ontology/application#> .
-@prefix valor:   <https://valor-ecosystem.nl/ontology/> .
-@prefix gufo:    <http://purl.org/nemo/gufo#> .
-@prefix sh:      <http://www.w3.org/ns/shacl#> .
-@prefix owl:     <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
 
 shdelib:prefixes
     sh:declare [ sh:prefix "delib" ;

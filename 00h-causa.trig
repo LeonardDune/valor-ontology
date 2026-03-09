@@ -1,3 +1,14 @@
+@prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufob:  <https://valor-ecosystem.nl/ontology/ufo-b#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 # TRiG version of 00h-causa.trig
 <https://valor-ecosystem.nl/ontology/causa> {
 ###############################################################################
@@ -45,17 +56,6 @@
 #    §H  DEPRECATED v0.1-artefacten (verwijderd in v0.3)
 ###############################################################################
 
-@prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
-@prefix gufo:  <http://purl.org/nemo/gufo#> .
-@prefix ufob:  <https://valor-ecosystem.nl/ontology/ufo-b#> .
-@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
-@prefix valor: <https://valor-ecosystem.nl/ontology/> .
-@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
-@prefix owl:   <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 
 vo:causa
     a owl:Ontology ;

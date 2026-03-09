@@ -1,3 +1,15 @@
+@prefix socia:  <https://valor-ecosystem.nl/ontology/socia#> .
+@prefix shsocia: <https://valor-ecosystem.nl/shacl/socia#> .
+@prefix causa:  <https://valor-ecosystem.nl/ontology/causa#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix gufo:   <http://purl.org/nemo/gufo#> .
+@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 # TRiG version of SOCIA SHACL ontology\n
 <https://valor-ecosystem.nl/shacl/socia> {
 ###############################################################################
@@ -32,18 +44,6 @@
 #      IP1  hasInterestProfile — aanbevolen per Stakeholder (Warning)
 ###############################################################################
 
-@prefix socia:  <https://valor-ecosystem.nl/ontology/socia#> .
-@prefix shsocia: <https://valor-ecosystem.nl/shacl/socia#> .
-@prefix causa:  <https://valor-ecosystem.nl/ontology/causa#> .
-@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
-@prefix gufo:   <http://purl.org/nemo/gufo#> .
-@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
-@prefix sh:     <http://www.w3.org/ns/shacl#> .
-@prefix owl:    <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
 
 # ── Prefix declarations voor SPARQL-constraints ───────────────────────────────
 

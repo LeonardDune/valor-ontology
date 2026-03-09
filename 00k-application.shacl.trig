@@ -1,3 +1,12 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 # TRiG version of 00k-application.shacl.ttl
 <https://valor-ecosystem.nl/shacl/application> {
 ###############################################################################
@@ -15,15 +24,6 @@
 #    P1   — elke Participant heeft precies 1 hasRole
 ###############################################################################
 
-@prefix sh:    <http://www.w3.org/ns/shacl#> .
-@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
-@prefix valor: <https://valor-ecosystem.nl/ontology/> .
-@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
-@prefix owl:   <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 
 ###############################################################################
 #  I1 — elk Issue heeft >= 1 hasConcernedAgent

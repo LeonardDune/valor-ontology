@@ -1,3 +1,14 @@
+@prefix axia:  <https://valor-ecosystem.nl/ontology/axia#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 # TRiG version of 00l-axia.trig
 <https://valor-ecosystem.nl/ontology/axia> {
 ###############################################################################
@@ -35,17 +46,6 @@
 #    §E  Properties
 ###############################################################################
 
-@prefix axia:  <https://valor-ecosystem.nl/ontology/axia#> .
-@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
-@prefix coodm: <https://valor-ecosystem.nl/ontology/coodm#> .
-@prefix gufo:  <http://purl.org/nemo/gufo#> .
-@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
-@prefix valor: <https://valor-ecosystem.nl/ontology/> .
-@prefix owl:   <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
 
 vo:axia
     a owl:Ontology ;
