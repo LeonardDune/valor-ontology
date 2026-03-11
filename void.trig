@@ -2,6 +2,7 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix vo: <https://valor-ecosystem.nl/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix gufo: <http://purl.org/nemo/gufo#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -10,7 +11,10 @@
 # SPARQL endpoint: https://begrippen.valor-ecosystem.nl/sparql
 # ============================================================
 
-<https://valor-ecosystem.nl/void/catalog> a void:Dataset ;
+<https://valor-ecosystem.nl/void/catalog> {
+
+<https://valor-ecosystem.nl/void/catalog> a owl:Ontology ;
+    owl:versionInfo "0.2" ;
     dcterms:title "VALOR-O ontology & shapes catalog"@nl ;
     dcterms:description "VoID metadata voor alle VALOR-O module graphs"@nl ;
     dcterms:creator "VALOR-O development team" ;
@@ -377,3 +381,5 @@
     void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/application.shacl.trig> ;
     void:vocabulary sh: .
+
+} # einde <https://valor-ecosystem.nl/void/catalog>
