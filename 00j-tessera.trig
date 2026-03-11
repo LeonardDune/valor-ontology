@@ -13,7 +13,7 @@
 #  VALOR-O — Module 00j: Epistemische Module (Tessera)
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/tessera#  (prefix tess:)
-#  Versie     : 0.1  (maart 2026)
+#  Versie     : 0.2  (maart 2026)
 #  Imports    : 00a-gufo-core, 00c-ufo-c
 #
 #  Architectuurprincipe (DD-061):
@@ -30,10 +30,13 @@
 #  Epistemische statusmachine (DD-065):
 #    5 statussen: Proposed / Contested / Accepted / Rejected / Reconsidered
 #    Contested en Reconsidered ontbraken in causa v0.1; hier gecorrigeerd.
+#    Overgangen zijn machine-readable via valor:allowedTransitionTo.
+#    valor:requiresDecisionEpisode markeert statussen die bij een API-aanroep
+#    een valor:DecisionEpisode-referentie vereisen.
 #
 #  Structuur:
 #    §A  Tessera — centrale claim-klasse
-#    §B  EpistemicStatus — 5-waardige statusmachine
+#    §B  EpistemicStatus — 5-waardige statusmachine + machine-readable transities
 #    §C  ClaimType — AsIs / ToBe
 #    §D  Evidence — bewijs-klasse (centraal)
 #    §E  Argumentatierelaties
@@ -53,7 +56,7 @@ vo:tessera
     rdfs:label "VALOR-O Module 00j — Epistemische Module (Tessera)"@nl ;
     owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
-    owl:versionInfo "0.1" ;
+    owl:versionInfo "0.2" ;
     rdfs:comment
         """Centraliseert de epistemische infrastructuur van VALOR-O.
          Alle module-specifieke claim-klassen subclasseeren valor:Tessera
@@ -63,16 +66,6 @@ vo:tessera
 
 ###############################################################################
 #  §A — Tessera (centrale claim-klasse)
-#
-#  DD-061: valor:Tessera is de gemeenschappelijke superklasse van alle
-#  VALOR-O claims. Architectonische fundering: ufoc:Belief (een
-#  IntentionalMode van een Agent met een Situation als hasPropositionalContent).
-#  Module-specifieke claims specialiseren Tessera en voegen domeinspecifieke
-#  propositional content en properties toe.
-#
-#  Naam: 'tessera' — het Latijnse tegeltje als toegangsbewijs tot een
-#  vergadering en bouwsteen van een mozaïek. Elke claim is een bouwsteen
-#  van het gezamenlijke ontwerp. (VALOR-ecosysteem20.md §1.4)
 ###############################################################################
 
 valor:Tessera
@@ -102,11 +95,11 @@ valor:Tessera
 #  DD-065: 5 statussen. Contested en Reconsidered toegevoegd t.o.v.
 #  de 3-waardige machine in causa v0.1 (Proposed/Accepted/Rejected).
 #
-#  Transities:
+#  Transities (machine-readable via valor:allowedTransitionTo):
 #    Proposed      -> Contested | Accepted | Rejected
 #    Contested     -> Accepted | Rejected
-#    Accepted      -> Reconsidered
-#    Rejected      -> Reconsidered
+#    Accepted      -> Reconsidered   [vereist DecisionEpisode]
+#    Rejected      -> Reconsidered   [vereist DecisionEpisode]
 #    Reconsidered  -> Proposed  (herstart cyclus)
 ###############################################################################
 
@@ -162,6 +155,34 @@ valor:ReconsideredStatus
          verbindt de Tessera met de oorspronkelijke DecisionEpisode.
          (DD-065)"""@nl .
 
+# ── Toestandsovergangen conform DD-065 (machine-readable) ─────────────────────
+#
+# valor:allowedTransitionTo verbindt elke statusindividueel met zijn
+# toegestane doelstatussen. De applicatielaag queryt deze triples bij startup
+# in plaats van de transitiematrix hardgecodeerd te houden.
+# valor:requiresDecisionEpisode markeert statussen die bij een API-aanroep
+# een valor:DecisionEpisode-referentie vereisen. (DD-065)
+
+valor:ProposedStatus
+    valor:allowedTransitionTo valor:ContestedStatus ;
+    valor:allowedTransitionTo valor:AcceptedStatus ;
+    valor:allowedTransitionTo valor:RejectedStatus .
+
+valor:ContestedStatus
+    valor:allowedTransitionTo valor:AcceptedStatus ;
+    valor:allowedTransitionTo valor:RejectedStatus .
+
+valor:AcceptedStatus
+    valor:allowedTransitionTo valor:ReconsideredStatus ;
+    valor:requiresDecisionEpisode "true"^^xsd:boolean .
+
+valor:RejectedStatus
+    valor:allowedTransitionTo valor:ReconsideredStatus ;
+    valor:requiresDecisionEpisode "true"^^xsd:boolean .
+
+valor:ReconsideredStatus
+    valor:allowedTransitionTo valor:ProposedStatus .
+
 
 ###############################################################################
 #  §C — ClaimType (AsIs / ToBe)
@@ -197,7 +218,6 @@ valor:ToBeType
 ###############################################################################
 #  §D — Evidence (centraal bewijs-concept)
 #
-#  Vervangt de module-specifieke causa:Evidence uit v0.1.
 #  Vier bewijs-typen conform PAMS-taxonomie (Enserink et al. 2022).
 ###############################################################################
 
@@ -247,9 +267,6 @@ valor:ExperientialEvidence
 
 ###############################################################################
 #  §E — Argumentatierelaties (IBIS-geïnspireerd)
-#
-#  Vier typen: supports | undermines | qualifies | presupposes
-#  valor:undermines is de trigger voor ContestedStatus op de object-Tessera.
 ###############################################################################
 
 valor:supports
@@ -294,8 +311,6 @@ valor:presupposes
 
 ###############################################################################
 #  §F — DecisionEpisode (gufo:Event)
-#
-#  Drie episodetypen: PhaseTransition | InSessionVoting | AsyncVoting
 ###############################################################################
 
 valor:DecisionEpisode
@@ -436,8 +451,7 @@ valor:claimType
     rdfs:label "claim type"@en , "claimtype"@nl ;
     rdfs:domain valor:Tessera ;
     rdfs:range  valor:ClaimType ;
-    rdfs:comment
-        """Het type: AsIs of ToBe. Verplicht (SHACL T4). (DD-061)"""@nl .
+    rdfs:comment "Het type: AsIs of ToBe. Verplicht (SHACL T4). (DD-061)"@nl .
 
 valor:claimedBy
     a owl:ObjectProperty ;
@@ -464,11 +478,8 @@ valor:claimContent
     rdfs:domain valor:Tessera ;
     rdfs:range  rdf:langString ;
     rdfs:comment
-        """De mensleesbare propositionele inhoud van de Tessera: de
-         bewering zoals de indiener die heeft geformuleerd. Verplicht
-         (SHACL T5). Komt overeen met ufoc:hasPropositionalContent
-         maar dan als tekst — de formele ontologische structuur wordt
-         vastgelegd via perspectief-specifieke properties. (DD-061, SHACL T3)"""@nl .
+        """De mensleesbare propositionele inhoud van de Tessera. Verplicht
+         (SHACL T5). (DD-061, SHACL T3)"""@nl .
 
 valor:inAlternative
     a owl:ObjectProperty ;
@@ -477,9 +488,7 @@ valor:inAlternative
     rdfs:domain valor:Tessera ;
     rdfs:range  <https://valor-ecosystem.nl/ontology/application#DesignAlternative> ;
     rdfs:comment
-        """Het alternatief waarbinnen een ToBe-Tessera geldt. Optioneel:
-         Tesserae zonder inAlternative gelden voor alle alternatieven
-         (typisch AsIs-Tesserae). (DD-061)"""@nl .
+        """Het alternatief waarbinnen een ToBe-Tessera geldt. Optioneel. (DD-061)"""@nl .
 
 valor:inPhase
     a owl:ObjectProperty ;
@@ -508,6 +517,30 @@ valor:reconsideredFrom
     rdfs:comment
         """Link van een Reconsidered Tessera naar de DecisionEpisode
          waaruit de heroverweging voortkomt. (DD-065)"""@nl .
+
+# ── Properties op valor:EpistemicStatus ──────────────────────────────────────
+
+valor:allowedTransitionTo
+    a owl:ObjectProperty ;
+    rdfs:label "allowed transition to"@en , "toegestane overgang naar"@nl ;
+    rdfs:domain valor:EpistemicStatus ;
+    rdfs:range  valor:EpistemicStatus ;
+    rdfs:comment
+        """Toegestane statusovergang conform de DD-065 toestandsmachine.
+         Machine-readable door de applicatielaag: bij startup wordt de
+         transitiematrix uit deze triples opgebouwd in plaats van
+         hardgecodeerd te worden. (DD-065)"""@nl .
+
+valor:requiresDecisionEpisode
+    a owl:DatatypeProperty ;
+    rdfs:label "requires decision episode"@en , "vereist besluitvormingsepisode"@nl ;
+    rdfs:domain valor:EpistemicStatus ;
+    rdfs:range  xsd:boolean ;
+    rdfs:comment
+        """Of een overgang naar deze status bij de API-aanroep een
+         valor:DecisionEpisode-referentie vereist. Samenwerking met
+         SHACL T6: T6 valideert de RDF-graph; dit property stuurt de
+         API-validatie. (DD-065)"""@nl .
 
 # ── Properties op valor:Evidence ─────────────────────────────────────────────
 
@@ -627,6 +660,6 @@ valor:isQuestion
          suggestie (false). Socratische agents stellen vragen. (DD-061)"""@nl .
 
 ###############################################################################
-#  Einde module 00j-tessera.trig (v0.1)
+#  Einde module 00j-tessera.trig (v0.2)
 ###############################################################################
 }
