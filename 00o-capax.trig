@@ -1,0 +1,627 @@
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix sysont:<https://valor-ecosystem.nl/ontology/sysont#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+<https://valor-ecosystem.nl/ontology/capax> {
+
+    ###############################################################################
+    # VALOR-O — Module 00o: CAPAX  (Capability & Feasibility)
+    #
+    # Purpose : Formalises the capability dimension needed to assess the
+    #           feasibility of design alternatives during VALOR's deliberation
+    #           process. Bridges the design space (what should be done) with
+    #           the execution space (can it be done) by grounding capability
+    #           gaps as first-class ontological objects citeable as Tesserae.
+    #
+    # Key classes:
+    #   capax:Capability               — gufo:Disposition inhering in an Agent
+    #   capax:CapabilityRequirement    — ufoc:SocialObject on a TransactionType
+    #   capax:CapabilityGap            — gufo:Situation of absent/insufficient cap.
+    #   capax:CapabilityDevelopmentNeed — what must change to close a gap
+    #   capax:FeasibilityAssessment    — aggregated gate Tessera for phase transition
+    #   capax:DispositionRelation      — relator between complementary capabilities
+    #
+    # Imports : 00a-gufo-core, 00c-ufo-c, 00g-acta, 00f-cover, 00r-sysont
+    #   N.B.: sysont added to imports (DD-087, DD-089 — BondingRelation basis).
+    #
+    # Sources : Calhau et al. (2023) EDOC — System Core Ontology for Capability
+    #             Emergence Modeling; Calhau (2024) CREON/DIECO; Guizzardi et al.
+    #             (2013) UFO-C; gUFO-spec; Bunge (1979) CESM;
+    #             Barton et al. (2017) A taxonomy of disposition-parthood.
+    #
+    # Design decisions: DD-066 through DD-070, DD-084, DD-092
+    # Version : 0.3  |  March 2026
+    ###############################################################################
+
+    vo:capax
+        a owl:Ontology ;
+        owl:imports vo:gufo-core, vo:ufo-c, vo:acta, vo:cover, vo:sysont ;
+        dcterms:title "VALOR-O — Module 00o: CAPAX — Capability & Feasibility"@nl ;
+        dcterms:description
+            "Formaliseert de capabiliteitsdimensie die nodig is om de
+             uitvoerbaarheid van ontwerpalternatieven te beoordelen tijdens
+             VALOR's deliberatieproces. Biedt de ontologische fundering voor
+             haalbaarheid als eerste-klas criterium bij faseovergangen."@nl ;
+        owl:versionInfo "0.3" ;
+        dcterms:created "2026-03-10" ;
+        dcterms:modified "2026-03-13" ;
+        dcterms:source
+            "Calhau et al. (2023) EDOC; Calhau (2024) CREON/DIECO;
+             Guizzardi et al. (2013) UFO-C; gUFO-spec;
+             Bunge (1979) CESM; Barton et al. (2017) disposition-parthood." .
+
+
+    ###############################################################################
+    # ── 1. CAPABILITY ─────────────────────────────────────────────────────────────
+    #
+    #  A Capability is a gufo:Disposition — an IntrinsicMode that inheres in
+    #  an Agent and manifests only under specific triggering conditions via
+    #  the occurrence of an event.
+    #
+    #  Ontological chain (SOCIA→CAPAX→ACTA→COVER):
+    #    Capability  —[inheresIn]→  Agent
+    #    Capability  —[hasManifestationCondition]→  Situation
+    #    Capability  —[manifestsVia]→  TransactionExecution
+    #    TransactionExecution  —[broughtAbout]→  TransactionResult
+    #    TransactionResult  ← ValueObject (COVER)  ← ValueExperience
+    #
+    #  DD-066: Capability as gufo:Disposition — not a goal, role, or process.
+    ###############################################################################
+
+    capax:Capability
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf gufo:Disposition ;
+        rdfs:label "Capability"@en , "Capability"@nl ;
+        rdfs:comment
+            "Een dispositie van een agent die hem in staat stelt een bepaald
+             type transactie succesvol uit te voeren en daarmee de verwachte
+             uitkomst (ValueObject in COVER) voort te brengen.
+
+             Een capability is een intrinsieke eigenschap van de agent —
+             geen doel, geen rol, geen proces. Ze bestaat als potentialiteit
+             ook wanneer ze niet wordt gerealiseerd (DD-066)."@nl ;
+        skos:example
+            "De capability van een gemeente om schuldhulpverlening te leveren:
+             aanwezig als dispositie, gemanifesteerd wanneer een burger een
+             aanvraagtransactie initieert, resulterend in een saneringsplan
+             als TransactionResult / ValueObject."@nl .
+
+    # ── 1.1 Subtypen ──────────────────────────────────────────────────────────────
+
+    capax:OrganizationalCapability
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf capax:Capability ;
+        rdfs:label "OrganizationalCapability"@en , "Organisatorische capability"@nl ;
+        rdfs:comment
+            "Een capability die inhereerrt aan een ufoc:InstitutionalAgent.
+
+             Conform Bunge (1979) en Calhau et al. (2023) wordt onderscheiden
+             of de capability resultant of emergent is (DD-084):
+             — resultant: direct afleidbaar uit de som van individuele capabilities;
+               kan worden verworven door de juiste mensen aan te stellen.
+             — emergent: superveniëert op de configuratie van leden én hun
+               dispositionele relaties; vereist organisatieontwerp (sysont-laag)."@nl ;
+        skos:example
+            "Resultant: gemeente stelt schuldhulpverleners aan → direct capability.
+             Emergent: 'integraal schuldenbeleid voeren' vereist afstemming,
+             gedeeld informatiesysteem en gezamenlijk mandaat."@nl .
+
+    capax:emergenceNature
+        a owl:DatatypeProperty ;
+        rdfs:label "emergence nature"@en , "emergentieaard"@nl ;
+        rdfs:domain capax:OrganizationalCapability ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Karakteriseert of een OrganizationalCapability resultant of emergent
+             is in de zin van Bunge (1979) en Calhau et al. (2023).
+
+             Gecontroleerd vocabulaire:
+             'Resultant'  — capability is de optelsom van individuele capabilities.
+             'Emergent'   — capability superveniëert op de bonding structure
+                            (sysont:EmergentSystemMoment — DD-084).
+             'Unknown'    — nog niet geanalyseerd (default bij aanmaken).
+
+             Bij 'Emergent' MOET een CapabilityDevelopmentNeed van type
+             'StructuralRedesign' of 'GovernanceRedesign' worden aangemaakt."@nl .
+
+    capax:IndividualCapability
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf capax:Capability ;
+        rdfs:label "IndividualCapability"@en , "Individuele capability"@nl ;
+        rdfs:comment
+            "Een capability die inhereerrt aan een ufoc:PhysicalAgent (persoon).
+             CAPAX modelleert niet de interne structuur van competences
+             (kennis, vaardigheden, attitudes) — zie DD-069."@nl .
+
+    [ a owl:AllDisjointClasses ;
+      owl:members ( capax:OrganizationalCapability capax:IndividualCapability ) ] .
+
+    # ── 1.2 Properties van Capability ─────────────────────────────────────────────
+
+    capax:inhereInAgent
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:inheresIn ;
+        rdfs:label "inheres in agent"@en , "inhereerrt aan agent"@nl ;
+        rdfs:domain capax:Capability ;
+        rdfs:range  ufoc:Agent ;
+        rdfs:comment
+            "De agent (bearer) waaraan de capability als dispositie inhereerrt."@nl .
+
+    capax:hasManifestationCondition
+        a owl:ObjectProperty ;
+        rdfs:label "has manifestation condition"@en ,
+                   "heeft manifestatieconditie"@nl ;
+        rdfs:domain capax:Capability ;
+        rdfs:range  gufo:Situation ;
+        rdfs:comment
+            "De situatieconditie waaronder de capability zich manifesteert."@nl .
+
+    capax:manifestsVia
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:manifestedIn ;
+        rdfs:label "manifests via"@en , "manifesteert via"@nl ;
+        rdfs:domain capax:Capability ;
+        rdfs:range  acta:TransactionExecution ;
+        rdfs:comment
+            "De transactie-executie waarin de capability zich realiseert
+             (CAPAX→ACTA-koppeling)."@nl .
+
+    capax:producesOutcome
+        a owl:ObjectProperty ;
+        rdfs:label "produces outcome"@en , "produceert uitkomst"@nl ;
+        rdfs:domain capax:Capability ;
+        rdfs:range  cover:ValueObject ;
+        rdfs:comment
+            "De verwachte uitkomst (ValueObject in COVER) die de manifestatie
+             van deze capability voortbrengt (CAPAX→COVER-koppeling)."@nl .
+
+    capax:capabilityLevel
+        a owl:DatatypeProperty ;
+        rdfs:label "capability level"@en , "capabiliteitsniveau"@nl ;
+        rdfs:domain capax:Capability ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Indicatief kwalificatieniveau van de capability. Domeinspecifiek
+             in te vullen (bijv. 'Basis', 'Gevorderd', 'Expert')."@nl .
+
+
+    ###############################################################################
+    # ── 2. CAPABILITY REQUIREMENT ─────────────────────────────────────────────────
+    #
+    #  A CapabilityRequirement is a normative SocialObject that specifies
+    #  which Capability a given TransactionType demands of its executor role.
+    #  DD-067: CapabilityRequirement as ufoc:SocialObject.
+    ###############################################################################
+
+    capax:CapabilityRequirement
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "CapabilityRequirement"@en , "Capabiliteitseis"@nl ;
+        rdfs:comment
+            "Een normatief sociaal object dat specificeert welke capability
+             een transactietype vereist van zijn executor. Inhereerrt aan het
+             transactietype (het ontwerp), niet aan de concrete actor.
+
+             Verbinding met module 00p (AXIA-VSD): een
+             axia:ValueBasedDesignRequirement die betrekking heeft op de
+             capability van een actor genereert automatisch een
+             CapabilityRequirement via axia:generatesCapabilityRequirement."@nl ;
+        skos:example
+            "De transactie 'schuldhulpverlening verlenen' vereist de capability
+             'geïntegreerde schuldbemiddeling uitvoeren' van de executor-rol
+             Schuldhulpverlener."@nl .
+
+    capax:requiredForTransactionType
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:inheresIn ;
+        rdfs:label "required for transaction type"@en ,
+                   "vereist voor transactietype"@nl ;
+        rdfs:domain capax:CapabilityRequirement ;
+        rdfs:range  acta:TransactionType ;
+        rdfs:comment
+            "Het transactietype waarvoor deze capabiliteitseis geldt."@nl .
+
+    capax:requiresCapabilityType
+        a owl:ObjectProperty ;
+        rdfs:label "requires capability type"@en ,
+                   "vereist capabiliteitstype"@nl ;
+        rdfs:domain capax:CapabilityRequirement ;
+        rdfs:range  capax:Capability ;
+        rdfs:comment
+            "Het type capability dat vereist is (OWL 2 punning — DD-007)."@nl .
+
+    capax:requiredOfRole
+        a owl:ObjectProperty ;
+        rdfs:label "required of role"@en , "vereist van rol"@nl ;
+        rdfs:domain capax:CapabilityRequirement ;
+        rdfs:range  acta:ActorRole ;
+        rdfs:comment
+            "De actorrol waarvan de capability wordt vereist."@nl .
+
+    capax:requirementSource
+        a owl:DatatypeProperty ;
+        rdfs:label "requirement source"@en , "eisenbron"@nl ;
+        rdfs:domain capax:CapabilityRequirement ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Beschrijving van de herkomst van de eis: wettelijk kader,
+             beleidsnorm, waardegerichte eis (VSD), professionele standaard."@nl .
+
+
+    ###############################################################################
+    # ── 3. CAPABILITY GAP ─────────────────────────────────────────────────────────
+    #
+    #  A CapabilityGap is a Situation in which a required capability is absent
+    #  or insufficient in the agent responsible for executing a transaction.
+    #  DD-068: CapabilityGap as gufo:Situation — first-class ontological object.
+    ###############################################################################
+
+    capax:CapabilityGap
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "CapabilityGap"@en , "Capabiliteitstekort"@nl ;
+        rdfs:comment
+            "Een situatie waarbij een vereiste capability ontbreekt of
+             onvoldoende aanwezig is bij de actor die verantwoordelijk is
+             voor de uitvoering van een transactie in een ontwerpalternatief.
+
+             Als gufo:Situation: citeerbaar als Tessera-inhoud, traceerbaar
+             in Delibera, en als haalbaarheidsrisico formeel zichtbaar bij
+             faseovergangen in VALOR (DD-068)."@nl ;
+        skos:example
+            "Gemeente X beschikt niet over de capability 'geïntegreerde
+             schuldbemiddeling uitvoeren' terwijl ontwerpalternatief A
+             deze capability vereist voor TK-07."@nl .
+
+    capax:gapAffectsAgent
+        a owl:ObjectProperty ;
+        rdfs:label "gap affects agent"@en , "tekort treft agent"@nl ;
+        rdfs:domain capax:CapabilityGap ;
+        rdfs:range  ufoc:Agent ;
+        rdfs:comment "De agent bij wie de vereiste capability ontbreekt."@nl .
+
+    capax:gapConcernsRequirement
+        a owl:ObjectProperty ;
+        rdfs:label "gap concerns requirement"@en , "tekort betreft eis"@nl ;
+        rdfs:domain capax:CapabilityGap ;
+        rdfs:range  capax:CapabilityRequirement ;
+        rdfs:comment "De capabiliteitseis waaraan niet wordt voldaan."@nl .
+
+    capax:gapOccursInAlternative
+        a owl:ObjectProperty ;
+        rdfs:label "gap occurs in alternative"@en ,
+                   "tekort treedt op in alternatief"@nl ;
+        rdfs:domain capax:CapabilityGap ;
+        rdfs:range  valor:DesignAlternative ;
+        rdfs:comment
+            "Het ontwerpalternatief waarbinnen dit capabiliteitstekort
+             is geconstateerd."@nl .
+
+    capax:gapSeverity
+        a owl:DatatypeProperty ;
+        rdfs:label "gap severity"@en , "tekort-ernst"@nl ;
+        rdfs:domain capax:CapabilityGap ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Ernst van het capabiliteitstekort. Gecontroleerd vocabulaire:
+             'Critical', 'Significant', 'Minor'."@nl .
+
+    capax:currentCapabilityDescription
+        a owl:DatatypeProperty ;
+        rdfs:label "current capability description"@en ,
+                   "huidig capabiliteitsniveau (beschrijving)"@nl ;
+        rdfs:domain capax:CapabilityGap ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Beschrijving van het huidige capabiliteitsniveau van de
+             betrokken agent."@nl .
+
+
+    ###############################################################################
+    # ── 4. CAPABILITY DEVELOPMENT NEED ───────────────────────────────────────────
+    #
+    #  A CapabilityDevelopmentNeed articulates what must be developed, acquired
+    #  or restructured to close a CapabilityGap within the planning horizon.
+    #  DD-069: HOW development happens is out of scope for CAPAX.
+    ###############################################################################
+
+    capax:CapabilityDevelopmentNeed
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "CapabilityDevelopmentNeed"@en ,
+                   "Capabiliteitsontwikkelingsbehoefte"@nl ;
+        rdfs:comment
+            "Een sociaal object dat articuleert wat moet worden ontwikkeld,
+             verworven of geherstructureerd om een CapabilityGap te dichten
+             binnen de planhorizon van een ontwerpalternatief."@nl ;
+        skos:example
+            "Om de gap 'ontbrekende schuldbemiddelingscapability bij gemeente X'
+             te dichten: werving, uitbesteding of opleiding — de keuze is
+             een nieuw ontwerpvraagstuk (DD-069)."@nl .
+
+    capax:addressesGap
+        a owl:ObjectProperty ;
+        rdfs:label "addresses gap"@en , "adresseert tekort"@nl ;
+        rdfs:domain capax:CapabilityDevelopmentNeed ;
+        rdfs:range  capax:CapabilityGap ;
+        rdfs:comment "De CapabilityGap die door deze behoefte wordt geadresseerd."@nl .
+
+    capax:developmentHorizon
+        a owl:DatatypeProperty ;
+        rdfs:label "development horizon"@en , "ontwikkelingshorizon"@nl ;
+        rdfs:domain capax:CapabilityDevelopmentNeed ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Tijdshorizon. Gecontroleerd vocabulaire:
+             'BeforeImplementation', 'WithinFirstYear', 'LongTerm'."@nl .
+
+    capax:developmentApproach
+        a owl:DatatypeProperty ;
+        rdfs:label "development approach"@en , "ontwikkelingsstrategie"@nl ;
+        rdfs:domain capax:CapabilityDevelopmentNeed ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Indicatieve strategie: 'Werving', 'Opleiding', 'Uitbesteding',
+             'Samenwerking', 'Reorganisatie', etc."@nl .
+
+
+    ###############################################################################
+    # ── 5. FEASIBILITY ASSESSMENT ─────────────────────────────────────────────────
+    #
+    #  A FeasibilityAssessment aggregates all CapabilityGaps for a DesignAlternative
+    #  and expresses an overall feasibility judgment.
+    #  DD-070: FeasibilityAssessment as gufo:Situation — contestable state.
+    ###############################################################################
+
+    capax:FeasibilityAssessment
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "FeasibilityAssessment"@en ,
+                   "Haalbaarheidsbeoordeling"@nl ;
+        rdfs:comment
+            "Een situatie die alle geïdentificeerde CapabilityGaps voor een
+             ontwerpalternatief aggregeert en een overkoepelend
+             haalbaarheidsordeel uitdrukt.
+
+             De FeasibilityAssessment is de Tessera die een alternatief
+             meebrengt naar een faseovergang. Zonder epistemicStatus 'Accepted'
+             mag het alternatief niet doorstromen (DD-070)."@nl .
+
+    capax:assessesAlternative
+        a owl:ObjectProperty ;
+        rdfs:label "assesses alternative"@en , "beoordeelt alternatief"@nl ;
+        rdfs:domain capax:FeasibilityAssessment ;
+        rdfs:range  valor:DesignAlternative ;
+        rdfs:comment "Het ontwerpalternatief waarop deze beoordeling betrekking heeft."@nl .
+
+    capax:includesGap
+        a owl:ObjectProperty ;
+        rdfs:label "includes gap"@en , "omvat tekort"@nl ;
+        rdfs:domain capax:FeasibilityAssessment ;
+        rdfs:range  capax:CapabilityGap ;
+        rdfs:comment "Een CapabilityGap die deel uitmaakt van deze beoordeling."@nl .
+
+    capax:includesDevelopmentNeed
+        a owl:ObjectProperty ;
+        rdfs:label "includes development need"@en ,
+                   "omvat ontwikkelingsbehoefte"@nl ;
+        rdfs:domain capax:FeasibilityAssessment ;
+        rdfs:range  capax:CapabilityDevelopmentNeed ;
+        rdfs:comment
+            "Een CapabilityDevelopmentNeed geïdentificeerd als onderdeel
+             van deze beoordeling. Duidt op overallFeasibility 'FeasibleWithConditions'."@nl .
+
+    capax:overallFeasibility
+        a owl:DatatypeProperty ;
+        rdfs:label "overall feasibility"@en , "overkoepelend haalbaarheidsordeel"@nl ;
+        rdfs:domain capax:FeasibilityAssessment ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire:
+             'Feasible', 'FeasibleWithConditions', 'NotFeasible'."@nl .
+
+    capax:assessedBy
+        a owl:ObjectProperty ;
+        rdfs:label "assessed by"@en , "beoordeeld door"@nl ;
+        rdfs:domain capax:FeasibilityAssessment ;
+        rdfs:range  ufoc:Agent ;
+        rdfs:comment "De agent(en) die de haalbaarheidsbeoordeling hebben opgesteld."@nl .
+
+    capax:assessmentDate
+        a owl:DatatypeProperty ;
+        rdfs:label "assessment date"@en , "beoordelingsdatum"@nl ;
+        rdfs:domain capax:FeasibilityAssessment ;
+        rdfs:range  xsd:date ;
+        rdfs:comment "Datum waarop de haalbaarheidsbeoordeling is opgesteld."@nl .
+
+
+    ###############################################################################
+    # ── 6. DISPOSITION RELATION ───────────────────────────────────────────────────
+    #
+    #  DispositionRelation formaliseert de onderlinge relaties tussen disposities
+    #  die samen een emergente OrganizationalCapability mogelijk maken.
+    #  Gebaseerd op Barton et al. (2017) en Calhau et al. (2023).
+    #
+    #  Drie typen (DD-084):
+    #    Reciprocal  — wederzijdse activering; co-constitutief.
+    #    Additional  — additief: samen meer dan elk afzonderlijk.
+    #    Enabling    — A maakt manifestatie van B mogelijk (of blokkeert haar).
+    #
+    #  N.B.: capax:DispositionRelation rdfs:subClassOf sysont:BondingRelation
+    #        is vastgelegd als bridge-axioma in 00r-sysont.trig (B1, DD-087).
+    ###############################################################################
+
+    capax:DispositionRelation
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "relator" ;
+        rdfs:subClassOf gufo:Relator ;
+        rdfs:label "DispositionRelation"@en , "Dispositionele relatie"@nl ;
+        rdfs:comment
+            "Een relator die de onderlinge afhankelijkheid tussen twee of meer
+             disposities (capabilities) formaliseert die samen bijdragen aan
+             een emergente capability. Gebaseerd op Barton et al. (2017)
+             taxonomie van dispositie-partheid en Calhau et al. (2023) §4.
+
+             Als Relator in UFO: verdwijnt wanneer één van de bearers het
+             systeem verlaat of de capability verliest — modelleert waarom
+             emergente capabilities fragieler zijn dan resultante (DD-084).
+
+             SYSONT-brug (B1): capax:DispositionRelation rdfs:subClassOf
+             sysont:BondingRelation — zie 00r-sysont.trig."@nl ;
+        skos:example
+            "De wederzijdse communicatievaardigheid van twee developers
+             (Reciprocal); vier stutten van een stoel (Additional);
+             agile coaching op leerbereidheid (Enabling)."@nl .
+
+    capax:dispositionRelationType
+        a owl:DatatypeProperty ;
+        rdfs:label "disposition relation type"@en ,
+                   "dispositionele relatietype"@nl ;
+        rdfs:domain capax:DispositionRelation ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire (Barton et al. 2017):
+             'Reciprocal' — wederzijdse activering.
+             'Additional' — additieve bijdrage; beide noodzakelijk.
+             'Enabling'   — eenzijdige activering."@nl .
+
+    capax:relatesDisposition
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:mediates ;
+        rdfs:label "relates disposition"@en , "relateert dispositie"@nl ;
+        rdfs:domain capax:DispositionRelation ;
+        rdfs:range  capax:Capability ;
+        rdfs:comment
+            "De capability die door deze DispositionRelation wordt gemedieerd.
+             Een DispositionRelation medieert ten minste twee capabilities."@nl .
+
+    capax:contributesToEmergenceOf
+        a owl:ObjectProperty ;
+        rdfs:label "contributes to emergence of"@en ,
+                   "draagt bij aan emergentie van"@nl ;
+        rdfs:domain capax:DispositionRelation ;
+        rdfs:range  capax:OrganizationalCapability ;
+        rdfs:comment
+            "De emergente OrganizationalCapability die door deze dispositionele
+             relatie mogelijk wordt gemaakt."@nl .
+
+
+    ###############################################################################
+    # ── 7. CONDITION COVERAGE (DD-092) ────────────────────────────────────────────
+    #
+    #  ConditionCoverage beoordeelt de mate waarin een ontwerpalternatief
+    #  de ManifestationCondition van een specifieke causa:CausalClaim realiseert.
+    #  Geaggregeerd in causa:ClaimCoverageAssessment (tweede gate-Tessera).
+    ###############################################################################
+
+    capax:ConditionCoverage
+        a owl:Class ;
+        rdf:type gufo:SituationType ;
+        valor:ontoumlStereotype "situation" ;
+        rdfs:subClassOf gufo:Situation ;
+        rdfs:label "ConditionCoverage"@en , "Conditiedekking"@nl ;
+        rdfs:comment
+            "Beoordeling van de mate waarin een ontwerpalternatief de
+             causa:ManifestationCondition van een specifieke causa:CausalClaim
+             realiseert. Geaggregeerd in causa:ClaimCoverageAssessment als tweede
+             gate-Tessera bij faseovergangen (DD-092).
+
+             Gecontroleerd vocabulaire voor capax:coverageLevel:
+               'Full'    — alle vereiste capabilities en situaties aanwezig.
+               'Partial' — sommige ontbreken maar claim kan zich gedeeltelijk
+                           manifesteren.
+               'None'    — kritieke conditie ontbreekt; manifestatie niet
+                           te verwachten."@nl .
+
+    capax:coversConditionOf
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "covers condition of"@en , "dekt conditie van"@nl ;
+        rdfs:domain capax:ConditionCoverage ;
+        rdfs:range  <https://valor-ecosystem.nl/ontology/causa#CausalClaim> ;
+        rdfs:comment
+            "De CausalClaim waarvan de ManifestationCondition door dit oordeel
+             wordt beoordeeld. (DD-092)"@nl .
+
+    capax:coverageForAlternative
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "coverage for alternative"@en , "dekking voor alternatief"@nl ;
+        rdfs:domain capax:ConditionCoverage ;
+        rdfs:range  valor:DesignAlternative ;
+        rdfs:comment
+            "Het ontwerpalternatief waarvoor deze conditie-dekking is bepaald.
+             (DD-092)"@nl .
+
+    capax:coverageLevel
+        a owl:DatatypeProperty ;
+        rdfs:label "coverage level"@en , "dekkingsniveau"@nl ;
+        rdfs:domain capax:ConditionCoverage ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire: 'Full', 'Partial', 'None'. (DD-092)"@nl .
+
+
+    ###############################################################################
+    # ── 8. INTEGRATION SUMMARY (non-normative) ────────────────────────────────────
+    #
+    #  De volledige VALOR-derivatieketen van waarde naar haalbaarheid en
+    #  theoretische adequaatheid:
+    #
+    #  AXIA (module 00l + 00p):
+    #    cover:ValueType → axia:ValueCriterion → axia:ValueBasedDesignRequirement
+    #      → axia:generatesCapabilityRequirement
+    #
+    #  CAPAX (module 00o):
+    #    capax:CapabilityRequirement ← capax:gapConcernsRequirement
+    #    capax:CapabilityGap ← capax:includesGap
+    #    capax:FeasibilityAssessment → [epistemicStatus = Accepted] bij PhaseTransition
+    #    capax:ConditionCoverage → geaggregeerd in causa:ClaimCoverageAssessment (DD-092)
+    #
+    #  CAUSA (module 00h):
+    #    causa:CausalClaim.hasManifestationCondition → sysont:SystemSituation
+    #    causa:Intervention.realisedBy → acta:TransactionType (DD-093)
+    #    causa:ClaimCoverageAssessment ← capax:ConditionCoverage (DD-092)
+    #
+    #  EMERGENTIE-LAAG (DD-084, sysont-basis in module 00r):
+    #    capax:DispositionRelation (subClassOf sysont:BondingRelation)
+    #      → capax:dispositionRelationType: Reciprocal / Additional / Enabling
+    #    capax:OrganizationalCapability.emergenceNature: Resultant / Emergent / Unknown
+    #
+    #  NEXUS (module 00q):
+    #    nexus:CollaborativeCapability specialiseert capax:Capability
+    #    nexus:CollaborationCondition (subClassOf sysont:SystemSituation)
+    ###############################################################################
+
+
+    ###############################################################################
+    # END OF MODULE 00o — CAPAX  (v0.3)
+    ###############################################################################
+
+}

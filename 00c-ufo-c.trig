@@ -13,9 +13,17 @@
     
     ###############################################################################
     # VALOR-O — Module 00c: UFO-C  (Social Entities)
-    # Versie 0.2 — gUFO-typefouten gecorrigeerd (DD-049)
+    # Versie 0.3 — Agent-taxonomie gecorrigeerd (DD-083)
     #
-    # Correcties t.o.v. v0.1:
+    # Wijzigingen t.o.v. v0.2:
+    #   [C-003] ufoc:SocialAgent toegevoegd als tussenklasse (DD-083)
+    #           Agent → {PhysicalAgent, SocialAgent}
+    #           SocialAgent → {InstitutionalAgent, CollectiveSocialAgent}
+    #   [C-004] ufoc:CollectiveSocialAgent toegevoegd (DD-083)
+    #   [C-005] ufoc:InstitutionalAgent: parent gewijzigd van ufoc:Agent
+    #           naar ufoc:SocialAgent — geen informatieverlies
+    #
+    # Correcties t.o.v. v0.1 (behouden):
     #   [C-001] ufoc:SocialRelator: rdf:type gufo:Relator VERWIJDERD
     #           gufo:Relator is een klasse in de Taxonomy of Individuals,
     #           geen type in de Taxonomy of Types. (DD-049)
@@ -37,9 +45,9 @@
         dcterms:description
             """Ontologie van sociale entiteiten: agents, intentionele toestanden,
              sociale objecten, commitments en delegatie."""@nl ;
-        owl:versionInfo "0.2" .
-    
-    
+        owl:versionInfo "0.3" .
+
+
     ###############################################################################
     # ── 1. AGENT ──────────────────────────────────────────────────────────────────
     ###############################################################################
@@ -62,19 +70,63 @@
         rdfs:subClassOf ufoc:Agent ;
         rdfs:label "PhysicalAgent"@en , "Fysieke agent"@nl ;
         rdfs:comment "Een agent die een fysiek lichaam heeft (persoon)."@nl .
-    
-    ufoc:InstitutionalAgent
+
+    # ── SocialAgent (toegevoegd in v0.3 — DD-083) ─────────────────────────────
+
+    ufoc:SocialAgent
         a owl:Class ;
         rdf:type gufo:SubKind ;
         valor:ontoumlStereotype "subkind" ;
         rdfs:subClassOf ufoc:Agent ;
+        rdfs:label "SocialAgent"@en , "Sociale agent"@nl ;
+        rdfs:comment
+            """Een agent wiens bestaan afhankelijk is van sociale erkenning —
+             hij bestaat als agent doordat andere agents hem als zodanig
+             erkennen en behandelen.
+
+             SocialAgent is de gemeenschappelijke superklasse van:
+               - InstitutionalAgent: erkend via formele institutionele structuur
+               - CollectiveSocialAgent: erkend door de leden zelf
+
+             Bron: UFO-C spec §Agent; DD-083 (correctie Agent-taxonomie v0.3)."""@nl .
+
+    ufoc:InstitutionalAgent
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf ufoc:SocialAgent ;
         rdfs:label "InstitutionalAgent"@en , "Institutionele agent"@nl ;
         rdfs:comment
-            """Een agent wiens bestaan afhankelijk is van collectieve
-             erkenning (organisatie, gemeente, rechtspersoon)."""@nl .
-    
+            """Een SocialAgent wiens bestaan afhankelijk is van erkenning via
+             een formele institutionele structuur: rechtspersoonlijkheid,
+             wettelijke status, of een formeel statuut.
+             Voorbeelden: gemeente, ministerie, woningcorporatie, stichting."""@nl .
+
+    # ── CollectiveSocialAgent (toegevoegd in v0.3 — DD-083) ──────────────────
+
+    ufoc:CollectiveSocialAgent
+        a owl:Class ;
+        rdf:type gufo:SubKind ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:subClassOf ufoc:SocialAgent ;
+        rdfs:label "CollectiveSocialAgent"@en , "Collectieve sociale agent"@nl ;
+        rdfs:comment
+            """Een SocialAgent die bestaat doordat zijn leden — autonome agents
+             — elkaar wederzijds erkennen als deel van een collectief en
+             daarnaar handelen. Vereist geen externe institutionele erkenning
+             en heeft geen intern hiërarchisch gezag over zijn leden.
+
+             Voorbeelden per UFO-C spec: samenleving (Society).
+             In VALOR-O: nexus:EcosystemAgent als CollectiveSocialAgent van
+             autonome InstitutionalAgents.
+
+             Bron: UFO-C spec §Agent; DD-083."""@nl .
+
     [ a owl:AllDisjointClasses ;
-      owl:members ( ufoc:PhysicalAgent ufoc:InstitutionalAgent ) ] .
+      owl:members ( ufoc:PhysicalAgent ufoc:SocialAgent ) ] .
+
+    [ a owl:AllDisjointClasses ;
+      owl:members ( ufoc:InstitutionalAgent ufoc:CollectiveSocialAgent ) ] .
     
     
     ###############################################################################

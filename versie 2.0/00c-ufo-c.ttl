@@ -1,0 +1,490 @@
+###############################################################################
+# VALOR-O — Module 00c: UFO-C  (Social Entities)
+#
+# Purpose : Formalise the social layer of UFO needed by VALOR-O.
+#           Covers: Agent, intentional modes (goal, belief, desire,
+#           intention, commitment/claim pair), social objects (norms,
+#           roles as social constructs), and the delegation pattern.
+#
+# Source  : Guizzardi et al. (2013), "UFO-C: A Foundational Ontology
+#           for Social Entities"; Guizzardi (2005) PhD thesis;
+#           de Oliveira Bringuente et al. (2011);
+#           UFO-C specification https://ontology.com.br/ufo/ufo-c/spec/
+#           (Social Agent taxonomy: Physical Agent / Social Agent /
+#            InstitutionalAgent / CollectiveSocialAgent)
+#
+# CHANGELOG v0.2 (March 2026):
+#   DD-083 — Corrected Agent taxonomy per UFO-C spec:
+#     Agent → {PhysicalAgent, SocialAgent}
+#     SocialAgent → {InstitutionalAgent, CollectiveSocialAgent}
+#   Previously 00b-ufo-c.ttl had Agent → {PhysicalAgent, InstitutionalAgent}
+#   which collapsed the SocialAgent level and omitted CollectiveSocialAgent.
+#
+# Imports : 00a-gufo-core.ttl
+###############################################################################
+
+@prefix gufo:  <https://nemo-ufes.github.io/gufo/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix vo:   <https://valor-ecosystem.nl/ontology/> .
+
+vo:ufo-c
+    a owl:Ontology ;
+    owl:imports vo:gufo-core ;
+    dcterms:title "VALOR-O — UFO-C Social Entities"@nl ;
+    dcterms:description
+        "Ontologie van sociale entiteiten: agents, intentionele toestanden,
+         sociale objecten, commitments en delegatie.
+         Versie 0.2: corrigeert Agent-taxonomie conform UFO-C spec —
+         SocialAgent als tussenklasse; CollectiveSocialAgent toegevoegd."@nl ;
+    owl:versionInfo "0.2" .
+
+
+###############################################################################
+# ── 1. AGENT ──────────────────────────────────────────────────────────────────
+#
+#  Agent-taxonomie per UFO-C spec (ontology.com.br/ufo/ufo-c/spec/):
+#
+#    Agent
+#    ├── PhysicalAgent
+#    │     Een agent met een fysiek lichaam (persoon, levend wezen).
+#    └── SocialAgent
+#          Een agent wiens bestaan afhankelijk is van sociale erkenning.
+#          ├── InstitutionalAgent
+#          │     Erkend via formele institutionele structuur (rechtspersoon,
+#          │     wettelijke status, hiërarchisch intern gezag).
+#          │     Voorbeelden: gemeente, ministerie, bedrijf, stichting.
+#          └── CollectiveSocialAgent
+#                Een sociaal agent die bestaat doordat zijn leden elkaar als
+#                zodanig erkennen, zónder noodzakelijk formele rechtspersoon-
+#                lijkheid of intern hiërarchisch gezag.
+#                Voorbeelden: samenleving, ecosysteem, informele coalitie.
+#
+#  Cruciale distinctie InstitutionalAgent vs CollectiveSocialAgent:
+#
+#    InstitutionalAgent: erkend door externe institutionele context
+#                        (wet, statuut, register) — intern hiërarchisch gezag
+#    CollectiveSocialAgent: erkend door de leden zelf via wederzijds
+#                        commitment — geen extern-institutioneel kader vereist
+#
+#  Bron: UFO-C spec §Agent; Society als voorbeeld van CollectiveSocialAgent.
+#  DD-083: correctie van eerder onvolledige modellering (v0.1 had alleen
+#          PhysicalAgent en InstitutionalAgent als directe subtypen).
+###############################################################################
+
+ufoc:Agent
+    a owl:Class ;
+    rdf:type gufo:Kind ;
+    gufo:ontoumlStereotype "kind" ;
+    rdfs:subClassOf gufo:FunctionalComplex ;
+    rdfs:label "Agent"@en , "Agent"@nl ;
+    rdfs:comment
+        "Een FunctionalComplex met intentionele toestanden (BDI). Agents
+         handelen op grond van doelen, overtuigingen en intenties.
+
+         Partitie (UFO-C spec): Agent = PhysicalAgent ∪ SocialAgent.
+         Een PhysicalAgent heeft een fysiek lichaam; een SocialAgent
+         bestaat door sociale erkenning (institutioneel of collectief)."@nl .
+
+# ── PhysicalAgent ──────────────────────────────────────────────────────────────
+
+ufoc:PhysicalAgent
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:Agent ;
+    rdfs:label "PhysicalAgent"@en , "Fysieke agent"@nl ;
+    rdfs:comment
+        "Een agent die een fysiek lichaam heeft (persoon, levend wezen).
+         Zijn bestaan is niet afhankelijk van sociale erkenning."@nl .
+
+# ── SocialAgent (NEW in v0.2) ──────────────────────────────────────────────────
+
+ufoc:SocialAgent
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:Agent ;
+    rdfs:label "SocialAgent"@en , "Sociale agent"@nl ;
+    rdfs:comment
+        "Een agent wiens bestaan afhankelijk is van sociale erkenning —
+         hij bestaat als agent doordat andere agents hem als zodanig
+         erkennen en behandelen.
+
+         SocialAgent is de gemeenschappelijke superklasse van:
+           - InstitutionalAgent: erkend via formele institutionele structuur
+           - CollectiveSocialAgent: erkend door de leden zelf
+
+         Bron: UFO-C spec §Agent (ontology.com.br/ufo/ufo-c/spec/);
+               DD-083 (correctie Agent-taxonomie v0.2)."@nl .
+
+# ── InstitutionalAgent ─────────────────────────────────────────────────────────
+
+ufoc:InstitutionalAgent
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialAgent ;
+    rdfs:label "InstitutionalAgent"@en , "Institutionele agent"@nl ;
+    rdfs:comment
+        "Een SocialAgent wiens bestaan afhankelijk is van erkenning via
+         een formele institutionele structuur: rechtspersoonlijkheid,
+         wettelijke status, of een formeel statuut.
+
+         InstitutionalAgents hebben typisch intern hiërarchisch gezag
+         (management, bestuur) en zijn als entiteit erkend in een externe
+         institutionele context (wet, handelsregister, publiek recht).
+
+         Voorbeelden: gemeente, ministerie, woningcorporatie, stichting,
+                      zorginstelling, Belastingdienst."@nl .
+
+# ── CollectiveSocialAgent (NEW in v0.2) ──────────────────────────────────────
+
+ufoc:CollectiveSocialAgent
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialAgent ;
+    rdfs:label "CollectiveSocialAgent"@en , "Collectieve sociale agent"@nl ;
+    rdfs:comment
+        "Een SocialAgent die bestaat doordat zijn leden — autonome agents
+         — elkaar wederzijds erkennen als deel van een collectief en
+         daarnaar handelen.
+
+         Onderscheiden van InstitutionalAgent: een CollectiveSocialAgent
+         vereist geen externe institutionele erkenning (geen rechtspersoon-
+         lijkheid, geen wettelijk kader), en heeft geen intern hiërarchisch
+         gezag over zijn leden. Hij bestaat als agent puur door de
+         gedeelde intentionaliteit van zijn leden.
+
+         Voorbeelden per UFO-C spec: samenleving (Society).
+         In VALOR-O: een publiek service ecosysteem (nexus:EcosystemAgent)
+         als CollectiveSocialAgent van autonome InstitutionalAgents.
+
+         Bron: UFO-C spec §Agent; DD-083."@nl ;
+    skos:example
+        "De Nederlandse samenleving als CollectiveSocialAgent: bestaat
+         doordat haar leden (burgers, organisaties) zich als onderdeel
+         erkennen — niet door een enkelvoudig juridisch document.
+
+         Het Regionaal Team Schuldhulpverlening Rotterdam als
+         CollectiveSocialAgent: gemeente, kredietbank, woningcorporaties
+         en zorginstellingen die elkaar wederzijds erkennen als partners
+         in een gedeeld zorgnetwerk."@nl .
+
+# ── Disjointness ──────────────────────────────────────────────────────────────
+
+# Physical vs Social: een agent is ofwel fysiek of sociaal — niet beide
+[ a owl:AllDisjointClasses ;
+  owl:members ( ufoc:PhysicalAgent ufoc:SocialAgent ) ] .
+
+# Binnen SocialAgent: Institutional vs Collective — niet beide
+[ a owl:AllDisjointClasses ;
+  owl:members ( ufoc:InstitutionalAgent ufoc:CollectiveSocialAgent ) ] .
+
+
+###############################################################################
+# ── 2. INTENTIONAL MODES ──────────────────────────────────────────────────────
+#
+#  All intentional modes are IntrinsicModes that inhere in an Agent and have
+#  a propositional content expressed as a Situation (the state of affairs the
+#  mode is "about").
+#
+#  Following COoDM (Guizzardi, Carneiro, Porello 2020):
+#    Belief   — doxastic mode  (the agent thinks p is true)
+#    Desire   — conative mode  (the agent wants p to be true)
+#    Goal     — a desire that is stable and deliberated
+#    Intention — a goal the agent has decided to pursue via an action plan
+#    Commitment — a social intention made public to another agent
+###############################################################################
+
+ufoc:IntentionalMode
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntentionalMode ;
+    rdfs:label "IntentionalMode"@en , "Intentionele toestand"@nl ;
+    rdfs:comment
+        "Een intrinsieke modus van een agent met propositionele inhoud
+         (een situatie waarover de modus gaat)."@nl .
+
+# ── Belief ────────────────────────────────────────────────────────────────────
+
+ufoc:Belief
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:IntentionalMode ;
+    rdfs:label "Belief"@en , "Overtuiging"@nl ;
+    rdfs:comment
+        "Een intentionele modus waarbij de agent de propositionele inhoud
+         als waar beschouwt."@nl .
+
+# ── Desire / Goal ─────────────────────────────────────────────────────────────
+
+ufoc:Desire
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:IntentionalMode ;
+    rdfs:label "Desire"@en , "Wens"@nl ;
+    rdfs:comment
+        "Een intentionele modus waarbij de agent de propositionele inhoud
+         als gewenst beschouwt."@nl .
+
+ufoc:Goal
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Desire ;
+    rdfs:label "Goal"@en , "Doel"@nl ;
+    rdfs:comment
+        "Een gestabiliseerde, bewust gekozen wens die de agent als
+         richtinggevend beschouwt voor zijn handelen."@nl .
+
+ufoc:SoftGoal
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Desire ;
+    rdfs:label "SoftGoal"@en , "Preferentiedoel"@nl ;
+    rdfs:comment
+        "Een doel waarvan de vervulling gradueel is en niet binair: het
+         gaat over 'zo goed mogelijk bereiken', niet 'al dan niet bereiken'.
+         Gebruikt in i*-actor-analyse."@nl .
+
+# ── Intention ─────────────────────────────────────────────────────────────────
+
+ufoc:Intention
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Goal ;
+    rdfs:label "Intention"@en , "Intentie"@nl ;
+    rdfs:comment
+        "Een doel waarvoor de agent een actieplan heeft gevormd en dat hij
+         heeft besloten na te streven."@nl .
+
+# ── Interest ──────────────────────────────────────────────────────────────────
+
+ufoc:Interest
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Desire ;
+    rdfs:label "Interest"@en , "Belang"@nl ;
+    rdfs:comment
+        "Een wens waarbij de agent een voordeel of nadeel ervaart afhankelijk
+         van een toestand in de wereld. Gebruikt in stakeholderanalyse
+         (Socia-perspectief)."@nl .
+
+# ── Concern ───────────────────────────────────────────────────────────────────
+
+ufoc:Concern
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:IntentionalMode ;
+    rdfs:label "Concern"@en , "Zorg / betrokkenheid"@nl ;
+    rdfs:comment
+        "Een intentionele toestand waarbij de agent de propositionele inhoud
+         als problematisch of zorgwekkend beschouwt. Fundeert het concept
+         'Issue' in VALOR: een Issue bestaat doordat agents een Concern
+         hebben ten aanzien van een Situation."@nl .
+
+
+###############################################################################
+# ── 3. COMMITMENT / CLAIM RELATOR ─────────────────────────────────────────────
+#
+#  A Commitment is a social relator between two agents:
+#    - the Committed agent (who commits)
+#    - the Claimant agent  (who holds the claim)
+#  The commitment inheres in the committed agent as a social duty;
+#  the claim inheres in the claimant as a social right.
+#
+#  This is the core pattern that underlies:
+#    - DEMO transactions (a transaction IS a commitment)
+#    - UFO-L legal relations (rights and duties as special commitments)
+#    - i* dependencies (a dependency IS a commitment)
+###############################################################################
+
+ufoc:SocialCommitment
+    a owl:Class ;
+    rdf:type gufo:Relator ;
+    gufo:ontoumlStereotype "relator" ;
+    rdfs:subClassOf gufo:Relator ;
+    rdfs:label "SocialCommitment"@en , "Sociale toezegging (relator)"@nl ;
+    rdfs:comment
+        "Een Relator die een normatieve band uitdrukt tussen twee agents:
+         de committed agent heeft een sociale plicht ten aanzien van de
+         claimant agent. De commitment en de bijbehorende claim zijn
+         modi van de respectievelijke agents die worden bijeengehouden
+         door dit Relator."@nl .
+
+ufoc:CommitmentMode
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "CommitmentMode"@en , "Toezeggingsmodus"@nl ;
+    rdfs:comment
+        "De intrinsieke modus die de committed agent draagt als gevolg van
+         de SocialCommitment: de sociale verplichting om de propositionele
+         inhoud waar te maken."@nl .
+
+ufoc:ClaimMode
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "ClaimMode"@en , "Aanspraakmodus"@nl ;
+    rdfs:comment
+        "De intrinsieke modus die de claimant agent draagt als gevolg van
+         de SocialCommitment: het sociale recht om nakoming te verwachten."@nl .
+
+# Mediation relations of SocialCommitment
+
+ufoc:hasCommittedAgent
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has committed agent"@en ;
+    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment "De agent die de toezegging draagt."@nl .
+
+ufoc:hasClaimantAgent
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has claimant agent"@en ;
+    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment "De agent ten behoeve van wie de toezegging geldt."@nl .
+
+ufoc:hasCommitmentContent
+    a owl:ObjectProperty ;
+    rdfs:label "has commitment content"@en ;
+    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:range  gufo:Situation ;
+    rdfs:comment
+        "De propositionele inhoud van de toezegging: de toestand die de
+         committed agent dient te bewerkstelligen."@nl .
+
+ufoc:hasCommitmentMode
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:hasQuality ;
+    rdfs:label "has commitment mode"@en ;
+    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:range  ufoc:CommitmentMode .
+
+ufoc:hasClaimMode
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:hasQuality ;
+    rdfs:label "has claim mode"@en ;
+    rdfs:domain ufoc:SocialCommitment ;
+    rdfs:range  ufoc:ClaimMode .
+
+
+###############################################################################
+# ── 4. SOCIAL OBJECT ──────────────────────────────────────────────────────────
+#
+#  A social object is an abstract individual whose existence depends on
+#  collective acceptance by a community of agents. It is not a physical
+#  object but it can be encoded in (or borne by) physical artifacts.
+#
+#  Examples: a law, a norm, a rule, a language, money, a title.
+#
+#  In UFO-C, a social object is modelled as an IntrinsicMode of a
+#  SocialAgent (the community or institution that accepts it).
+#  NOTE v0.2: range widened from InstitutionalAgent to SocialAgent —
+#  social objects can inhere in both InstitutionalAgents and
+#  CollectiveSocialAgents.
+###############################################################################
+
+ufoc:SocialObject
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    gufo:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "SocialObject"@en , "Sociaal object"@nl ;
+    rdfs:comment
+        "Een intrinsieke modus van een SocialAgent (institutie of
+         collectief) die als sociaal werkelijk geldt zolang de
+         gemeenschap het accepteert. Normen, regels, taal, geld."@nl .
+
+ufoc:Norm
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    gufo:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "Norm"@en , "Norm"@nl ;
+    rdfs:comment
+        "Een sociaal object dat schrijft voor of verbiedt dat agents
+         bepaalde handelingen verrichten of bepaalde toestanden
+         bewerkstelligen. Normen kunnen juridisch (UFO-L), organisatorisch
+         of moreel zijn."@nl .
+
+
+###############################################################################
+# ── 5. SOCIAL ROLE ────────────────────────────────────────────────────────────
+###############################################################################
+
+ufoc:SocialRole
+    a owl:Class ;
+    rdf:type gufo:Role ;
+    gufo:ontoumlStereotype "role" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "SocialRole"@en , "Sociale rol"@nl ;
+    rdfs:comment
+        "Een sociaal geconstitueerde rol die een agent speelt in de context
+         van een SocialCommitment of institutionele structuur."@nl .
+
+
+###############################################################################
+# ── 6. DELEGATION ─────────────────────────────────────────────────────────────
+###############################################################################
+
+ufoc:Delegatum
+    a owl:Class ;
+    rdf:type gufo:Relator ;
+    gufo:ontoumlStereotype "relator" ;
+    rdfs:subClassOf gufo:Relator ;
+    rdfs:label "Delegatum"@en , "Delegatie"@nl ;
+    rdfs:comment
+        "Een Relator die een delegatie-relatie uitdrukt: de delegator
+         verleent de delegatee de bevoegdheid om te handelen namens
+         of in het kader van de delegator."@nl .
+
+ufoc:Delegator
+    a owl:Class ;
+    rdf:type gufo:Role ;
+    gufo:ontoumlStereotype "role" ;
+    rdfs:subClassOf ufoc:SocialRole ;
+    rdfs:label "Delegator"@en , "Delegeerder"@nl ;
+    rdfs:comment "De agent die bevoegdheid verleent."@nl .
+
+ufoc:Delegatee
+    a owl:Class ;
+    rdf:type gufo:Role ;
+    gufo:ontoumlStereotype "role" ;
+    rdfs:subClassOf ufoc:SocialRole ;
+    rdfs:label "Delegatee"@en , "Gedelegeerde"@nl ;
+    rdfs:comment "De agent die bevoegdheid ontvangt."@nl .
+
+ufoc:hasDelegator
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has delegator"@en ;
+    rdfs:domain ufoc:Delegatum ;
+    rdfs:range  ufoc:Delegator .
+
+ufoc:hasDelegatee
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf gufo:mediates ;
+    rdfs:label "has delegatee"@en ;
+    rdfs:domain ufoc:Delegatum ;
+    rdfs:range  ufoc:Delegatee .

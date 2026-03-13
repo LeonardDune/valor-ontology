@@ -1,0 +1,297 @@
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix nexus: <https://valor-ecosystem.nl/ontology/nexus#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+<https://valor-ecosystem.nl/ontology/valor-core> {
+
+    ###############################################################################
+    # VALOR-O — Module 00s: VALOR-CORE  (Toepassingsontologie kernlaag)
+    #
+    # Purpose : Formaliseert de VALOR-specifieke kernconcepten die de verbinding
+    #           vormen tussen de ontologische fundering en de toepassingslaag.
+    #
+    #           Centrale bijdrage: valor:CollectiveIntentionalCommunity — een
+    #           abstracte «category» waarvan twee specialisaties zijn:
+    #
+    #           (a) valor:IssueCommunity — de gemeenschap die een Issue erkent
+    #               Constitutief moment: gedeeld Concern (cognitief-evaluatief)
+    #               Modus: epistemic / declaratief
+    #
+    #           (b) nexus:EcosystemAgent — de gemeenschap die handelt
+    #               Constitutief moment: CollaborationCommitment (normatief)
+    #               Modus: conative / handelingsgericht
+    #
+    # Key design decisions:
+    #   DD-091  CollectiveIntentionalCommunity als abstracte «category»;
+    #           IssueCommunity als cognitieve modus (Concern-gegrond);
+    #           EcosystemAgent als conatieve modus (Commitment-gegrond);
+    #           addressesIssue als legitimeringspijl van EcosystemAgent naar Issue
+    #
+    # Imports : 00a-gufo-core, 00c-ufo-c
+    #   N.B.: NEXUS importeert VALOR-CORE (niet omgekeerd — geen circulaire import).
+    #         Bridge-axioma's die nexus: termen gebruiken zijn geldig zodra de
+    #         volledige ontologie-set is geladen.
+    #
+    # Sources : Searle, J.R. (1995), The Construction of Social Reality;
+    #           Guizzardi et al. (2013), UFO-C;
+    #           Osborne et al. (2022), Value Creation in the Public Service Ecosystem;
+    #           VALOR-O reflectie DD-091 (2026-03-12).
+    #
+    # Version : 0.1  |  March 2026
+    ###############################################################################
+
+    vo:valor-core
+        a owl:Ontology ;
+        owl:imports vo:gufo-core, vo:ufo-c ;
+        dcterms:title
+            "VALOR-O — Module 00s: VALOR-CORE — Toepassingsontologie kernlaag"@nl ;
+        dcterms:description
+            "Formaliseert de VALOR-specifieke kernconcepten, met als centrale
+             bijdrage de abstracte category CollectiveIntentionalCommunity
+             en haar twee specialisaties IssueCommunity (cognitieve modus)
+             en EcosystemAgent (conatieve modus), alsmede de relatie
+             addressesIssue die de legitimeringsbasis van het ecosysteem
+             ten opzichte van de bredere Issue-gemeenschap vastlegt."@nl ;
+        owl:versionInfo "0.1" ;
+        dcterms:created "2026-03-12" ;
+        dcterms:modified "2026-03-12" ;
+        dcterms:source
+            "Searle (1995) The Construction of Social Reality;
+             Guizzardi et al. (2013) UFO-C;
+             Osborne et al. (2022) Public Service Ecosystem;
+             VALOR-O reflectie DD-091 (2026-03-12)." .
+
+
+    ###############################################################################
+    # §1  CollectiveIntentionalCommunity — abstracte category
+    ###############################################################################
+
+    valor:CollectiveIntentionalCommunity
+        a owl:Class ;
+        rdfs:subClassOf ufoc:CollectiveSocialAgent ;
+        valor:ontoumlStereotype "category" ;
+        rdfs:label
+            "CollectiveIntentionalCommunity"@en ,
+            "Collectieve intentionele gemeenschap"@nl ;
+        rdfs:comment
+            "Een abstracte category voor groeperingen van agents die als collectief
+             worden geconstitueerd door een gedeelde intentionele toestand met
+             betrekking tot een externe situatie in de wereld.
+
+             Twee essentiële kenmerken:
+             (1) COLLECTIEVE INTENTIONALITEIT — de gedeelde toestand impliceert
+                 wederzijdse erkenning. Agents zijn zich bewust van elkaars
+                 betrokkenheid.
+             (2) EXTERNE REFERENTIE — de gedeelde toestand is gericht op een
+                 gufo:Situation buiten de groep zelf.
+
+             Twee specialisaties:
+             (a) valor:IssueCommunity — cognitieve modus:
+                 constitutief moment is gedeeld ufoc:Concern.
+             (b) nexus:EcosystemAgent — conatieve modus:
+                 constitutief moment is nexus:CollaborationCommitment.
+
+             De abstracte category legt vast dat beide hetzelfde diepere
+             ontologische patroon instantiëren (Searle 1995: collective
+             intentionality als constitutief mechanisme voor sociale realiteit),
+             terwijl het onderscheid in constitutieve modus — Concern vs.
+             Commitment — de categorisch verschillende aard vastlegt."@nl ;
+        skos:example
+            "De IssueCommunity rondom schuldenproblematiek (burgers, uitvoerders,
+             beleidsmakers) en het EcosystemAgent dat schuldhulpverlening uitvoert
+             zijn beide CollectiveIntentionalCommunities met betrekking tot
+             hetzelfde Issue — de eerste bestaat door gedeelde zorg, de tweede
+             door wederzijds commitment."@nl .
+
+
+    ###############################################################################
+    # §2  IssueCommunity — cognitieve modus
+    ###############################################################################
+
+    valor:IssueCommunity
+        a owl:Class ;
+        rdfs:subClassOf valor:CollectiveIntentionalCommunity ;
+        valor:ontoumlStereotype "subkind" ;
+        rdfs:label
+            "IssueCommunity"@en ,
+            "Issue-gemeenschap"@nl ;
+        rdfs:comment
+            "Een CollectiveIntentionalCommunity in de COGNITIEVE MODUS:
+             geconstitueerd door gedeeld ufoc:Concern met betrekking tot een
+             onderliggende gufo:Situation die als problematisch wordt ervaren.
+
+             Ontologische eigenschappen:
+             (1) CONSTITUTIEF MOMENT: gedeeld ufoc:Concern
+             (2) PASSIEVE BESTAANSMODUS: bestaat zodra agents elkaars Concern
+                 wederzijds erkennen — hoeft niets te doen.
+             (3) BREEDTE: typisch breder dan het EcosystemAgent.
+             (4) LEGITIMERINGSFUNCTIE: de normatieve grond waarop het
+                 EcosystemAgent zijn mandaat baseert."@nl ;
+        skos:example
+            "De IssueCommunity rondom schuldenproblematiek in gemeente X:
+             omvat burgers met schulden, schuldhulpverleners, ambtenaren,
+             raadsleden, woningcorporaties, lokale media."@nl .
+
+
+    ###############################################################################
+    # §3  Issue — het SocialObject geconstitueerd door IssueCommunity
+    ###############################################################################
+
+    valor:Issue
+        a owl:Class ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        valor:ontoumlStereotype "kind" ;
+        rdfs:label
+            "Issue"@en ,
+            "Maatschappelijk vraagstuk"@nl ;
+        rdfs:comment
+            "Een ufoc:SocialObject dat bestaat doordat een IssueCommunity
+             een gedeeld ufoc:Concern heeft over een onderliggende gufo:Situation
+             (de toestand van de wereld die als problematisch wordt ervaren).
+
+             Twee lagen:
+             (a) de onderliggende gufo:Situation — de toestand van de wereld
+                 (vastgelegd via valor:concernedWithSituation)
+             (b) het Issue als SocialObject — de gedeelde probleemdefinitie
+                 (geconstitueerd door de IssueCommunity via gedeeld Concern)
+
+             Het Issue is het object van het Design Space in VALOR."@nl ;
+        skos:example
+            "schuldenproblematiek in gemeente X (Issue) ←
+             geconstitueerd door IssueCommunity ←
+             gegrond in: stijgend percentage huishoudens met problematische
+             schulden in gemeente X (gufo:Situation)"@nl .
+
+
+    ###############################################################################
+    # §4  Properties
+    ###############################################################################
+
+    # ── IssueCommunity → Issue ────────────────────────────────────────────────────
+
+    valor:hasConcernAbout
+        a owl:ObjectProperty ;
+        rdfs:domain valor:IssueCommunity ;
+        rdfs:range  valor:Issue ;
+        rdfs:label
+            "hasConcernAbout"@en ,
+            "heeft zorg over"@nl ;
+        rdfs:comment
+            "Verbindt een IssueCommunity met het Issue dat door haar gedeeld
+             Concern wordt geconstitueerd. Constitutieve relatie: de
+             IssueCommunity constitueert het Issue via deze relatie."@nl .
+
+    # ── Issue → onderliggende Situation ──────────────────────────────────────────
+
+    valor:concernedWithSituation
+        a owl:ObjectProperty ;
+        rdfs:domain valor:Issue ;
+        rdfs:range  gufo:Situation ;
+        rdfs:label
+            "concernedWithSituation"@en ,
+            "betreft situatie"@nl ;
+        rdfs:comment
+            "Verbindt een Issue met de onderliggende gufo:Situation in de wereld
+             die de objectieve grond vormt voor het gedeelde Concern."@nl .
+
+    # ── EcosystemAgent → Issue ────────────────────────────────────────────────────
+    #  N.B.: nexus:EcosystemAgent is gedefinieerd in module 00q-nexus.
+    #        nexus importeert valor-core; de bridge-axioma's hier zijn geldig
+    #        zodra de volledige ontologie-set is geladen.
+
+    nexus:addressesIssue
+        a owl:ObjectProperty ;
+        rdfs:domain nexus:EcosystemAgent ;
+        rdfs:range  valor:Issue ;
+        rdfs:label
+            "addressesIssue"@en ,
+            "adresseert vraagstuk"@nl ;
+        rdfs:comment
+            "Verbindt een EcosystemAgent met het Issue dat zijn legitimeringsbasis
+             vormt. Formaliseert de normatieve grondslag van het ecosysteem: een
+             EcosystemAgent bestaat om een Issue aan te pakken dat door een
+             IssueCommunity als problematisch wordt erkend.
+
+             Ontologische status: LEGITIMERINGSPIJL (geen constitutieve relatie).
+
+             Implicaties:
+             (1) Een EcosystemAgent zonder addressesIssue mist zijn democratische
+                 legitimering — detecteerbaar via SPARQL.
+             (2) De overlap tussen IssueCommunity-leden en EcosystemAgent-leden
+                 is een proxy voor de inclusiviteitsgraad van het ecosysteem."@nl ;
+        skos:example
+            "nexus:SchuldhulpEcosysteemGemeenteX
+                 nexus:addressesIssue valor:SchuldenproblematiekGemeenteX ."@nl .
+
+    # ── IssueCommunity → EcosystemAgent ──────────────────────────────────────────
+
+    valor:hasRespondingEcosystem
+        a owl:ObjectProperty ;
+        rdfs:domain valor:IssueCommunity ;
+        rdfs:range  nexus:EcosystemAgent ;
+        rdfs:label
+            "hasRespondingEcosystem"@en ,
+            "heeft reagerend ecosysteem"@nl ;
+        rdfs:comment
+            "Verbindt een IssueCommunity met de EcosystemAgent(s) die haar Issue
+             aanpakken. De relatie loopt via het Issue als SocialObject: de
+             IssueCommunity geeft haar mandaat aan een Issue, de EcosystemAgent
+             neemt dat op via addressesIssue."@nl .
+
+    # ── Issue → Design Space ──────────────────────────────────────────────────────
+
+    valor:isAddressedInDesignSpace
+        a owl:ObjectProperty ;
+        rdfs:domain valor:Issue ;
+        rdfs:range  valor:DesignSpace ;
+        rdfs:label
+            "isAddressedInDesignSpace"@en ,
+            "wordt geadresseerd in Design Space"@nl ;
+        rdfs:comment
+            "Verbindt een Issue met de DesignSpace(s) waarin het wordt geanalyseerd
+             en ontworpen. Een DesignSpace adresseert altijd precies één Issue."@nl .
+
+
+    ###############################################################################
+    # §5  SPARQL-patronen (als rdfs:comment voor documentatie)
+    ###############################################################################
+
+    valor:LegitimacyQueryPattern
+        a owl:NamedIndividual ;
+        rdfs:label "Legitimiteitsquery-patroon"@nl ;
+        rdfs:comment
+            """Aanbevolen SPARQL-query voor democratische legitimiteitsaudit:
+
+             PREFIX valor: <https://valor-ecosystem.nl/ontology/>
+             PREFIX nexus: <https://valor-ecosystem.nl/ontology/nexus#>
+             PREFIX ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#>
+
+             SELECT ?ecosystem ?issue ?communityMember ?ecosystemMember ?inBoth
+             WHERE {
+               ?ecosystem a nexus:EcosystemAgent ;
+                          nexus:addressesIssue ?issue .
+               ?issue valor:hasConcernAbout ?community .
+               ?community ufoc:hasMember ?communityMember .
+               ?ecosystem ufoc:hasMember ?ecosystemMember .
+               BIND( ?communityMember = ?ecosystemMember AS ?inBoth )
+             }
+
+             Resultaat: voor elk ecosysteem de leden van de IssueCommunity
+             die NIET vertegenwoordigd zijn in het ecosysteem zelf.
+             Hoge niet-overlap = signaal van democratisch deficit."""@nl .
+
+
+    ###############################################################################
+    # END OF MODULE 00s — VALOR-CORE  (v0.1)
+    ###############################################################################
+
+}

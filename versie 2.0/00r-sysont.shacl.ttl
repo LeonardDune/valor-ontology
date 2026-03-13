@@ -1,0 +1,467 @@
+###############################################################################
+# VALOR-O — Module 00r: SYSONT — SHACL Validation Companion
+#
+# Shapes:
+#   SYS-1   System heeft ten minste 2 Components
+#   SYS-2   Component is isComponentOf ten minste 1 System
+#   SYS-3   BondingRelation medieert ten minste 2 Objects
+#   SYS-4   NonBondingRelation heeft ten minste 2 isContrastedWith
+#   SYS-5   FunctionalRole isCharacterizedBy ten minste 1 MomentType
+#   SYS-6   EmergentSystemMoment heeft ten minste 1 emergesFrom
+#   SYS-7   EmergentSystemMoment heeft precies 1 emergesIn (SystemSituation)
+#   SYS-8   ResultantSystemMoment heeft 0 emergesIn
+#   SYS-9   SystemMoment inheresInSystem precies 1 System
+#   SYS-10  EmergencePattern heeft ten minste 2 patternRequiresFunctionalRole
+#   SYS-11  EmergencePattern heeft ten minste 1 patternYieldsSystemMoment
+#   SYS-12  Subsystem is Component van ten minste 1 hoger System
+#   SYS-13  FunctionalRole isBondedTo impliceert wederkerige instantiëring (SPARQL)
+#   SYS-14  NEXUS-brug: CollaborationCondition heeft ten minste 1
+#           conditionGroundedInDispositionRelations (na DD-085)
+#   SYS-15  CAPAX-brug: emergenceNature = 'Emergent' impliceert EmergentSystemMoment
+#           (SPARQL waarschuwing)
+#   SYS-16  InternalConnection medieert uitsluitend Components van hetzelfde System
+#   SYS-17  ExternalConnection heeft ten minste 1 ExternalEntity als relatum
+#   SYS-18  satisfiesPattern vereist dat alle patternRequiresFunctionalRole
+#           zijn geïnstantiëerd (SPARQL)
+#
+# Version : 0.1  |  March 2026
+###############################################################################
+
+@prefix sysont: <https://valor-ecosystem.nl/ontology/sysont#> .
+@prefix capax:  <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix nexus:  <https://valor-ecosystem.nl/ontology/nexus#> .
+@prefix gufo:   <https://nemo-ufes.github.io/gufo/> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+shc_sys
+    a sh:PrefixDeclaration ;
+    sh:declare [ sh:prefix "sysont" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/sysont#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "capax"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "nexus"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/nexus#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "gufo"   ;
+                 sh:namespace "https://nemo-ufes.github.io/gufo/"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "xsd"    ;
+                 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+###############################################################################
+# SYS-1 — System heeft ten minste 2 Components
+###############################################################################
+
+sysont:SystemMinComponentsShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:System ;
+    sh:name "SystemMinComponentsShape" ;
+    sh:description
+        "SYS-1: Een System heeft ten minste 2 Components. Een enkel-
+         componentig object is geen System maar een FunctionalComplex
+         zonder emergente eigenschappen (Calhau et al. 2023 §4, criterium i)." ;
+    sh:property [
+        sh:path     [ sh:inversePath sysont:isComponentOf ] ;
+        sh:minCount 2 ;
+        sh:class    sysont:Component ;
+        sh:message  "SYS-1: System vereist minimaal 2 Components via inverse sysont:isComponentOf (DD-086)."
+    ] .
+
+
+###############################################################################
+# SYS-2 — Component is isComponentOf ten minste 1 System
+###############################################################################
+
+sysont:ComponentBelongsToSystemShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:Component ;
+    sh:name "ComponentBelongsToSystemShape" ;
+    sh:description
+        "SYS-2: Een Component is altijd deel van ten minste één System.
+         Een losstaand Component zonder System is ontologisch niet
+         gedefinieerd als Component (mereologische constraint)." ;
+    sh:property [
+        sh:path     sysont:isComponentOf ;
+        sh:minCount 1 ;
+        sh:class    sysont:System ;
+        sh:message  "SYS-2: Component.isComponentOf vereist minimaal één sysont:System (DD-086)."
+    ] .
+
+
+###############################################################################
+# SYS-3 — BondingRelation medieert ten minste 2 Objects
+###############################################################################
+
+sysont:BondingRelationMediatorsShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:BondingRelation ;
+    sh:name "BondingRelationMediatorsShape" ;
+    sh:description
+        "SYS-3: Een BondingRelation (als UFO-Relator) medieert ten minste
+         2 Objects. Een unaire bonding relation is geen relatie." ;
+    sh:property [
+        sh:path     sysont:isConnectedWith ;
+        sh:minCount 2 ;
+        sh:class    gufo:Object ;
+        sh:message  "SYS-3: BondingRelation.isConnectedWith vereist minimaal 2 gufo:Objects (UFO-relator constraint, DD-087)."
+    ] .
+
+
+###############################################################################
+# SYS-4 — NonBondingRelation heeft ten minste 2 isContrastedWith
+###############################################################################
+
+sysont:NonBondingRelationMembersShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:NonBondingRelation ;
+    sh:name "NonBondingRelationMembersShape" ;
+    sh:description
+        "SYS-4: Een NonBondingRelation (als UFO ComparativeRelation)
+         betrekt ten minste 2 Objects. Een unaire constraint is
+         een kwaliteit, geen vergelijkende relatie." ;
+    sh:property [
+        sh:path     sysont:isContrastedWith ;
+        sh:minCount 2 ;
+        sh:class    gufo:Object ;
+        sh:message  "SYS-4: NonBondingRelation.isContrastedWith vereist minimaal 2 gufo:Objects (DD-087)."
+    ] .
+
+
+###############################################################################
+# SYS-5 — FunctionalRole isCharacterizedBy ten minste 1 MomentType
+###############################################################################
+
+sysont:FunctionalRoleCharacterizationShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:FunctionalRole ;
+    sh:name "FunctionalRoleCharacterizationShape" ;
+    sh:description
+        "SYS-5: Een FunctionalRole moet worden gekarakteriseerd door ten
+         minste één MomentType. Een functionele rol zonder eigenschapseis
+         is niet gedefinieerd — er is dan niets wat een Component onderscheidt
+         als invuller van die rol (Calhau et al. 2023 Fig. 3)." ;
+    sh:property [
+        sh:path     sysont:isCharacterizedBy ;
+        sh:minCount 1 ;
+        sh:class    sysont:MomentType ;
+        sh:message  "SYS-5: FunctionalRole.isCharacterizedBy vereist minimaal één sysont:MomentType (DD-088)."
+    ] .
+
+
+###############################################################################
+# SYS-6 — EmergentSystemMoment heeft ten minste 1 emergesFrom
+###############################################################################
+
+sysont:EmergentMomentSourceShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:EmergentSystemMoment ;
+    sh:name "EmergentMomentSourceShape" ;
+    sh:description
+        "SYS-6: Een EmergentSystemMoment moet aantoonbaar emergeren uit
+         ten minste één component-moment. Zonder grondslag in component-
+         eigenschappen is het geen emergentie maar een onverklaard
+         postulaat (Calhau et al. 2023 Fig. 4 — historical dependence)." ;
+    sh:property [
+        sh:path     sysont:emergesFrom ;
+        sh:minCount 1 ;
+        sh:class    gufo:Moment ;
+        sh:message  "SYS-6: EmergentSystemMoment.emergesFrom vereist minimaal één gufo:Moment (DD-089)."
+    ] .
+
+
+###############################################################################
+# SYS-7 — EmergentSystemMoment heeft precies 1 emergesIn (SystemSituation)
+###############################################################################
+
+sysont:EmergentMomentSituationShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:EmergentSystemMoment ;
+    sh:name "EmergentMomentSituationShape" ;
+    sh:description
+        "SYS-7: Een EmergentSystemMoment emergeert in precies één
+         SystemSituation. Emergentie is configuratie-afhankelijk:
+         de SystemSituation IS de ontologische grond van de emergente
+         eigenschap (Bunge 1979; Calhau et al. 2023 Fig. 4)." ;
+    sh:property [
+        sh:path     sysont:emergesIn ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    sysont:SystemSituation ;
+        sh:message  "SYS-7: EmergentSystemMoment.emergesIn vereist precies één sysont:SystemSituation (DD-089)."
+    ] .
+
+
+###############################################################################
+# SYS-8 — ResultantSystemMoment heeft 0 emergesIn
+###############################################################################
+
+sysont:ResultantMomentNoSituationShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:ResultantSystemMoment ;
+    sh:name "ResultantMomentNoSituationShape" ;
+    sh:description
+        "SYS-8: Een ResultantSystemMoment is situatie-onafhankelijk en
+         MAG NIET emergesIn hebben. Resultante eigenschappen zijn
+         mathematisch afleidbaar uit componenten — de bonding structure
+         is er irrelevant voor (Bunge 1977)." ;
+    sh:property [
+        sh:path     sysont:emergesIn ;
+        sh:maxCount 0 ;
+        sh:message  "SYS-8: ResultantSystemMoment mag geen sysont:emergesIn hebben — resultante eigenschappen zijn situatie-onafhankelijk (DD-089)."
+    ] .
+
+
+###############################################################################
+# SYS-9 — SystemMoment inheresInSystem precies 1 System
+###############################################################################
+
+sysont:SystemMomentBearerShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:SystemMoment ;
+    sh:name "SystemMomentBearerShape" ;
+    sh:description
+        "SYS-9: Een SystemMoment inhereerrt aan precies één System.
+         Als globale eigenschap van het geheel heeft het één en slechts
+         één bearer (UFO inheresIn-constraint; Calhau et al. 2023 §4)." ;
+    sh:property [
+        sh:path     sysont:inheresInSystem ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    sysont:System ;
+        sh:message  "SYS-9: SystemMoment.inheresInSystem vereist precies één sysont:System (DD-089)."
+    ] .
+
+
+###############################################################################
+# SYS-10 — EmergencePattern heeft ten minste 2 FunctionalRoles
+###############################################################################
+
+sysont:EmergencePatternMinRolesShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:EmergencePattern ;
+    sh:name "EmergencePatternMinRolesShape" ;
+    sh:description
+        "SYS-10: Een EmergencePattern vereist ten minste 2 FunctionalRoles.
+         Emergentie is per definitie een meerdere-componenten-fenomeen;
+         een patroon met één rol beschrijft geen emergentie maar een
+         enkelvoudige capability (DD-090)." ;
+    sh:property [
+        sh:path     sysont:patternRequiresFunctionalRole ;
+        sh:minCount 2 ;
+        sh:class    sysont:FunctionalRole ;
+        sh:message  "SYS-10: EmergencePattern.patternRequiresFunctionalRole vereist minimaal 2 sysont:FunctionalRoles (DD-090)."
+    ] .
+
+
+###############################################################################
+# SYS-11 — EmergencePattern heeft ten minste 1 patternYieldsSystemMoment
+###############################################################################
+
+sysont:EmergencePatternOutcomeShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:EmergencePattern ;
+    sh:name "EmergencePatternOutcomeShape" ;
+    sh:description
+        "SYS-11: Een EmergencePattern moet specificeren welk type
+         EmergentSystemMoment het oplevert. Een patroon zonder uitkomst
+         is onvolledig en niet bruikbaar als ontwerpcriterium (DD-090)." ;
+    sh:property [
+        sh:path     sysont:patternYieldsSystemMoment ;
+        sh:minCount 1 ;
+        sh:class    sysont:EmergentSystemMoment ;
+        sh:message  "SYS-11: EmergencePattern.patternYieldsSystemMoment vereist minimaal één sysont:EmergentSystemMoment (DD-090)."
+    ] .
+
+
+###############################################################################
+# SYS-12 — Subsystem is Component van ten minste 1 hoger System
+###############################################################################
+
+sysont:SubsystemIsComponentShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:Subsystem ;
+    sh:name "SubsystemIsComponentShape" ;
+    sh:description
+        "SYS-12: Een Subsystem is per definitie ook een Component van
+         een hoger System. Een 'subsystem' dat van niets deel is, is
+         gewoon een System (niet een Subsystem)." ;
+    sh:property [
+        sh:path     sysont:isComponentOf ;
+        sh:minCount 1 ;
+        sh:message  "SYS-12: Subsystem.isComponentOf vereist minimaal één hoger sysont:System (DD-086)."
+    ] .
+
+
+###############################################################################
+# SYS-13 — FunctionalRole isBondedTo: beide rollen moeten geïnstantiëerd zijn
+#          (SPARQL-waarschuwing: niet hard enforcebaar zonder instantiedata)
+###############################################################################
+
+sysont:BondedRoleInstantiationShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:FunctionalRole ;
+    sh:name "BondedRoleInstantiationShape" ;
+    sh:description
+        "SYS-13: Als een FunctionalRole isBondedTo een andere FunctionalRole,
+         dan moeten beide rollen zijn geïnstantiëerd in het System voor een
+         BondingRelation op instantie-niveau te kunnen bestaan. SPARQL-
+         waarschuwing: detecteert rollen die wel isBondedTo hebben maar
+         geen instantiatesRole van een Component." ;
+    sh:sparql [
+        sh:name    "SYS-13-bonded-role-instantiation" ;
+        sh:message "SYS-13: FunctionalRole met isBondedTo heeft geen instantiëring via sysont:instantiatesRole — BondingRelation op instantie-niveau ontbreekt (DD-088)." ;
+        sh:prefixes shc_sys ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this sysont:isBondedTo ?other .
+                FILTER NOT EXISTS {
+                    ?component sysont:instantiatesRole $this .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# SYS-14 — NEXUS-brug: CollaborationCondition heeft ten minste 1
+#          conditionGroundedInDispositionRelations (DD-085)
+###############################################################################
+
+sysont:CollaborationConditionBondingStructureShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationCondition ;
+    sh:name "CollaborationConditionBondingStructureShape" ;
+    sh:description
+        "SYS-14 / NEX-20: Een nexus:CollaborationCondition als SystemSituation
+         (DD-085) moet ten minste één DispositionRelation specificeren die
+         de bonding structure van het ecosysteem constitueert. Zonder
+         DispositionRelations is de CollaborationCondition een checklist
+         zonder ontologische grond voor emergentie (DD-085, DD-089)." ;
+    sh:property [
+        sh:path     nexus:conditionGroundedInDispositionRelations ;
+        sh:minCount 1 ;
+        sh:class    capax:DispositionRelation ;
+        sh:message  "SYS-14: CollaborationCondition.conditionGroundedInDispositionRelations vereist minimaal één capax:DispositionRelation — de bonding structure van het ecosysteem ontbreekt (DD-085, DD-089)."
+    ] .
+
+
+###############################################################################
+# SYS-15 — CAPAX-brug: emergenceNature = 'Emergent' impliceert
+#          ten minste 1 DispositionRelation (SPARQL-waarschuwing)
+###############################################################################
+
+sysont:EmergentCapabilityDispositionRelationShape
+    a sh:NodeShape ;
+    sh:targetClass capax:OrganizationalCapability ;
+    sh:name "EmergentCapabilityDispositionRelationShape" ;
+    sh:description
+        "SYS-15: Als een capax:OrganizationalCapability emergenceNature
+         'Emergent' heeft, dan MOET er ten minste één capax:DispositionRelation
+         zijn die de emergentiestructuur beschrijft. Een emergente capability
+         zonder DispositionRelation-analyse is onvolledig gemodelleerd." ;
+    sh:sparql [
+        sh:name    "SYS-15-emergent-needs-dispositionrelation" ;
+        sh:message "SYS-15: OrganizationalCapability met emergenceNature 'Emergent' heeft geen bijbehorende capax:DispositionRelation — voeg DispositionRelation toe voor volledige emergentie-analyse (DD-084, DD-089)." ;
+        sh:prefixes shc_sys ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this capax:emergenceNature "Emergent" .
+                FILTER NOT EXISTS {
+                    ?dr a capax:DispositionRelation ;
+                        capax:contributesToEmergenceOf $this .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# SYS-16 — InternalConnection medieert uitsluitend Components van hetzelfde System
+###############################################################################
+
+sysont:InternalConnectionScopeShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:InternalConnection ;
+    sh:name "InternalConnectionScopeShape" ;
+    sh:description
+        "SYS-16: Een InternalConnection mag uitsluitend Components van
+         hetzelfde System verbinden. Een verbinding die buiten het System
+         gaat, is een ExternalConnection." ;
+    sh:sparql [
+        sh:name    "SYS-16-internal-connection-scope" ;
+        sh:message "SYS-16: InternalConnection verbindt Components die niet aan hetzelfde System toebehoort — gebruik sysont:ExternalConnection voor System-grens-overschrijdende verbindingen (DD-087)." ;
+        sh:prefixes shc_sys ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this sysont:isConnectedWith ?c1 , ?c2 .
+                ?c1 sysont:isComponentOf ?sys1 .
+                ?c2 sysont:isComponentOf ?sys2 .
+                FILTER (?c1 != ?c2 && ?sys1 != ?sys2)
+            }
+        """
+    ] .
+
+
+###############################################################################
+# SYS-17 — ExternalConnection heeft ten minste 1 ExternalEntity als relatum
+###############################################################################
+
+sysont:ExternalConnectionEntityShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:ExternalConnection ;
+    sh:name "ExternalConnectionEntityShape" ;
+    sh:description
+        "SYS-17: Een ExternalConnection verbindt een Component met ten
+         minste één ExternalEntity (entiteit buiten het System)." ;
+    sh:sparql [
+        sh:name    "SYS-17-external-connection-entity" ;
+        sh:message "SYS-17: ExternalConnection heeft geen ExternalEntity als relatum — een verbinding tussen uitsluitend Components is een InternalConnection (DD-087)." ;
+        sh:prefixes shc_sys ;
+        sh:select  """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS {
+                    $this sysont:isConnectedWith ?e .
+                    ?e a sysont:ExternalEntity .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# SYS-18 — satisfiesPattern vereist dat alle patternRequiresFunctionalRole
+#          zijn geïnstantiëerd in de SystemSituation (SPARQL)
+###############################################################################
+
+sysont:PatternSatisfactionCompletenessShape
+    a sh:NodeShape ;
+    sh:targetClass sysont:SystemSituation ;
+    sh:name "PatternSatisfactionCompletenessShape" ;
+    sh:description
+        "SYS-18: Als een SystemSituation satisfiesPattern een EmergencePattern,
+         dan moeten alle FunctionalRoles van dat patroon zijn geïnstantiëerd
+         in het bijbehorende System. Een partieel geïnstantiëerd patroon
+         genereert geen emergentie (DD-090)." ;
+    sh:sparql [
+        sh:name    "SYS-18-pattern-satisfaction-completeness" ;
+        sh:message "SYS-18: SystemSituation.satisfiesPattern — niet alle vereiste FunctionalRoles zijn geïnstantiëerd door Components van het bijbehorende System (DD-090)." ;
+        sh:prefixes shc_sys ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this sysont:satisfiesPattern ?pattern .
+                ?pattern sysont:patternRequiresFunctionalRole ?role .
+                FILTER NOT EXISTS {
+                    ?component sysont:instantiatesRole ?role .
+                    ?sys sysont:concerns $this .
+                    ?component sysont:isComponentOf ?sys .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# END OF SHACL — 00m-sysont
+###############################################################################

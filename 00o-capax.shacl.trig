@@ -1,0 +1,374 @@
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix capax:  <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix gufo:   <http://purl.org/nemo/gufo#> .
+@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix acta:   <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shvc:   <https://valor-ecosystem.nl/shacl/capax#> .
+@prefix vo:     <https://valor-ecosystem.nl/ontology/> .
+
+<https://valor-ecosystem.nl/shacl/capax> {
+
+    ###############################################################################
+    # VALOR-O — SHACL Shapes: CAPAX — Capability & Feasibility (Module 00o)
+    #
+    # Shapes CAP-1 through FEA-4 (DD-066 – DD-070)
+    # Version : 0.1  |  March 2026
+    ###############################################################################
+
+    shvc:
+        a owl:Ontology ;
+        dcterms:title "VALOR-O SHACL — CAPAX Capability & Feasibility"@nl ;
+        owl:versionInfo "0.1" .
+
+    # Prefix declaration block for SPARQL constraints
+    shvc:
+        a sh:PrefixDeclaration ;
+        sh:declare [ sh:prefix "capax" ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "gufo"  ;
+                     sh:namespace "http://purl.org/nemo/gufo#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "ufoc"  ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "acta"  ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/acta#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "valor" ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "xsd"   ;
+                     sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+    ###############################################################################
+    # CAP-1 — Capability must inhere in exactly one Agent
+    ###############################################################################
+
+    capax:CapabilityAgentShape
+        a sh:NodeShape ;
+        sh:targetClass capax:Capability ;
+        sh:name "CapabilityAgentShape" ;
+        sh:description
+            "CAP-1: Een Capability moet inhereren aan precies één Agent
+             via capax:inhereInAgent." ;
+        sh:property [
+            sh:path     capax:inhereInAgent ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    ufoc:Agent ;
+            sh:message  "CAP-1: Capability.inhereInAgent vereist precies één ufoc:Agent (DD-066)."
+        ] .
+
+
+    ###############################################################################
+    # CAP-2 — Capability must be OrganizationalCapability or IndividualCapability
+    ###############################################################################
+
+    capax:CapabilitySubtypeShape
+        a sh:NodeShape ;
+        sh:targetClass capax:Capability ;
+        sh:name "CapabilitySubtypeShape" ;
+        sh:description
+            "CAP-2: Elke Capability moet een OrganizationalCapability of
+             IndividualCapability zijn." ;
+        sh:or (
+            [ sh:class capax:OrganizationalCapability ]
+            [ sh:class capax:IndividualCapability     ]
+        ) ;
+        sh:message "CAP-2: Capability moet capax:OrganizationalCapability of capax:IndividualCapability zijn." .
+
+
+    ###############################################################################
+    # CAP-3 — CapabilityRequirement must inhere in a TransactionType
+    ###############################################################################
+
+    capax:CapReqTransactionShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityRequirement ;
+        sh:name "CapReqTransactionShape" ;
+        sh:description
+            "CAP-3: Een CapabilityRequirement moet gekoppeld zijn aan
+             precies één TransactionType via capax:requiredForTransactionType." ;
+        sh:property [
+            sh:path     capax:requiredForTransactionType ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    acta:TransactionType ;
+            sh:message  "CAP-3: CapabilityRequirement.requiredForTransactionType vereist precies één acta:TransactionType (DD-067)."
+        ] .
+
+
+    ###############################################################################
+    # CAP-4 — CapabilityRequirement must specify the required capability type
+    ###############################################################################
+
+    capax:CapReqTypeShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityRequirement ;
+        sh:name "CapReqTypeShape" ;
+        sh:description
+            "CAP-4: Een CapabilityRequirement moet het vereiste type
+             capability specificeren via capax:requiresCapabilityType." ;
+        sh:property [
+            sh:path     capax:requiresCapabilityType ;
+            sh:minCount 1 ;
+            sh:class    capax:Capability ;
+            sh:message  "CAP-4: CapabilityRequirement.requiresCapabilityType vereist minimaal één capax:Capability."
+        ] .
+
+
+    ###############################################################################
+    # GAP-1 — CapabilityGap must reference at least one CapabilityRequirement
+    ###############################################################################
+
+    capax:GapRequirementShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityGap ;
+        sh:name "GapRequirementShape" ;
+        sh:description
+            "GAP-1: Een CapabilityGap moet verwijzen naar de
+             CapabilityRequirement waaraan niet wordt voldaan." ;
+        sh:property [
+            sh:path     capax:gapConcernsRequirement ;
+            sh:minCount 1 ;
+            sh:class    capax:CapabilityRequirement ;
+            sh:message  "GAP-1: CapabilityGap.gapConcernsRequirement vereist minimaal één capax:CapabilityRequirement (DD-068)."
+        ] .
+
+
+    ###############################################################################
+    # GAP-2 — CapabilityGap must reference the affected Agent
+    ###############################################################################
+
+    capax:GapAgentShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityGap ;
+        sh:name "GapAgentShape" ;
+        sh:description
+            "GAP-2: Een CapabilityGap moet verwijzen naar de agent
+             bij wie de capability ontbreekt." ;
+        sh:property [
+            sh:path     capax:gapAffectsAgent ;
+            sh:minCount 1 ;
+            sh:class    ufoc:Agent ;
+            sh:message  "GAP-2: CapabilityGap.gapAffectsAgent vereist minimaal één ufoc:Agent."
+        ] .
+
+
+    ###############################################################################
+    # GAP-3 — CapabilityGap must reference a DesignAlternative
+    ###############################################################################
+
+    capax:GapAlternativeShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityGap ;
+        sh:name "GapAlternativeShape" ;
+        sh:description
+            "GAP-3: Een CapabilityGap moet gekoppeld zijn aan het
+             ontwerpalternatief waarbinnen het tekort is geconstateerd." ;
+        sh:property [
+            sh:path     capax:gapOccursInAlternative ;
+            sh:minCount 1 ;
+            sh:class    valor:DesignAlternative ;
+            sh:message  "GAP-3: CapabilityGap.gapOccursInAlternative vereist minimaal één valor:DesignAlternative."
+        ] .
+
+
+    ###############################################################################
+    # GAP-4 — gapSeverity controlled vocabulary
+    ###############################################################################
+
+    capax:GapSeverityShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityGap ;
+        sh:name "GapSeverityShape" ;
+        sh:description
+            "GAP-4: gapSeverity moet een waarde zijn uit het
+             gecontroleerde vocabulaire: Critical, Significant, Minor." ;
+        sh:sparql [
+            sh:name    "GAP-4-severity-vocab" ;
+            sh:message "GAP-4: CapabilityGap.gapSeverity moet 'Critical', 'Significant', of 'Minor' zijn." ;
+            sh:prefixes shvc: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    $this capax:gapSeverity ?sev .
+                    FILTER (?sev NOT IN ("Critical", "Significant", "Minor"))
+                }
+            """
+        ] .
+
+
+    ###############################################################################
+    # DEV-1 — CapabilityDevelopmentNeed must address exactly one gap
+    ###############################################################################
+
+    capax:DevNeedGapShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityDevelopmentNeed ;
+        sh:name "DevNeedGapShape" ;
+        sh:description
+            "DEV-1: Een CapabilityDevelopmentNeed moet precies één
+             CapabilityGap adresseren." ;
+        sh:property [
+            sh:path     capax:addressesGap ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    capax:CapabilityGap ;
+            sh:message  "DEV-1: CapabilityDevelopmentNeed.addressesGap vereist precies één capax:CapabilityGap."
+        ] .
+
+
+    ###############################################################################
+    # DEV-2 — CapabilityDevelopmentNeed must have a developmentHorizon
+    ###############################################################################
+
+    capax:DevNeedHorizonShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityDevelopmentNeed ;
+        sh:name "DevNeedHorizonShape" ;
+        sh:description
+            "DEV-2: Een CapabilityDevelopmentNeed moet een
+             developmentHorizon specificeren." ;
+        sh:property [
+            sh:path     capax:developmentHorizon ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:datatype xsd:string ;
+            sh:message  "DEV-2: CapabilityDevelopmentNeed.developmentHorizon is verplicht."
+        ] .
+
+
+    ###############################################################################
+    # DEV-3 — developmentHorizon controlled vocabulary
+    ###############################################################################
+
+    capax:DevHorizonVocabShape
+        a sh:NodeShape ;
+        sh:targetClass capax:CapabilityDevelopmentNeed ;
+        sh:name "DevHorizonVocabShape" ;
+        sh:sparql [
+            sh:name    "DEV-3-horizon-vocab" ;
+            sh:message "DEV-3: developmentHorizon moet 'BeforeImplementation', 'WithinFirstYear', of 'LongTerm' zijn." ;
+            sh:prefixes shvc: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    $this capax:developmentHorizon ?h .
+                    FILTER (?h NOT IN (
+                        "BeforeImplementation",
+                        "WithinFirstYear",
+                        "LongTerm"
+                    ))
+                }
+            """
+        ] .
+
+
+    ###############################################################################
+    # FEA-1 — FeasibilityAssessment must reference a DesignAlternative
+    ###############################################################################
+
+    capax:FeaAlternativeShape
+        a sh:NodeShape ;
+        sh:targetClass capax:FeasibilityAssessment ;
+        sh:name "FeaAlternativeShape" ;
+        sh:description
+            "FEA-1: Een FeasibilityAssessment moet precies één
+             DesignAlternative beoordelen." ;
+        sh:property [
+            sh:path     capax:assessesAlternative ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    valor:DesignAlternative ;
+            sh:message  "FEA-1: FeasibilityAssessment.assessesAlternative vereist precies één valor:DesignAlternative (DD-070)."
+        ] .
+
+
+    ###############################################################################
+    # FEA-2 — overallFeasibility controlled vocabulary
+    ###############################################################################
+
+    capax:FeaFeasibilityVocabShape
+        a sh:NodeShape ;
+        sh:targetClass capax:FeasibilityAssessment ;
+        sh:name "FeaFeasibilityVocabShape" ;
+        sh:sparql [
+            sh:name    "FEA-2-feasibility-vocab" ;
+            sh:message "FEA-2: overallFeasibility moet 'Feasible', 'FeasibleWithConditions', of 'NotFeasible' zijn." ;
+            sh:prefixes shvc: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    $this capax:overallFeasibility ?f .
+                    FILTER (?f NOT IN (
+                        "Feasible",
+                        "FeasibleWithConditions",
+                        "NotFeasible"
+                    ))
+                }
+            """
+        ] .
+
+
+    ###############################################################################
+    # FEA-3 — FeasibleWithConditions requires at least one DevelopmentNeed
+    ###############################################################################
+
+    capax:FeaWithConditionsShape
+        a sh:NodeShape ;
+        sh:targetClass capax:FeasibilityAssessment ;
+        sh:name "FeaWithConditionsShape" ;
+        sh:description
+            "FEA-3: Een FeasibilityAssessment met overallFeasibility
+             'FeasibleWithConditions' moet ten minste één
+             CapabilityDevelopmentNeed omvatten." ;
+        sh:sparql [
+            sh:name    "FEA-3-conditions-need-devneed" ;
+            sh:message "FEA-3: FeasibilityAssessment 'FeasibleWithConditions' vereist minimaal één capax:CapabilityDevelopmentNeed via capax:includesDevelopmentNeed." ;
+            sh:prefixes shvc: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    $this capax:overallFeasibility "FeasibleWithConditions" .
+                    FILTER NOT EXISTS {
+                        $this capax:includesDevelopmentNeed ?dn .
+                    }
+                }
+            """
+        ] .
+
+
+    ###############################################################################
+    # FEA-4 — NotFeasible requires at least one Critical or Significant gap
+    ###############################################################################
+
+    capax:FeaNotFeasibleShape
+        a sh:NodeShape ;
+        sh:targetClass capax:FeasibilityAssessment ;
+        sh:name "FeaNotFeasibleShape" ;
+        sh:description
+            "FEA-4: Een FeasibilityAssessment met overallFeasibility
+             'NotFeasible' moet ten minste één CapabilityGap omvatten
+             met gapSeverity 'Critical' of 'Significant'." ;
+        sh:sparql [
+            sh:name    "FEA-4-notfeasible-needs-gap" ;
+            sh:message "FEA-4: FeasibilityAssessment 'NotFeasible' vereist minimaal één gap met severity Critical of Significant." ;
+            sh:prefixes shvc: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    $this capax:overallFeasibility "NotFeasible" .
+                    FILTER NOT EXISTS {
+                        $this capax:includesGap ?gap .
+                        ?gap capax:gapSeverity ?sev .
+                        FILTER (?sev IN ("Critical", "Significant"))
+                    }
+                }
+            """
+        ] .
+
+
+    ###############################################################################
+    # END OF SHACL — CAPAX  (v0.1)
+    ###############################################################################
+
+}

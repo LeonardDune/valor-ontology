@@ -2,6 +2,9 @@
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufob:  <https://valor-ecosystem.nl/ontology/ufo-b#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix sysont:<https://valor-ecosystem.nl/ontology/sysont#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
 @prefix valor: <https://valor-ecosystem.nl/ontology/> .
 @prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
@@ -15,8 +18,30 @@
 #  VALOR-O — Module 00h: CAUSA Causal Loop Diagram Ontologie
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/causa#  (prefix causa:)
-#  Versie     : 0.2  (maart 2026)
-#  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00j-tessera, 00k-application
+#  Versie     : 0.3  (maart 2026)
+#  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00j-tessera,
+#               00k-application, 00g-acta, 00r-sysont
+#
+#  Wijzigingen t.o.v. v0.2 (DD-092, DD-093):
+#
+#   [C-006] causa:hasManifestationCondition TOEGEVOEGD (DD-092)
+#           Domain: causa:CausalClaim; Range: sysont:SystemSituation
+#           Formaliseert de conditionaliteit van CausalClaims: een claim is
+#           niet absoluut maar geldig gegeven een specifieke SystemSituation.
+#
+#   [C-007] causa:realisedBy TOEGEVOEGD (DD-092, DD-093)
+#           Domain: causa:Intervention; Range: acta:TransactionType
+#           Formele keten beleidstheorie → ontwerpelement. Detecteerbaar via
+#           SPARQL wanneer TransactionType verdwijnt uit alternatief.
+#
+#   [C-008] causa:boundToAlternative TOEGEVOEGD (DD-092)
+#           Domain: causa:SolutionModel; Range: valor:DesignAlternative
+#           Koppelt het oplossingsmodel aan het specifieke ontwerpalternatief
+#           waarop het van toepassing is.
+#
+#   [C-009] causa:ClaimCoverageAssessment TOEGEVOEGD (DD-092)
+#           Tweede gate-Tessera bij faseovergang (naast capax:FeasibilityAssessment).
+#           Aggregeert capax:ConditionCoverage-oordelen per CausalClaim.
 #
 #  Wijzigingen t.o.v. v0.1 (DD-061, DD-062, DD-064, DD-065):
 #
@@ -39,21 +64,23 @@
 #
 #  Bron:
 #    Forrester (1961), Meadows (2008), Sterman (2000),
-#    Enserink et al. (2022) PAMS, Guizzardi et al. (2013) UFO-C/UFO-B.
+#    Enserink et al. (2022) PAMS, Guizzardi et al. (2013) UFO-C/UFO-B,
+#    Pearl, J. (2009) Causality §7, Calhau et al. (2023) EDOC §4.
 #
-#  Ontologische grondslag (DD-052):
-#    Twee lagen:
-#      EPISTEMISCH  — causa:CausalClaim (valor:Tessera + ufoc:Belief)
-#      ONTOLOGISCH  — gufo:contributedToTrigger (de werkelijke relatie)
+#  Ontologische grondslag (DD-052, DD-092):
+#    Drie lagen:
+#      TOKEN-LEVEL   — gufo:contributedToTrigger (de werkelijke relatie)
+#      TYPE-LEVEL    — causa:CausalClaim (valor:Tessera + ufoc:Belief)
+#      MANIFESTATIE  — causa:hasManifestationCondition → sysont:SystemSituation
 #
 #  Structuur:
 #    §B  CausalVariable
 #    §C  CausalSituation
 #    §D  CausalClaim (valor:Tessera subklasse)
-#    §E  CausalModel
+#    §E  CausalModel + SolutionModel + Intervention + ClaimCoverageAssessment
 #    §F  FeedbackLoop
 #    §G  Properties
-#    §H  DEPRECATED v0.1-artefacten (verwijderd in v0.3)
+#    §H  DEPRECATED v0.1-artefacten (verwijderd in v0.4)
 ###############################################################################
 
 
@@ -65,12 +92,15 @@ vo:causa
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
     owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
     owl:imports <https://valor-ecosystem.nl/ontology/application> ;
-    owl:versionInfo "0.2" ;
-    owl:priorVersion "0.1" ;
+    owl:imports <https://valor-ecosystem.nl/ontology/acta> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/sysont> ;
+    owl:versionInfo "0.3" ;
+    owl:priorVersion "0.2" ;
     rdfs:comment
-        """Formaliseert Causal Loop Diagrams in UFO. v0.2: Issue naar
-         00k-application, CausalClaim subclasseert valor:Tessera,
-         lokale EpistemicStatus/Evidence deprecated. (DD-052, DD-061, DD-062)"""@nl .
+        """Formaliseert Causal Loop Diagrams in UFO. v0.3: drie-laags causale
+         architectuur (DD-092, DD-093): hasManifestationCondition, realisedBy,
+         ClaimCoverageAssessment. v0.2: Issue naar 00k-application, CausalClaim
+         subclasseert valor:Tessera. (DD-052, DD-061, DD-062, DD-092, DD-093)"""@nl .
 
 
 ###############################################################################
@@ -258,7 +288,30 @@ causa:Intervention
     valor:ontoumlStereotype "situation" ;
     rdfs:subClassOf gufo:Situation ;
     rdfs:label "Intervention"@en , "Interventie"@nl ;
-    rdfs:comment "Een doelbewuste ingreep op een of meer CausalVariables. (DD-053)"@nl .
+    rdfs:comment
+        """Een type interventie-event dat een of meer CausalVariables beïnvloedt
+         in de context van een SolutionModel. Eerste-klas concept (DD-092):
+         verbonden aan acta:TransactionType via causa:realisedBy (DD-093).
+         Ontbreekt een realisatie dan verliest de Intervention haar
+         realisatiebasis — detecteerbaar als SHACL CA-02 Warning."""@nl .
+
+
+###############################################################################
+#  §E+ — ClaimCoverageAssessment (DD-092)
+###############################################################################
+
+causa:ClaimCoverageAssessment
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "ClaimCoverageAssessment"@en , "Claimdekking-beoordeling"@nl ;
+    rdfs:comment
+        """Tweede gate-Tessera bij faseovergang (naast capax:FeasibilityAssessment).
+         Aggregeert alle capax:ConditionCoverage-oordelen voor de CausalClaims
+         in het SolutionModel van een ontwerpalternatief. Uitkomst bepaalt of
+         het alternatief de beleidstheorie die het beoogt daadwerkelijk kan
+         realiseren (theoretische adequaatheid). (DD-092)"""@nl .
 
 
 ###############################################################################
@@ -392,9 +445,67 @@ causa:loopIncludesClaim
     rdfs:range  causa:CausalClaim ;
     rdfs:comment "Claims die de cyclus vormen. Minimaal 2 (SHACL FL1). (DD-060)"@nl .
 
+causa:hasManifestationCondition
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has manifestation condition"@en , "heeft manifesteringsconditie"@nl ;
+    rdfs:domain causa:CausalClaim ;
+    rdfs:range  sysont:SystemSituation ;
+    rdfs:comment
+        """De SystemSituation die aanwezig moet zijn opdat de CausalClaim zich
+         in concrete token-level gevallen realiseert. Optioneel: een CausalClaim
+         zonder ManifestationCondition asserteert universele geldigheid (zelden
+         empirisch verdedigbaar). Formele grond: een claim met
+         uncertaintyLevel = DeepUncertainty heeft een slecht begrepen
+         ManifestationCondition. (DD-092)"""@nl .
+
+causa:realisedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "realised by"@en , "gerealiseerd door"@nl ;
+    rdfs:domain causa:Intervention ;
+    rdfs:range  acta:TransactionType ;
+    rdfs:comment
+        """Formele keten beleidstheorie → ontwerpelement. Een Intervention
+         (type-level beschrijving van welk handelen een CausalVariable beïnvloedt)
+         wordt gerealiseerd door een acta:TransactionType in een specifiek
+         ontwerpalternatief. Meervoudige realisatie is toegestaan.
+         Inverse: acta:realisesIntervention (DD-093)."""@nl .
+
+causa:boundToAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "bound to alternative"@en , "gebonden aan alternatief"@nl ;
+    rdfs:domain causa:SolutionModel ;
+    rdfs:range  valor:DesignAlternative ;
+    rdfs:comment
+        """Koppelt een SolutionModel aan het specifieke ontwerpalternatief waarop
+         het betrekking heeft. Maakt vergelijking van alternatieven op basis
+         van hun SolutionModels mogelijk. (DD-092)"""@nl .
+
+causa:hasConditionCoverage
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has condition coverage"@en , "heeft conditie-dekking"@nl ;
+    rdfs:domain causa:ClaimCoverageAssessment ;
+    rdfs:range  capax:ConditionCoverage ;
+    rdfs:comment
+        """De ConditionCoverage-oordelen die deze ClaimCoverageAssessment
+         aggregeert. Minimaal 1 vereist (SHACL CA-01). (DD-092)"""@nl .
+
+causa:assessmentForAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "assessment for alternative"@en , "beoordeling voor alternatief"@nl ;
+    rdfs:domain causa:ClaimCoverageAssessment ;
+    rdfs:range  valor:DesignAlternative ;
+    rdfs:comment
+        """Het ontwerpalternatief waarop deze ClaimCoverageAssessment betrekking
+         heeft. (DD-092)"""@nl .
+
 
 ###############################################################################
-#  §H — DEPRECATED v0.1-artefacten (verwijderd in v0.3)
+#  §H — DEPRECATED v0.1-artefacten (verwijderd in v0.4)
 ###############################################################################
 
 causa:EpistemicStatus
@@ -456,6 +567,6 @@ causa:evidenceSource
     rdfs:comment "DEPRECATED v0.2. Gebruik valor:evidenceSource."@nl .
 
 ###############################################################################
-#  Einde module 00h-causa.trig (v0.2)
+#  Einde module 00h-causa.trig (v0.3)
 ###############################################################################
 }

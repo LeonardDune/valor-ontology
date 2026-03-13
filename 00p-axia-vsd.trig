@@ -1,0 +1,303 @@
+@prefix axia:  <https://valor-ecosystem.nl/ontology/axia#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+<https://valor-ecosystem.nl/ontology/axia-vsd> {
+
+    ###############################################################################
+    # VALOR-O — Module 00p: AXIA-VSD  (Value Sensitive Design — Values Hierarchy)
+    #
+    # Purpose : Formalises the VSD Values Hierarchy (Friedman & Hendry 2019)
+    #           as a derivation chain from value types to concrete design
+    #           requirements. Extends module 00l (AXIA/COVER) by adding the
+    #           normative derivation dimension.
+    #
+    #           COVER answers:    "How are values experienced?"
+    #           AXIA-VSD answers: "What does a value demand of a design?"
+    #
+    # Key classes:
+    #   axia:ValueCriterion              — normative standard from a ValueType
+    #   axia:ValueBasedDesignRequirement — concrete requirement on an alternative
+    #   axia:ValueHierarchy              — named collection of the full chain
+    #
+    # Key properties:
+    #   axia:criterionFromValue          — ValueCriterion ← cover:ValueType
+    #   axia:requirementFromCriterion    — VBDR ← ValueCriterion
+    #   axia:appliesToAlternative        — VBDR → DesignAlternative
+    #   axia:generatesCapabilityRequirement — AXIA-VSD → CAPAX bridge
+    #   axia:groundedInNorm              — ValueCriterion ← ufol:Norm
+    #
+    # Imports : 00a-gufo-core, 00c-ufo-c, 00d-ufo-l, 00f-cover, 00o-capax
+    #
+    # Sources : Friedman, B. & Hendry, D. (2019), Value Sensitive Design, MIT Press;
+    #           Guizzardi et al. (2022) COVER; Guizzardi et al. (2015) UFO-L;
+    #           Guizzardi et al. (2013) UFO-C.
+    #
+    # Design decisions: DD-071 through DD-076
+    # Version : 0.1  |  March 2026
+    ###############################################################################
+
+    vo:axia-vsd
+        a owl:Ontology ;
+        owl:imports vo:gufo-core, vo:ufo-c, vo:ufo-l, vo:cover, vo:capax ;
+        dcterms:title
+            "VALOR-O — Module 00p: AXIA-VSD — Value Sensitive Design Values Hierarchy"@nl ;
+        dcterms:description
+            "Formaliseert de VSD Values Hierarchy (Friedman & Hendry 2019) als
+             een derivatieketen van waarden naar concrete ontwerpeisen. Sluit aan
+             op COVER (waardebeleving) en CAPAX (haalbaarheid)."@nl ;
+        owl:versionInfo "0.1" ;
+        dcterms:created "2026-03-10" ;
+        dcterms:source
+            "Friedman & Hendry (2019) Value Sensitive Design;
+             COVER (Guizzardi et al. 2022); UFO-L (Guizzardi et al. 2015);
+             UFO-C (Guizzardi et al. 2013)." .
+
+
+    ###############################################################################
+    # ── 1. VALUE CRITERION ────────────────────────────────────────────────────────
+    #
+    #  Level 2 van de VSD Values Hierarchy: normative standard dat uitdrukt
+    #  wat een ontwerp moet doen/vermijden om een waarde te respecteren.
+    #  DD-072: ValueCriterion inheres in cover:ValueType.
+    ###############################################################################
+
+    axia:ValueCriterion
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "ValueCriterion"@en , "Waardecriterium"@nl ;
+        rdfs:comment
+            "Een normatief sociaal object dat uitdrukt aan welke conditie
+             een ontwerp moet voldoen om een bepaalde waarde (ValueType)
+             te respecteren.
+
+             Inhereerrt aan het ValueType (niet aan een specifieke agent of
+             alternatief) — waardoor criteria herbruikbaar zijn over
+             alternatieven en Design Spaces heen.
+
+             Kan ook juridisch verankerd zijn via axia:groundedInNorm
+             (DD-072). VSD Level 2: ValueCriterion (Friedman & Hendry 2019)."@nl ;
+        skos:example
+            "Waardecriterium voor Privacy: 'Persoonsgegevens worden niet
+             meer verwerkt dan strikt noodzakelijk en niet gedeeld zonder
+             expliciete toestemming van de betrokkene.'"@nl .
+
+    axia:criterionFromValue
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:inheresIn ;
+        rdfs:label "criterion from value"@en ,
+                   "criterium afgeleid van waarde"@nl ;
+        rdfs:domain axia:ValueCriterion ;
+        rdfs:range  cover:ValueType ;
+        rdfs:comment
+            "De waarde waarvan dit criterium is afgeleid (Level 1→2)."@nl .
+
+    axia:groundedInNorm
+        a owl:ObjectProperty ;
+        rdfs:label "grounded in norm"@en , "juridisch gegrond in norm"@nl ;
+        rdfs:domain axia:ValueCriterion ;
+        rdfs:range  ufol:Norm ;
+        rdfs:comment
+            "De juridische of beleidsmatige norm die dit waardecriterium
+             verankert. Optioneel — een criterium kan op waarden, op normen,
+             of op beide gegrond zijn."@nl .
+
+    axia:criterionScope
+        a owl:DatatypeProperty ;
+        rdfs:label "criterion scope"@en , "criteriumreikwijdte"@nl ;
+        rdfs:domain axia:ValueCriterion ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire: 'Universal', 'Contextual'."@nl .
+
+    axia:criterionContextDescription
+        a owl:DatatypeProperty ;
+        rdfs:label "criterion context description"@en ,
+                   "contextuele toelichting"@nl ;
+        rdfs:domain axia:ValueCriterion ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Context waarin het criterium geldt, indien criterionScope = 'Contextual'."@nl .
+
+
+    ###############################################################################
+    # ── 2. VALUE-BASED DESIGN REQUIREMENT ────────────────────────────────────────
+    #
+    #  Level 3 van de VSD Values Hierarchy: concrete operationalisering van
+    #  een ValueCriterion voor een specifiek DesignAlternative.
+    #  DD-073: ValueBasedDesignRequirement inheres in DesignAlternative.
+    #  DD-074: AXIA→CAPAX-brug via axia:generatesCapabilityRequirement.
+    ###############################################################################
+
+    axia:ValueBasedDesignRequirement
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "ValueBasedDesignRequirement"@en ,
+                   "Waardegedreven ontwerpeis"@nl ;
+        rdfs:comment
+            "De concrete operationalisering van een ValueCriterion voor een
+             specifiek ontwerpalternatief.
+
+             Architecturale rol in VALOR:
+             (1) Brug AXIA→CAPAX: wanneer de eis betrekking heeft op de
+                 capability van een actor → genereert capax:CapabilityRequirement.
+             (2) Brug AXIA→ACTA: beperkt de structuur van een transactie.
+             (3) Citeerbaar als Tessera (to-be claim in ontwerpfase).
+
+             VSD Level 3: Design Requirements (Friedman & Hendry 2019)."@nl ;
+        skos:example
+            "'Alternatief A mag geen BSN koppelen aan externe incassopartijen
+             zonder expliciete toestemming (afgeleid van Privacycriterium PC-01).'
+             → genereert capax:CapabilityRequirement voor AVG-gecertificeerde
+             gegevensverwerking."@nl .
+
+    axia:requirementFromCriterion
+        a owl:ObjectProperty ;
+        rdfs:label "requirement from criterion"@en ,
+                   "eis afgeleid van criterium"@nl ;
+        rdfs:domain axia:ValueBasedDesignRequirement ;
+        rdfs:range  axia:ValueCriterion ;
+        rdfs:comment
+            "Het ValueCriterion waarvan deze ontwerpeis is afgeleid (Level 2→3).
+             Verplicht: elke ValueBasedDesignRequirement moet traceerbaar zijn."@nl .
+
+    axia:appliesToAlternative
+        a owl:ObjectProperty ;
+        rdfs:subPropertyOf gufo:inheresIn ;
+        rdfs:label "applies to alternative"@en ,
+                   "van toepassing op alternatief"@nl ;
+        rdfs:domain axia:ValueBasedDesignRequirement ;
+        rdfs:range  valor:DesignAlternative ;
+        rdfs:comment "Het ontwerpalternatief waarop deze eis van toepassing is (DD-073)."@nl .
+
+    axia:constrainsTransactionType
+        a owl:ObjectProperty ;
+        rdfs:label "constrains transaction type"@en ,
+                   "beperkt transactietype"@nl ;
+        rdfs:domain axia:ValueBasedDesignRequirement ;
+        rdfs:range  acta:TransactionType ;
+        rdfs:comment
+            "Optioneel: het specifieke transactietype waarop deze eis betrekking heeft."@nl .
+
+    axia:generatesCapabilityRequirement
+        a owl:ObjectProperty ;
+        rdfs:label "generates capability requirement"@en ,
+                   "genereert capabiliteitseis"@nl ;
+        rdfs:domain axia:ValueBasedDesignRequirement ;
+        rdfs:range  capax:CapabilityRequirement ;
+        rdfs:comment
+            "De capabiliteitseis (CAPAX) die door deze waardegedreven
+             ontwerpeis wordt gegenereerd. AXIA→CAPAX-brug (DD-074)."@nl .
+
+    axia:requirementType
+        a owl:DatatypeProperty ;
+        rdfs:label "requirement type"@en , "eistype"@nl ;
+        rdfs:domain axia:ValueBasedDesignRequirement ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire:
+             'Prohibition', 'Obligation', 'Permission', 'Capability'."@nl .
+
+    axia:requirementPriority
+        a owl:DatatypeProperty ;
+        rdfs:label "requirement priority"@en , "eisprioriteit"@nl ;
+        rdfs:domain axia:ValueBasedDesignRequirement ;
+        rdfs:range  xsd:string ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire: 'MustHave', 'ShouldHave', 'CouldHave'."@nl .
+
+
+    ###############################################################################
+    # ── 3. VALUE HIERARCHY ────────────────────────────────────────────────────────
+    #
+    #  Een benoemde verzameling die de volledige VSD-derivatiestructuur
+    #  (waarden → criteria → eisen) representeert voor een Design Space.
+    #  DD-075: ValueHierarchy als gufo:Collection.
+    ###############################################################################
+
+    axia:ValueHierarchy
+        a owl:Class ;
+        rdf:type gufo:CollectiveType ;
+        valor:ontoumlStereotype "collective" ;
+        rdfs:subClassOf gufo:Collection ;
+        rdfs:label "ValueHierarchy"@en , "Waardehiërarchie"@nl ;
+        rdfs:comment
+            "Een benoemde verzameling die de volledige VSD-derivatiestructuur
+             representeert voor een Design Space of thematisch domein.
+             Gemodelleerd als gufo:Collection (DD-075)."@nl .
+
+    axia:hierarchyIncludesValue
+        a owl:ObjectProperty ;
+        rdfs:label "hierarchy includes value"@en , "hiërarchie omvat waarde"@nl ;
+        rdfs:domain axia:ValueHierarchy ;
+        rdfs:range  cover:ValueType ;
+        rdfs:comment "Een ValueType dat deel uitmaakt van deze hiërarchie."@nl .
+
+    axia:hierarchyIncludesCriterion
+        a owl:ObjectProperty ;
+        rdfs:label "hierarchy includes criterion"@en ,
+                   "hiërarchie omvat criterium"@nl ;
+        rdfs:domain axia:ValueHierarchy ;
+        rdfs:range  axia:ValueCriterion ;
+        rdfs:comment "Een ValueCriterion dat deel uitmaakt van deze hiërarchie."@nl .
+
+    axia:hierarchyIncludesRequirement
+        a owl:ObjectProperty ;
+        rdfs:label "hierarchy includes requirement"@en ,
+                   "hiërarchie omvat eis"@nl ;
+        rdfs:domain axia:ValueHierarchy ;
+        rdfs:range  axia:ValueBasedDesignRequirement ;
+        rdfs:comment
+            "Een ValueBasedDesignRequirement dat deel uitmaakt van deze hiërarchie."@nl .
+
+    axia:hierarchyForDesignSpace
+        a owl:ObjectProperty ;
+        rdfs:label "hierarchy for design space"@en ,
+                   "hiërarchie voor design space"@nl ;
+        rdfs:domain axia:ValueHierarchy ;
+        rdfs:range  valor:DesignSpace ;
+        rdfs:comment
+            "De Design Space waarvoor deze waardehiërarchie is opgesteld."@nl .
+
+
+    ###############################################################################
+    # ── 4. DERIVATION CHAIN — COMPLETE PATH (non-normative) ──────────────────────
+    #
+    #  cover:ValueType
+    #    ← [axia:criterionFromValue] ─ axia:ValueCriterion
+    #        ← [axia:requirementFromCriterion] ─ axia:ValueBasedDesignRequirement
+    #            → [axia:appliesToAlternative] → valor:DesignAlternative
+    #            → [axia:generatesCapabilityRequirement]
+    #                → capax:CapabilityRequirement
+    #                    ← [capax:gapConcernsRequirement] ─ capax:CapabilityGap
+    #                        ← [capax:includesGap] ─ capax:FeasibilityAssessment
+    #                            → epistemicStatus 'Accepted' (Delibera gate)
+    #
+    #  Juridische grondslag: ufol:Norm ← [axia:groundedInNorm] ─ axia:ValueCriterion
+    #
+    #  DD-076: derivatieketen als acyclisch gerichte graaf (DAG); geen
+    #  terugkoppeling van CAPAX naar AXIA-VSD.
+    ###############################################################################
+
+
+    ###############################################################################
+    # END OF MODULE 00p — AXIA-VSD  (v0.1)
+    ###############################################################################
+
+}

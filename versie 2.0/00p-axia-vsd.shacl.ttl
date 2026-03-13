@@ -1,0 +1,270 @@
+###############################################################################
+# VALOR-O — Module 00p: AXIA-VSD — SHACL Validation Companion
+#
+# Purpose : Validates the structural integrity of the VSD Values Hierarchy
+#           derivation chain. Enforces DD-071 through DD-076.
+#
+# Shapes:
+#   VSD-1   ValueCriterion must derive from at least one ValueType
+#   VSD-2   ValueCriterion criterionScope controlled vocabulary
+#   VSD-3   ValueBasedDesignRequirement must derive from a ValueCriterion
+#   VSD-4   ValueBasedDesignRequirement must apply to a DesignAlternative
+#   VSD-5   requirementType controlled vocabulary
+#   VSD-6   requirementPriority controlled vocabulary
+#   VSD-7   Capability-type requirement must generate a CapabilityRequirement
+#   VSD-8   ValueHierarchy derivation consistency (warning)
+#   VSD-9   No circular derivation ValueCriterion → ValueBasedDesignRequirement
+#            → ValueCriterion (SPARQL cycle check)
+#
+# Version : 0.1  |  March 2026
+###############################################################################
+
+@prefix axia:  <https://valor-ecosystem.nl/ontology/axia#> .
+@prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/valor#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+# Prefix declaration block for SPARQL constraints
+shc_vsd
+    a sh:PrefixDeclaration ;
+    sh:declare [ sh:prefix "axia"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/axia#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "cover" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/cover#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "capax" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/valor#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "xsd"   ;
+                 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+###############################################################################
+# VSD-1 — ValueCriterion must derive from at least one ValueType
+###############################################################################
+
+axia:ValueCriterionValueShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueCriterion ;
+    sh:name "ValueCriterionValueShape" ;
+    sh:description
+        "VSD-1: Een ValueCriterion moet afgeleid zijn van ten minste
+         één cover:ValueType via axia:criterionFromValue." ;
+
+    sh:property [
+        sh:path     axia:criterionFromValue ;
+        sh:minCount 1 ;
+        sh:class    cover:ValueType ;
+        sh:message  "VSD-1: ValueCriterion.criterionFromValue vereist minimaal één cover:ValueType (DD-072)."
+    ] .
+
+
+###############################################################################
+# VSD-2 — criterionScope controlled vocabulary
+###############################################################################
+
+axia:ValueCriterionScopeShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueCriterion ;
+    sh:name "ValueCriterionScopeShape" ;
+    sh:description
+        "VSD-2: criterionScope moet een waarde zijn uit het
+         gecontroleerde vocabulaire." ;
+
+    sh:sparql [
+        sh:name    "VSD-2-scope-vocab" ;
+        sh:message "VSD-2: ValueCriterion.criterionScope moet 'Universal' of 'Contextual' zijn." ;
+        sh:prefixes shc_vsd ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this axia:criterionScope ?scope .
+                FILTER (?scope NOT IN ("Universal", "Contextual"))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# VSD-3 — ValueBasedDesignRequirement must derive from a ValueCriterion
+###############################################################################
+
+axia:ReqFromCriterionShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueBasedDesignRequirement ;
+    sh:name "ReqFromCriterionShape" ;
+    sh:description
+        "VSD-3: Een ValueBasedDesignRequirement moet traceerbaar zijn
+         naar precies één ValueCriterion." ;
+
+    sh:property [
+        sh:path     axia:requirementFromCriterion ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    axia:ValueCriterion ;
+        sh:message  "VSD-3: ValueBasedDesignRequirement.requirementFromCriterion vereist precies één axia:ValueCriterion (DD-073)."
+    ] .
+
+
+###############################################################################
+# VSD-4 — ValueBasedDesignRequirement must apply to a DesignAlternative
+###############################################################################
+
+axia:ReqAlternativeShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueBasedDesignRequirement ;
+    sh:name "ReqAlternativeShape" ;
+    sh:description
+        "VSD-4: Een ValueBasedDesignRequirement moet van toepassing zijn
+         op ten minste één DesignAlternative." ;
+
+    sh:property [
+        sh:path     axia:appliesToAlternative ;
+        sh:minCount 1 ;
+        sh:class    valor:DesignAlternative ;
+        sh:message  "VSD-4: ValueBasedDesignRequirement.appliesToAlternative vereist minimaal één valor:DesignAlternative (DD-073)."
+    ] .
+
+
+###############################################################################
+# VSD-5 — requirementType controlled vocabulary
+###############################################################################
+
+axia:ReqTypeVocabShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueBasedDesignRequirement ;
+    sh:name "ReqTypeVocabShape" ;
+    sh:description
+        "VSD-5: requirementType moet een waarde zijn uit het
+         gecontroleerde vocabulaire." ;
+
+    sh:sparql [
+        sh:name    "VSD-5-reqtype-vocab" ;
+        sh:message "VSD-5: requirementType moet 'Prohibition', 'Obligation', 'Permission', of 'Capability' zijn." ;
+        sh:prefixes shc_vsd ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this axia:requirementType ?t .
+                FILTER (?t NOT IN (
+                    "Prohibition",
+                    "Obligation",
+                    "Permission",
+                    "Capability"
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# VSD-6 — requirementPriority controlled vocabulary
+###############################################################################
+
+axia:ReqPriorityVocabShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueBasedDesignRequirement ;
+    sh:name "ReqPriorityVocabShape" ;
+    sh:description
+        "VSD-6: requirementPriority moet een waarde zijn uit het
+         gecontroleerde vocabulaire." ;
+
+    sh:sparql [
+        sh:name    "VSD-6-priority-vocab" ;
+        sh:message "VSD-6: requirementPriority moet 'MustHave', 'ShouldHave', of 'CouldHave' zijn." ;
+        sh:prefixes shc_vsd ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this axia:requirementPriority ?p .
+                FILTER (?p NOT IN ("MustHave", "ShouldHave", "CouldHave"))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# VSD-7 — Capability-type requirement must generate a CapabilityRequirement
+###############################################################################
+
+axia:ReqCapabilityBridgeShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueBasedDesignRequirement ;
+    sh:name "ReqCapabilityBridgeShape" ;
+    sh:description
+        "VSD-7: Een ValueBasedDesignRequirement met requirementType
+         'Capability' moet ten minste één capax:CapabilityRequirement
+         genereren via axia:generatesCapabilityRequirement." ;
+
+    sh:sparql [
+        sh:name    "VSD-7-capability-bridge" ;
+        sh:message "VSD-7: ValueBasedDesignRequirement met requirementType 'Capability' vereist axia:generatesCapabilityRequirement → capax:CapabilityRequirement (DD-074)." ;
+        sh:prefixes shc_vsd ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this axia:requirementType "Capability" .
+                FILTER NOT EXISTS {
+                    $this axia:generatesCapabilityRequirement ?cr .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# VSD-8 — ValueHierarchy completeness warning
+###############################################################################
+
+axia:ValueHierarchyCompletenessShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueHierarchy ;
+    sh:name "ValueHierarchyCompletenessShape" ;
+    sh:description
+        "VSD-8 (waarschuwing): Een ValueHierarchy moet ten minste
+         één waarde, één criterium én één eis omvatten om betekenisvol
+         te zijn." ;
+
+    sh:severity sh:Warning ;
+
+    sh:sparql [
+        sh:name    "VSD-8-hierarchy-completeness" ;
+        sh:message "VSD-8 (waarschuwing): ValueHierarchy mist waarden, criteria of eisen — controleer volledigheid." ;
+        sh:prefixes shc_vsd ;
+        sh:select  """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS { $this axia:hierarchyIncludesValue ?v }
+                UNION
+                FILTER NOT EXISTS { $this axia:hierarchyIncludesCriterion ?c }
+                UNION
+                FILTER NOT EXISTS { $this axia:hierarchyIncludesRequirement ?r }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# VSD-9 — No circular derivation (cycle check)
+###############################################################################
+
+axia:NoCyclicDerivationShape
+    a sh:NodeShape ;
+    sh:targetClass axia:ValueCriterion ;
+    sh:name "NoCyclicDerivationShape" ;
+    sh:description
+        "VSD-9: Een ValueCriterion mag niet via een keten van
+         requirementFromCriterion terug verwijzen naar zichzelf
+         (cyclische derivatie verboden)." ;
+
+    sh:sparql [
+        sh:name    "VSD-9-no-cycle" ;
+        sh:message "VSD-9: Cyclische derivatie gedetecteerd: ValueCriterion verwijst indirect naar zichzelf." ;
+        sh:prefixes shc_vsd ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this axia:criterionFromValue/^axia:criterionFromValue+
+                      $this .
+            }
+        """
+    ] .

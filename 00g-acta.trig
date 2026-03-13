@@ -1,4 +1,5 @@
 @prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
 @prefix cover: <https://valor-ecosystem.nl/ontology/cover#> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
@@ -15,7 +16,7 @@
     #  VALOR-O — Module 00g: ACTA Transactieontologie
     #
     #  Namespace  : https://valor-ecosystem.nl/ontology/acta#  (prefix acta:)
-    #  Versie     : 0.6  (maart 2026)
+    #  Versie     : 0.7  (maart 2026)
     #  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00d-ufo-l, 00f-cover
     #
     #  Bron:
@@ -80,9 +81,10 @@
         owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
         owl:imports <https://valor-ecosystem.nl/ontology/cover> ;
         owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
-        owl:versionInfo "0.6" ;
+        owl:versionInfo "0.7" ;
+        owl:priorVersion "0.6" ;
         rdfs:comment
-            "Formaliseert het DEMO Complete Transaction Pattern in UFO, conform Almeida et al. (EEWC 2013). v0.5: CTAR als RoleMixin; TransactorNetwork als Collection (zie versiehistorie)."@nl .
+            "Formaliseert het DEMO Complete Transaction Pattern in UFO, conform Almeida et al. (EEWC 2013). v0.7: acta:realisesIntervention toegevoegd als inverse van causa:realisedBy (DD-093). v0.5: CTAR als RoleMixin; TransactorNetwork als Collection."@nl .
     
     
     ###############################################################################
@@ -822,8 +824,29 @@
         rdfs:domain acta:Transaction ;
         rdfs:range  acta:Transaction ;
         rdfs:comment "Sub-transactie vereist voor voltooiing. Conform DEMO B-organisatie. (DD-040)"@nl .
-    
+
+
     ###############################################################################
-    #  Einde module 00g-acta.trig (v0.6)
+    #  §G — CAUSA-brug (DD-093)
+    ###############################################################################
+
+    acta:realisesIntervention
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        owl:inverseOf causa:realisedBy ;
+        rdfs:label "realises intervention"@en , "realiseert interventie"@nl ;
+        rdfs:domain acta:TransactionType ;
+        rdfs:range  causa:Intervention ;
+        rdfs:comment
+            """Inverse van causa:realisedBy (DD-093). Query-hulp: via deze property
+             is vanuit een TransactionType direct opvraagbaar welke Interventions
+             het realiseert in de beleidstheorie. Een TransactionType zonder
+             realisesIntervention is legitiem (uitvoeringstransacties zonder
+             directe beleidstheorie-grondslag), maar detecteerbaar voor review.
+             Richtingsbesluit: CAUSA → ACTA; de beleidstheorie stelt de eis,
+             het transactieontwerp realiseert haar."""@nl .
+
+    ###############################################################################
+    #  Einde module 00g-acta.trig (v0.7)
     ###############################################################################
 }

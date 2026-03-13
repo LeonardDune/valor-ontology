@@ -1,0 +1,211 @@
+---
+title: VALOR-O — Kernconcepten & Inter-perspectief Relaties (v2 — met emergentielaag)
+---
+flowchart TB
+
+  %% ─── STIJLEN ─────────────────────────────────────────────────────────────
+  classDef foundation  fill:#1e293b,stroke:#475569,color:#f1f5f9,font-size:11px
+  classDef socia       fill:#1e3a5f,stroke:#3b82f6,color:#e0f2fe,font-size:11px
+  classDef lexa        fill:#1a3a2a,stroke:#22c55e,color:#dcfce7,font-size:11px
+  classDef acta        fill:#3b1f00,stroke:#f97316,color:#ffedd5,font-size:11px
+  classDef causa       fill:#2d1b4e,stroke:#a855f7,color:#f3e8ff,font-size:11px
+  classDef cover       fill:#1a2e4a,stroke:#06b6d4,color:#cffafe,font-size:11px
+  classDef capax       fill:#1f2937,stroke:#6366f1,color:#e0e7ff,font-size:11px
+  classDef emergence   fill:#0f1f3a,stroke:#818cf8,color:#c7d2fe,font-size:11px,stroke-dasharray:4 2
+  classDef axia        fill:#2a1a1a,stroke:#ef4444,color:#fee2e2,font-size:11px
+  classDef nexus       fill:#0f2820,stroke:#10b981,color:#d1fae5,font-size:11px
+  classDef delibera    fill:#27201a,stroke:#eab308,color:#fef9c3,font-size:11px
+  classDef sysont      fill:#1a1a2e,stroke:#7c3aed,color:#ede9fe,font-size:11px,stroke-dasharray:6 3
+
+  %% ─── UFO-C / gUFO FUNDAMENT ─────────────────────────────────────────────
+  subgraph UFO["UFO-C / UFO-L / gUFO  —  Fundament"]
+    direction LR
+    Agent["Agent\n(Physical / Social)"]:::foundation
+    SocialCommitment["SocialCommitment\n«relator»"]:::foundation
+    SocialObject["SocialObject\n«mode»"]:::foundation
+    Situation["Situation\n«situation»"]:::foundation
+    Disposition["Disposition\n«mode»"]:::foundation
+  end
+
+  %% ─── SOCIA ──────────────────────────────────────────────────────────────
+  subgraph SOCIA["SOCIA — Actoren"]
+    Actor["Actor\n«role»"]:::socia
+    IntentionalDependency["IntentionalDependency\n«relator»"]:::socia
+  end
+
+  %% ─── LEXA ───────────────────────────────────────────────────────────────
+  subgraph LEXA["LEXA — Normatief"]
+    Norm["Norm\n«mode»"]:::lexa
+    LegalRelator["LegalRelator\n«relator»"]:::lexa
+    Policy["Policy\n«mode»"]:::lexa
+  end
+
+  %% ─── ACTA ───────────────────────────────────────────────────────────────
+  subgraph ACTA["ACTA — Transacties"]
+    TransactionType["TransactionType\n«kind»"]:::acta
+    ActorRole["ActorRole\n«role»"]:::acta
+    TransactionResult["TransactionResult\n«situation»"]:::acta
+  end
+
+  %% ─── CAUSA ──────────────────────────────────────────────────────────────
+  subgraph CAUSA["CAUSA — Causaliteit"]
+    Issue["Issue\n«situation»"]:::causa
+    CausalVariable["CausalVariable\n«quality»"]:::causa
+    FeedbackLoop["FeedbackLoop\n«situation»"]:::causa
+    CausalClaim["CausalClaim\n«mode»"]:::causa
+  end
+
+  %% ─── COVER ──────────────────────────────────────────────────────────────
+  subgraph COVER["COVER — Waarden"]
+    ValueType["ValueType\n«kind»"]:::cover
+    ValueExperience["ValueExperience\n«event»"]:::cover
+    ValueObject["ValueObject\n«kind»"]:::cover
+  end
+
+  %% ─── CAPAX (kern) ────────────────────────────────────────────────────────
+  subgraph CAPAX["CAPAX — Capabilities"]
+    Capability["Capability\n«mode» ← Disposition"]:::capax
+    OrgCap["OrganizationalCapability\n«subkind»\nemergenceNature:\nResultant | Emergent"]:::capax
+    CapabilityRequirement["CapabilityRequirement\n«mode»"]:::capax
+    CapabilityGap["CapabilityGap\n«situation»"]:::capax
+    FeasibilityAssessment["FeasibilityAssessment\n«situation»"]:::capax
+
+    %% ── Emergentielaag (nieuw v0.2 — DD-084) ─────────────────────────
+    subgraph EMG["Emergentielaag  —  DD-084  (Bunge / Calhau 2023)"]
+      DispositionRelation["DispositionRelation\n«relator»\ndispositionRelationType:\nReciprocal | Additional | Enabling"]:::emergence
+      ContributesToEmergence["contributesToEmergenceOf ▶\nOrganizationalCapability"]:::emergence
+    end
+  end
+
+  %% ─── AXIA ───────────────────────────────────────────────────────────────
+  subgraph AXIA["AXIA-VSD — Ontwerpvereisten"]
+    ValueCriterion["ValueCriterion\n«mode»"]:::axia
+    ValueBasedDesignReq["ValueBasedDesign\nRequirement\n«mode»"]:::axia
+    DesignAlternative["DesignAlternative\n«situation»"]:::axia
+  end
+
+  %% ─── NEXUS ───────────────────────────────────────────────────────────────
+  subgraph NEXUS["NEXUS — Ecosysteem  (v0.3 — DD-085)"]
+    EcosystemAgent["EcosystemAgent\n«subkind» ←\nCollectiveSocialAgent"]:::nexus
+    CollaborationCommitment["CollaborationCommitment\n«relator»"]:::nexus
+    CollabCap["CollaborativeCapability\n«subkind»\nemergenceNature:\nalways 'Emergent'"]:::nexus
+    CollaborationCondition["CollaborationCondition\n«situation»\n= SystemSituation\n(a) Commitment\n(b) Architecture\n(c) DispositionRelations"]:::nexus
+    CollaborationArchitecture["CollaborationArchitecture\n«situation»"]:::nexus
+    GovernanceDevelopmentNeed["GovernanceDevelopment\nNeed\n«mode»"]:::nexus
+    EcosystemGap["EcosystemCapabilityGap\n«subkind»\n→ altijd Emergent"]:::nexus
+  end
+
+  %% ─── COoDM / DELIBERA ────────────────────────────────────────────────────
+  subgraph DELIBERA["COoDM / DELIBERA — Besluitvorming"]
+    Tessera["Tessera (Claim)\nepistemicStatus"]:::delibera
+    DecisionEpisode["DecisionEpisode\n«event»"]:::delibera
+    ValueAscription["ValueAscription\n«relator»"]:::delibera
+  end
+
+  %% ─── 00m-SYSONT (gepland) ────────────────────────────────────────────────
+  subgraph SYSONT["00m-SYSONT — gepland (Calhau 2023 Fig. 2-4)"]
+    SystemNode["System / FunctionalComplex\n«category»"]:::sysont
+    FunctionalRole["FunctionalRole\n«role»"]:::sysont
+    BondingRelation["BondingRelation\n«material»"]:::sysont
+    SystemMoment["SystemMoment\n«category»"]:::sysont
+  end
+
+
+  %% ═══════════════════════════════════════════════════════════════════════
+  %% ─── INTRA-MODULE RELATIES ────────────────────────────────────────────
+  %% ═══════════════════════════════════════════════════════════════════════
+
+  Agent -->|"speelt"| Actor
+  Agent -->|"draagt"| Disposition
+  SocialCommitment -->|"medieert"| Agent
+
+  Norm -.->|"spec."| SocialObject
+  Policy -.->|"spec."| SocialObject
+
+  ActorRole -->|"voert uit"| TransactionType
+  TransactionType -->|"brengt voort"| TransactionResult
+
+  Issue -.->|"spec."| Situation
+  FeedbackLoop -->|"bevat"| CausalVariable
+
+  ValueExperience -->|"type"| ValueType
+  ValueExperience -->|"object"| ValueObject
+
+  Capability -.->|"spec."| Disposition
+  OrgCap -.->|"subtype"| Capability
+  DispositionRelation -->|"medieert"| Capability
+  DispositionRelation --- ContributesToEmergence
+  ContributesToEmergence -->|"→"| OrgCap
+  CapabilityGap -->|"betreft"| CapabilityRequirement
+  FeasibilityAssessment -->|"omvat"| CapabilityGap
+
+  ValueCriterion -->|"van waarde"| ValueType
+  ValueBasedDesignReq -->|"van criterium"| ValueCriterion
+  ValueBasedDesignReq -->|"voor alt."| DesignAlternative
+
+  EcosystemAgent -.->|"is een"| Agent
+  CollaborationCommitment -.->|"spec."| SocialCommitment
+  CollaborationCommitment -->|"constitueert"| EcosystemAgent
+  CollabCap -.->|"subtype"| OrgCap
+  CollabCap -->|"vereist"| CollaborationCondition
+  CollaborationCondition -->|"(a) commitment"| CollaborationCommitment
+  CollaborationCondition -->|"(b) architectuur"| CollaborationArchitecture
+  CollaborationCondition -->|"(c) bonding\nstructure"| DispositionRelation
+  EcosystemGap -.->|"subtype"| CapabilityGap
+  EcosystemGap -->|"vereist"| GovernanceDevelopmentNeed
+  GovernanceDevelopmentNeed -->|"analyseert"| DispositionRelation
+
+  Tessera -->|"over"| Situation
+  DecisionEpisode -->|"besluit over"| Tessera
+
+  SystemNode -->|"heeft"| FunctionalRole
+  BondingRelation -->|"medieert"| FunctionalRole
+  SystemMoment -->|"emergeert in"| Situation
+
+
+  %% ═══════════════════════════════════════════════════════════════════════
+  %% ─── CROSS-MODULE INTEGRATIE (fundamentele ketens) ────────────────────
+  %% ═══════════════════════════════════════════════════════════════════════
+
+  %% ACTA → COVER
+  TransactionResult -- "IS het\nValueObject" --> ValueObject
+
+  %% COVER → AXIA
+  ValueType -- "basis voor" --> ValueCriterion
+
+  %% AXIA → CAPAX
+  ValueBasedDesignReq -- "genereert" --> CapabilityRequirement
+
+  %% CAPAX → DELIBERA
+  FeasibilityAssessment -- "gate\ncriterium" --> DecisionEpisode
+
+  %% CAUSA → DELIBERA
+  CausalClaim -- "wordt" --> Tessera
+
+  %% SOCIA → ACTA
+  Actor -- "vervult" --> ActorRole
+
+  %% LEXA → ACTA
+  Norm -- "verankert" --> TransactionType
+
+  %% LEXA → NEXUS
+  Norm -- "verankert" --> CollaborationCommitment
+
+  %% COVER → DELIBERA
+  ValueExperience -- "input voor" --> ValueAscription
+
+  %% CAUSA → COVER
+  Issue -- "bedreigt" --> ValueType
+
+  %% NEXUS → CAPAX (gap-keten)
+  GovernanceDevelopmentNeed -- "adresseert" --> CapabilityGap
+
+  %% NEXUS → ACTA (architectuur bestaat uit transacties)
+  CollaborationArchitecture -- "omvat" --> TransactionType
+
+  %% DELIBERA valideert alle perspectieven
+  DecisionEpisode -. "valideert Tesserae\nuit alle perspectieven" .-> Tessera
+
+  %% SYSONT fundeert CAPAX emergentielaag (gepland)
+  BondingRelation -. "fundeert\n(00m gepland)" .-> DispositionRelation
+  SystemMoment -. "fundeert\n(00m gepland)" .-> CollabCap

@@ -1,0 +1,423 @@
+###############################################################################
+# VALOR-O — Module 00q: NEXUS — SHACL Validation Companion
+#
+# Shapes:
+#   NEX-1   EcosystemAgent must be grounded in a CollaborationCommitment
+#   NEX-2   CollaborationCommitment requires at least two participating orgs
+#   NEX-3   CollaborationCommitment duration controlled vocabulary
+#   NEX-4   CollaborativeCapability must inhere in an EcosystemAgent
+#   NEX-5   CollaborativeCapability must have a CollaborationCondition
+#   NEX-6   CollaborationCondition must reference a CollaborationCommitment
+#   NEX-7   CollaborationCondition must reference a CollaborationArchitecture
+#   NEX-8   CollaborationArchitecture must implement a CollaborationCommitment
+#   NEX-9   CollaborationArchitecture must include at least one TransactionType
+#   NEX-10  GovernanceArrangement governance type controlled vocabulary
+#   NEX-11  EcosystemCapabilityGap must concern a CollaborativeCapability
+#   NEX-12  EcosystemCapabilityGap must have a missingConditionComponent
+#   NEX-13  missingConditionComponent controlled vocabulary
+#   NEX-14  EcosystemCapabilityGap must generate a GovernanceDevelopmentNeed
+#   NEX-15  GovernanceDevelopmentNeed must address an EcosystemCapabilityGap
+#   NEX-16  GovernanceDevelopmentNeed governance need type controlled vocabulary
+#   NEX-17  GovernanceDevelopmentNeed resolution horizon controlled vocabulary
+#   NEX-18  EcosystemAgent members must be InstitutionalAgents
+#   NEX-19  EcosystemAgent must not list itself as a member
+#
+# Version : 0.1  |  March 2026
+###############################################################################
+
+@prefix nexus: <https://valor-ecosystem.nl/ontology/nexus#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/valor#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+shc_nex
+    a sh:PrefixDeclaration ;
+    sh:declare [ sh:prefix "nexus" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/nexus#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "capax" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufoc"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "acta"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/acta#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/valor#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "xsd"   ;
+                 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+###############################################################################
+# NEX-1 — EcosystemAgent must be grounded in a CollaborationCommitment
+###############################################################################
+
+nexus:EcosystemAgentCommitmentShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemAgent ;
+    sh:name "EcosystemAgentCommitmentShape" ;
+    sh:description
+        "NEX-1: Een EcosystemAgent moet gegrond zijn in ten minste één
+         CollaborationCommitment. Zonder commitment bestaat het ecosysteem
+         niet als agent." ;
+    sh:property [
+        sh:path     nexus:isGroundedInCommitment ;
+        sh:minCount 1 ;
+        sh:class    nexus:CollaborationCommitment ;
+        sh:message  "NEX-1: EcosystemAgent.isGroundedInCommitment vereist minimaal één nexus:CollaborationCommitment (DD-077)."
+    ] .
+
+
+###############################################################################
+# NEX-2 — CollaborationCommitment requires at least two participating orgs
+###############################################################################
+
+nexus:CollaborationCommitmentMinMembersShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationCommitment ;
+    sh:name "CollaborationCommitmentMinMembersShape" ;
+    sh:description
+        "NEX-2: Een CollaborationCommitment vereist minimaal twee
+         deelnemende organisaties — een unilateraal commitment is
+         geen samenwerking." ;
+    sh:property [
+        sh:path     nexus:hasParticipatingOrganisation ;
+        sh:minCount 2 ;
+        sh:class    ufoc:InstitutionalAgent ;
+        sh:message  "NEX-2: CollaborationCommitment.hasParticipatingOrganisation vereist minimaal twee ufoc:InstitutionalAgents (DD-079)."
+    ] .
+
+
+###############################################################################
+# NEX-3 — CollaborationCommitment duration controlled vocabulary
+###############################################################################
+
+nexus:CollaborationCommitmentDurationShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationCommitment ;
+    sh:name "CollaborationCommitmentDurationShape" ;
+    sh:sparql [
+        sh:name    "NEX-3-duration-vocab" ;
+        sh:message "NEX-3: commitmentDuration moet 'Permanent', 'ProjectBased', of 'Experimental' zijn." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this nexus:commitmentDuration ?d .
+                FILTER (?d NOT IN ("Permanent", "ProjectBased", "Experimental"))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# NEX-4 — CollaborativeCapability must inhere in an EcosystemAgent
+###############################################################################
+
+nexus:CollaborativeCapabilityBearerShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborativeCapability ;
+    sh:name "CollaborativeCapabilityBearerShape" ;
+    sh:description
+        "NEX-4: Een CollaborativeCapability moet inheren aan precies
+         één EcosystemAgent. Samenwerkingscapabilities zijn per definitie
+         eigenschappen van het ecosysteem, niet van individuele leden." ;
+    sh:property [
+        sh:path     capax:inhereInAgent ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    nexus:EcosystemAgent ;
+        sh:message  "NEX-4: CollaborativeCapability.inhereInAgent vereist precies één nexus:EcosystemAgent (DD-078)."
+    ] .
+
+
+###############################################################################
+# NEX-5 — CollaborativeCapability must have a CollaborationCondition
+###############################################################################
+
+nexus:CollaborativeCapabilityConditionShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborativeCapability ;
+    sh:name "CollaborativeCapabilityConditionShape" ;
+    sh:description
+        "NEX-5: Een CollaborativeCapability moet verwijzen naar ten minste
+         één CollaborationCondition via nexus:requiresCollaborationCondition." ;
+    sh:property [
+        sh:path     nexus:requiresCollaborationCondition ;
+        sh:minCount 1 ;
+        sh:class    nexus:CollaborationCondition ;
+        sh:message  "NEX-5: CollaborativeCapability.requiresCollaborationCondition vereist minimaal één nexus:CollaborationCondition."
+    ] .
+
+
+###############################################################################
+# NEX-6 — CollaborationCondition must reference a CollaborationCommitment
+###############################################################################
+
+nexus:CollaborationConditionCommitmentShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationCondition ;
+    sh:name "CollaborationConditionCommitmentShape" ;
+    sh:property [
+        sh:path     nexus:conditionRequiresCommitment ;
+        sh:minCount 1 ;
+        sh:class    nexus:CollaborationCommitment ;
+        sh:message  "NEX-6: CollaborationCondition.conditionRequiresCommitment vereist minimaal één nexus:CollaborationCommitment (DD-080)."
+    ] .
+
+
+###############################################################################
+# NEX-7 — CollaborationCondition must reference a CollaborationArchitecture
+###############################################################################
+
+nexus:CollaborationConditionArchitectureShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationCondition ;
+    sh:name "CollaborationConditionArchitectureShape" ;
+    sh:property [
+        sh:path     nexus:conditionRequiresArchitecture ;
+        sh:minCount 1 ;
+        sh:class    nexus:CollaborationArchitecture ;
+        sh:message  "NEX-7: CollaborationCondition.conditionRequiresArchitecture vereist minimaal één nexus:CollaborationArchitecture (DD-080)."
+    ] .
+
+
+###############################################################################
+# NEX-8 — CollaborationArchitecture must implement a CollaborationCommitment
+###############################################################################
+
+nexus:ArchitectureCommitmentShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationArchitecture ;
+    sh:name "ArchitectureCommitmentShape" ;
+    sh:property [
+        sh:path     nexus:implementsCommitment ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    nexus:CollaborationCommitment ;
+        sh:message  "NEX-8: CollaborationArchitecture.implementsCommitment vereist precies één nexus:CollaborationCommitment (DD-082)."
+    ] .
+
+
+###############################################################################
+# NEX-9 — CollaborationArchitecture must include at least one TransactionType
+###############################################################################
+
+nexus:ArchitectureTransactionShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:CollaborationArchitecture ;
+    sh:name "ArchitectureTransactionShape" ;
+    sh:property [
+        sh:path     nexus:includesTransactionType ;
+        sh:minCount 1 ;
+        sh:class    acta:TransactionType ;
+        sh:message  "NEX-9: CollaborationArchitecture.includesTransactionType vereist minimaal één acta:TransactionType."
+    ] .
+
+
+###############################################################################
+# NEX-10 — GovernanceArrangement governance type controlled vocabulary
+###############################################################################
+
+nexus:GovernanceTypeVocabShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:GovernanceArrangement ;
+    sh:name "GovernanceTypeVocabShape" ;
+    sh:sparql [
+        sh:name    "NEX-10-govtype-vocab" ;
+        sh:message "NEX-10: governanceType moet 'Consensus', 'Majority', 'LeadPartner', 'RotatingChair', of 'ExternalBody' zijn." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this nexus:governanceType ?t .
+                FILTER (?t NOT IN (
+                    "Consensus", "Majority", "LeadPartner",
+                    "RotatingChair", "ExternalBody"
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# NEX-11 — EcosystemCapabilityGap must concern a CollaborativeCapability
+###############################################################################
+
+nexus:EcoGapCapabilityShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemCapabilityGap ;
+    sh:name "EcoGapCapabilityShape" ;
+    sh:property [
+        sh:path     nexus:gapConcernsCollaborativeCapability ;
+        sh:minCount 1 ;
+        sh:class    nexus:CollaborativeCapability ;
+        sh:message  "NEX-11: EcosystemCapabilityGap.gapConcernsCollaborativeCapability vereist minimaal één nexus:CollaborativeCapability (DD-081)."
+    ] .
+
+
+###############################################################################
+# NEX-12 — EcosystemCapabilityGap must have missingConditionComponent
+###############################################################################
+
+nexus:EcoGapConditionShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemCapabilityGap ;
+    sh:name "EcoGapConditionShape" ;
+    sh:property [
+        sh:path     nexus:missingConditionComponent ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message  "NEX-12: EcosystemCapabilityGap.missingConditionComponent is verplicht."
+    ] .
+
+
+###############################################################################
+# NEX-13 — missingConditionComponent controlled vocabulary
+###############################################################################
+
+nexus:MissingConditionVocabShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemCapabilityGap ;
+    sh:name "MissingConditionVocabShape" ;
+    sh:sparql [
+        sh:name    "NEX-13-missing-vocab" ;
+        sh:message "NEX-13: missingConditionComponent moet 'Commitment', 'Architecture', of 'BothMissing' zijn." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this nexus:missingConditionComponent ?m .
+                FILTER (?m NOT IN ("Commitment", "Architecture", "BothMissing"))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# NEX-14 — EcosystemCapabilityGap must be addressed by a GovernanceDevelopmentNeed
+###############################################################################
+
+nexus:EcoGapGovernanceNeedShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemCapabilityGap ;
+    sh:name "EcoGapGovernanceNeedShape" ;
+    sh:description
+        "NEX-14: Een EcosystemCapabilityGap moet worden geadresseerd door
+         ten minste één GovernanceDevelopmentNeed. Ecosysteem-gaps vereisen
+         altijd een governance-interventie, nooit uitsluitend een HR-oplossing
+         (DD-081)." ;
+    sh:sparql [
+        sh:name    "NEX-14-needs-governance-need" ;
+        sh:message "NEX-14: EcosystemCapabilityGap vereist minimaal één nexus:GovernanceDevelopmentNeed die haar adresseert (DD-081)." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                FILTER NOT EXISTS {
+                    ?gdn nexus:addressesEcosystemGap $this .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+# NEX-15 — GovernanceDevelopmentNeed must address an EcosystemCapabilityGap
+###############################################################################
+
+nexus:GovernanceNeedGapShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:GovernanceDevelopmentNeed ;
+    sh:name "GovernanceNeedGapShape" ;
+    sh:property [
+        sh:path     nexus:addressesEcosystemGap ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    nexus:EcosystemCapabilityGap ;
+        sh:message  "NEX-15: GovernanceDevelopmentNeed.addressesEcosystemGap vereist precies één nexus:EcosystemCapabilityGap."
+    ] .
+
+
+###############################################################################
+# NEX-16 — GovernanceDevelopmentNeed governance need type controlled vocabulary
+###############################################################################
+
+nexus:GovernanceNeedTypeVocabShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:GovernanceDevelopmentNeed ;
+    sh:name "GovernanceNeedTypeVocabShape" ;
+    sh:sparql [
+        sh:name    "NEX-16-needtype-vocab" ;
+        sh:message "NEX-16: governanceNeedType moet 'NewCommitment', 'NewArchitecture', 'NewGovernanceBody', 'AmendExisting', of 'LegalGrounding' zijn." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this nexus:governanceNeedType ?t .
+                FILTER (?t NOT IN (
+                    "NewCommitment", "NewArchitecture",
+                    "NewGovernanceBody", "AmendExisting", "LegalGrounding"
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# NEX-17 — GovernanceDevelopmentNeed resolution horizon controlled vocabulary
+###############################################################################
+
+nexus:GovernanceHorizonVocabShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:GovernanceDevelopmentNeed ;
+    sh:name "GovernanceHorizonVocabShape" ;
+    sh:sparql [
+        sh:name    "NEX-17-horizon-vocab" ;
+        sh:message "NEX-17: targetResolutionHorizon moet 'BeforeImplementation', 'WithinFirstYear', of 'LongTerm' zijn." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this nexus:targetResolutionHorizon ?h .
+                FILTER (?h NOT IN (
+                    "BeforeImplementation", "WithinFirstYear", "LongTerm"
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+# NEX-18 — EcosystemAgent members must be InstitutionalAgents
+###############################################################################
+
+nexus:EcoAgentMemberTypeShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemAgent ;
+    sh:name "EcoAgentMemberTypeShape" ;
+    sh:property [
+        sh:path     nexus:hasMember ;
+        sh:class    ufoc:InstitutionalAgent ;
+        sh:message  "NEX-18: nexus:hasMember vereist ufoc:InstitutionalAgent — leden van een ecosysteem zijn organisaties, geen personen."
+    ] .
+
+
+###############################################################################
+# NEX-19 — EcosystemAgent must not list itself as a member
+###############################################################################
+
+nexus:EcoAgentNoSelfMembershipShape
+    a sh:NodeShape ;
+    sh:targetClass nexus:EcosystemAgent ;
+    sh:name "EcoAgentNoSelfMembershipShape" ;
+    sh:description
+        "NEX-19: Een EcosystemAgent mag zichzelf niet als lid opgeven." ;
+    sh:sparql [
+        sh:name    "NEX-19-no-self-membership" ;
+        sh:message "NEX-19: EcosystemAgent.hasMember mag niet verwijzen naar de agent zelf." ;
+        sh:prefixes shc_nex ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this nexus:hasMember $this .
+            }
+        """
+    ] .

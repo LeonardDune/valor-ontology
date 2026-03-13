@@ -8,19 +8,26 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix shc:  <https://valor-ecosystem.nl/shacl/ufo-c#> .
 @prefix vo:   <https://valor-ecosystem.nl/ontology/> .
-# TRiG version of 00c-ufo-c.shacl.ttl
+# TRiG version of 00c-ufo-c.shacl.ttl — v0.2 (DD-083)
 <https://valor-ecosystem.nl/shacl/ufo-c> {
-    
+
     ###############################################################################
-    # VALOR-O — SHACL Shapes: UFO-C Social Entities (Module 00b)
+    # VALOR-O — SHACL Shapes: UFO-C Social Entities (Module 00c)
     #
-    # Constraints C1–C8 as documented in 00b-ufo-c.ttl.
+    # Constraints C1–C9 as documented in 00c-ufo-c.trig.
+    #
+    # CHANGELOG v0.2 (March 2026) — DD-083:
+    #   C6 updated: Agent partitie is nu Physical ∨ Social
+    #               (niet meer Physical ∨ Institutional)
+    #   C8 updated: Norm.inheresIn range is nu SocialAgent
+    #               (niet meer InstitutionalAgent)
+    #   C9 NEW:     SocialAgent partitie: Institutional ∨ CollectiveSocial
     ###############################################################################
-    
+
     shc:
         a owl:Ontology ;
         dcterms:title "VALOR-O SHACL — UFO-C Social Entities"@nl ;
-        owl:versionInfo "0.1" .
+        owl:versionInfo "0.2" .
     
     
     ###############################################################################
@@ -204,21 +211,22 @@
     
     
     ###############################################################################
-    # C6 — Agent partition: must be PhysicalAgent or InstitutionalAgent
+    # C6 — Agent partition: must be PhysicalAgent OR SocialAgent
+    #      (v0.2 CORRECTIE: was PhysicalAgent | InstitutionalAgent — DD-083)
     ###############################################################################
-    
+
     shc:AgentPartitionShape
         a sh:NodeShape ;
         sh:targetClass ufoc:Agent ;
         sh:name "AgentPartitionShape" ;
         sh:description
-            "C6: Elke Agent moet een PhysicalAgent of InstitutionalAgent zijn." ;
-    
+            "C6 (v0.2): Elke Agent moet een PhysicalAgent of SocialAgent zijn. Gecorrigeerd per UFO-C spec (DD-083): tussenklasse SocialAgent toegevoegd; partitie is nu Physical ∨ Social." ;
+
         sh:or (
-            [ sh:class ufoc:PhysicalAgent      ]
-            [ sh:class ufoc:InstitutionalAgent ]
+            [ sh:class ufoc:PhysicalAgent ]
+            [ sh:class ufoc:SocialAgent   ]
         ) ;
-        sh:message "C6: Agent moet ufoc:PhysicalAgent of ufoc:InstitutionalAgent zijn." .
+        sh:message "C6: Agent moet ufoc:PhysicalAgent of ufoc:SocialAgent zijn (DD-083)." .
     
     
     ###############################################################################
@@ -262,26 +270,46 @@
     
     
     ###############################################################################
-    # C8 — Norm is a SocialObject: must inhere in a collective Agent
+    # C8 — Norm is a SocialObject: must inhere in a SocialAgent
+    #      (v0.2 CORRECTIE: was InstitutionalAgent — DD-083)
+    #      Normen kunnen inheren in zowel InstitutionalAgents (wetten, beleid)
+    #      als in CollectiveSocialAgents (sociale normen, gebruiken).
     ###############################################################################
-    
+
     shc:NormShape
         a sh:NodeShape ;
         sh:targetClass ufoc:Norm ;
         sh:name "NormShape" ;
         sh:description
-            """C8: Een Norm is een SocialObject en moet inheren aan een
-             institutionele of collectieve Agent (normen bestaan door
-             collectieve erkenning).""" ;
-    
+            "C8 (v0.2): Een Norm is een SocialObject en moet inheren aan een SocialAgent. Gecorrigeerd: was InstitutionalAgent, nu SocialAgent om ook normen in CollectiveSocialAgents toe te staan (DD-083)." ;
+
         sh:property [
             sh:path gufo:inheresIn ;
             sh:minCount 1 ;
-            sh:class ufoc:InstitutionalAgent ;
-            sh:message "C8: Norm.inheresIn vereist ten minste één ufoc:InstitutionalAgent."
+            sh:class ufoc:SocialAgent ;
+            sh:message "C8: Norm.inheresIn vereist ten minste één ufoc:SocialAgent (DD-083)."
         ] .
-    
-    
+
+
+    ###############################################################################
+    # C9 (NEW v0.2) — SocialAgent partition: Institutional OR CollectiveSocial
+    #                 (DD-083)
+    ###############################################################################
+
+    shc:SocialAgentPartitionShape
+        a sh:NodeShape ;
+        sh:targetClass ufoc:SocialAgent ;
+        sh:name "SocialAgentPartitionShape" ;
+        sh:description
+            "C9 (NEW v0.2): Elke SocialAgent moet een InstitutionalAgent of CollectiveSocialAgent zijn (DD-083)." ;
+
+        sh:or (
+            [ sh:class ufoc:InstitutionalAgent    ]
+            [ sh:class ufoc:CollectiveSocialAgent ]
+        ) ;
+        sh:message "C9: SocialAgent moet ufoc:InstitutionalAgent of ufoc:CollectiveSocialAgent zijn (DD-083)." .
+
+
     ###############################################################################
     # Prefix declarations for SPARQL constraints
     ###############################################################################
@@ -298,6 +326,6 @@
         ] .
     
     ###############################################################################
-    # END OF SHACL — UFO-C
+    # END OF SHACL — UFO-C  (v0.2)
     ###############################################################################
 }

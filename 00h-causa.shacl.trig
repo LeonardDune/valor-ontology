@@ -1,4 +1,6 @@
 @prefix causa: <https://valor-ecosystem.nl/ontology/causa#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix acta:  <https://valor-ecosystem.nl/ontology/acta#> .
 @prefix shcausa: <https://valor-ecosystem.nl/shacl/causa#> .
 @prefix valor: <https://valor-ecosystem.nl/ontology/> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
@@ -14,7 +16,7 @@
     ###############################################################################
     #  VALOR-O — Module 00h SHACL: CAUSA Causal Loop Diagram Ontologie
     #
-    #  Versie : 0.1 (maart 2026)
+    #  Versie : 0.2 (maart 2026)
     #
     #  Constraints:
     #    §A  Issue
@@ -40,13 +42,30 @@
     #    §F  FeedbackLoop
     #      FL1  FeedbackLoop.loopIncludesClaim — minimaal 2
     #    §G  Ontologische laag — manifestsAsRelation alleen bij Accepted
+    #    §H  CAUSA v0.3 — ManifestationCondition-architectuur (DD-092, DD-093)
+    #      CA-01  ClaimCoverageAssessment.hasConditionCoverage — minimaal 1
+    #      CA-02  Intervention.realisedBy — aanbevolen (Warning)
+    #      CA-03  SolutionModel.boundToAlternative — verplicht, precies 1
     ###############################################################################
     
     
     shcausa:
         a owl:Ontology ;
         dcterms:title "VALOR-O SHACL — CAUSA Causal Loop Diagram Ontologie"@nl ;
-        owl:versionInfo "0.1" .
+        owl:versionInfo "0.2" .
+
+    shcausa:
+        a sh:PrefixDeclaration ;
+        sh:declare [ sh:prefix "causa" ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/causa#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "capax" ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "acta"  ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/acta#"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "valor" ;
+                     sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] ;
+        sh:declare [ sh:prefix "xsd"   ;
+                     sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
     
     
     ###############################################################################
@@ -308,6 +327,71 @@
         ] .
     
     ###############################################################################
-    #  Einde 00h-causa.shacl.ttl (v0.1)
+    #  §H — CAUSA v0.3: ManifestationCondition-architectuur (DD-092, DD-093)
+    ###############################################################################
+
+    shcausa:ClaimCoverageAssessmentShape
+        a sh:NodeShape ;
+        sh:targetClass causa:ClaimCoverageAssessment ;
+        sh:name "ClaimCoverageAssessmentShape" ;
+        sh:description
+            """CA-01: Een ClaimCoverageAssessment moet minimaal één
+             capax:ConditionCoverage-oordeel bevatten. Een lege assessment
+             heeft geen informatiewaarde als gate-Tessera. (DD-092)""" ;
+        sh:property [
+            sh:path     causa:hasConditionCoverage ;
+            sh:minCount 1 ;
+            sh:class    capax:ConditionCoverage ;
+            sh:severity sh:Violation ;
+            sh:message  "CA-01: ClaimCoverageAssessment.hasConditionCoverage vereist minimaal één capax:ConditionCoverage (DD-092)."
+        ] .
+
+
+    shcausa:InterventionRealisationShape
+        a sh:NodeShape ;
+        sh:targetClass causa:Intervention ;
+        sh:name "InterventionRealisationShape" ;
+        sh:description
+            """CA-02 (waarschuwing): Een causa:Intervention zonder
+             causa:realisedBy heeft geen ontwerprealisatie in het actieve
+             alternatief. Dit is detecteerbaar als een ontbrekende schakel
+             tussen beleidstheorie en transactieontwerp. (DD-093)""" ;
+        sh:severity sh:Warning ;
+        sh:sparql [
+            sh:name    "CA-02-realisation-basis" ;
+            sh:message "CA-02 (waarschuwing): Intervention heeft geen causa:realisedBy → acta:TransactionType — realisatiebasis ontbreekt (DD-093)." ;
+            sh:prefixes shcausa: ;
+            sh:select  """
+                SELECT $this WHERE {
+                    FILTER NOT EXISTS {
+                        $this causa:realisedBy ?tt .
+                    }
+                }
+            """
+        ] .
+
+
+    shcausa:SolutionModelBoundShape
+        a sh:NodeShape ;
+        sh:targetClass causa:SolutionModel ;
+        sh:name "SolutionModelBoundShape" ;
+        sh:description
+            """CA-03: Een causa:SolutionModel moet gebonden zijn aan precies
+             één valor:DesignAlternative via causa:boundToAlternative.
+             Een SolutionModel zonder binding is niet vergelijkbaar met andere
+             alternatieven en kan niet dienen als basis voor een
+             ClaimCoverageAssessment. (DD-092)""" ;
+        sh:property [
+            sh:path     causa:boundToAlternative ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    valor:DesignAlternative ;
+            sh:severity sh:Violation ;
+            sh:message  "CA-03: SolutionModel.boundToAlternative vereist precies één valor:DesignAlternative (DD-092)."
+        ] .
+
+
+    ###############################################################################
+    #  Einde 00h-causa.shacl.trig (v0.2)
     ###############################################################################
 }

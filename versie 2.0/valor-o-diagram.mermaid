@@ -1,0 +1,197 @@
+---
+title: VALOR-O — Kernconcepten & Inter-perspectief Relaties
+---
+flowchart TB
+
+  %% ─── STIJLEN PER PERSPECTIEF ─────────────────────────────────────────────
+  classDef foundation  fill:#1e293b,stroke:#475569,color:#f1f5f9,font-size:11px
+  classDef socia       fill:#1e3a5f,stroke:#3b82f6,color:#e0f2fe,font-size:11px
+  classDef lexa        fill:#1a3a2a,stroke:#22c55e,color:#dcfce7,font-size:11px
+  classDef acta        fill:#3b1f00,stroke:#f97316,color:#ffedd5,font-size:11px
+  classDef causa       fill:#2d1b4e,stroke:#a855f7,color:#f3e8ff,font-size:11px
+  classDef cover       fill:#1a2e4a,stroke:#06b6d4,color:#cffafe,font-size:11px
+  classDef capax       fill:#1f2937,stroke:#6366f1,color:#e0e7ff,font-size:11px
+  classDef axia        fill:#2a1a1a,stroke:#ef4444,color:#fee2e2,font-size:11px
+  classDef nexus       fill:#0f2820,stroke:#10b981,color:#d1fae5,font-size:11px
+  classDef delibera    fill:#27201a,stroke:#eab308,color:#fef9c3,font-size:11px
+  classDef sharedNode  fill:#374151,stroke:#9ca3af,color:#f9fafb,font-size:11px
+
+  %% ─── UFO-C FUNDAMENT (gedeeld) ──────────────────────────────────────────
+  subgraph UFO["UFO-C / UFO-L / gUFO  —  Fundament"]
+    direction LR
+    Agent["Agent\n(PhysicalAgent /\nSocialAgent)"]:::foundation
+    SocialCommitment["SocialCommitment\n«relator»"]:::foundation
+    SocialObject["SocialObject\n«mode»"]:::foundation
+    Situation["Situation\n«situation»"]:::foundation
+    Disposition["Disposition\n«mode»"]:::foundation
+  end
+
+  %% ─── SOCIA (i* Actor Analysis) ──────────────────────────────────────────
+  subgraph SOCIA["SOCIA — Actoren"]
+    Actor["Actor\n«role»"]:::socia
+    IntentionalDependency["IntentionalDependency\n«relator»"]:::socia
+  end
+
+  %% ─── LEXA (UFO-L Normatief) ─────────────────────────────────────────────
+  subgraph LEXA["LEXA — Normatief"]
+    Norm["Norm\n«mode»"]:::lexa
+    LegalRelator["LegalRelator\n«relator»"]:::lexa
+    Policy["Policy\n«mode»"]:::lexa
+  end
+
+  %% ─── ACTA (DEMO Transacties) ────────────────────────────────────────────
+  subgraph ACTA["ACTA — Transacties"]
+    TransactionType["TransactionType\n«kind»"]:::acta
+    ActorRole["ActorRole\n«role»"]:::acta
+    LegalRelator_ACTA["LegalRelator\n(ACTA-instantie)\n«relator»"]:::acta
+    TransactionResult["TransactionResult\n«situation»"]:::acta
+  end
+
+  %% ─── CAUSA (Causale Lussen) ──────────────────────────────────────────────
+  subgraph CAUSA["CAUSA — Causaliteit"]
+    CausalVariable["CausalVariable\n«quality»"]:::causa
+    CausalClaim["CausalClaim\n«mode»  ← Belief"]:::causa
+    FeedbackLoop["FeedbackLoop\n«situation»"]:::causa
+    Issue["Issue\n«situation»"]:::causa
+  end
+
+  %% ─── COVER (Waardebeleving) ──────────────────────────────────────────────
+  subgraph COVER["COVER — Waarden"]
+    ValueType["ValueType\n«kind»"]:::cover
+    ValueExperience["ValueExperience\n«event»"]:::cover
+    ValueObject["ValueObject\n«kind»"]:::cover
+  end
+
+  %% ─── CAPAX (Capabilities) ────────────────────────────────────────────────
+  subgraph CAPAX["CAPAX — Capabilities"]
+    Capability["Capability\n«mode» ← Disposition"]:::capax
+    CapabilityRequirement["CapabilityRequirement\n«mode»"]:::capax
+    CapabilityGap["CapabilityGap\n«situation»"]:::capax
+    FeasibilityAssessment["FeasibilityAssessment\n«situation»"]:::capax
+  end
+
+  %% ─── AXIA-VSD (Waardeontwerp) ────────────────────────────────────────────
+  subgraph AXIA["AXIA-VSD — Ontwerpvereisten"]
+    ValueCriterion["ValueCriterion\n«mode»"]:::axia
+    ValueBasedDesignReq["ValueBasedDesign\nRequirement\n«mode»"]:::axia
+    DesignAlternative["DesignAlternative\n«situation»"]:::axia
+  end
+
+  %% ─── NEXUS (Ecosysteem) ──────────────────────────────────────────────────
+  subgraph NEXUS["NEXUS — Ecosysteem"]
+    EcosystemAgent["EcosystemAgent\n«subkind» ←\nCollectiveSocialAgent"]:::nexus
+    CollaborationCommitment["CollaborationCommitment\n«relator»"]:::nexus
+    CollaborativeCapability["CollaborativeCapability\n«mode»"]:::nexus
+    CollaborationCondition["CollaborationCondition\n«situation»"]:::nexus
+    GovernanceDevelopmentNeed["GovernanceDevelopment\nNeed\n«mode»"]:::nexus
+  end
+
+  %% ─── COoDM / DELIBERA ────────────────────────────────────────────────────
+  subgraph DELIBERA["COoDM / DELIBERA — Besluitvorming"]
+    DecisionEpisode["DecisionEpisode\n«event»"]:::delibera
+    Tessera["Tessera (Claim)\nepistemicStatus"]:::delibera
+    ValueAscription["ValueAscription\n«relator»"]:::delibera
+    ValueExperience_COoDM["ValueExperience\n(COoDM)\n«event»"]:::delibera
+  end
+
+
+  %% ═══════════════════════════════════════════════════════════════════════
+  %% ─── FUNDAMENTELE RELATIES BINNEN MODULES ────────────────────────────
+  %% ═══════════════════════════════════════════════════════════════════════
+
+  Agent -->|"speelt ▶"| Actor
+  Agent -->|"draagt ▶"| Disposition
+  Agent -->|"heeft ▶"| SocialObject
+  SocialCommitment -->|"medieert ▶"| Agent
+
+  %% SOCIA
+  IntentionalDependency -->|"medieert ▶"| Actor
+  IntentionalDependency -.->|"specialiseert"| SocialCommitment
+
+  %% LEXA
+  Norm -.->|"specialiseert"| SocialObject
+  LegalRelator -->|"grond-\ninstitutie ▶"| Norm
+  Policy -.->|"specialiseert"| SocialObject
+
+  %% ACTA
+  LegalRelator_ACTA -->|"gegrond in ▶"| Norm
+  TransactionType -->|"creëert ▶"| LegalRelator_ACTA
+  ActorRole -->|"voert uit ▶"| TransactionType
+  TransactionType -->|"brengt voort ▶"| TransactionResult
+
+  %% CAUSA
+  CausalClaim -->|"propositie ▶"| Situation
+  CausalVariable -->|"inhereerrt aan ▶"| Situation
+  FeedbackLoop -->|"bevat ▶"| CausalVariable
+  Issue -.->|"specialiseert"| Situation
+
+  %% COVER
+  ValueExperience -->|"type ▶"| ValueType
+  ValueExperience -->|"object ▶"| ValueObject
+
+  %% CAPAX
+  Capability -.->|"specialiseert"| Disposition
+  CapabilityGap -->|"betreft ▶"| CapabilityRequirement
+  FeasibilityAssessment -->|"omvat ▶"| CapabilityGap
+
+  %% AXIA
+  ValueCriterion -->|"van waarde ▶"| ValueType
+  ValueBasedDesignReq -->|"van criterium ▶"| ValueCriterion
+  ValueBasedDesignReq -->|"voor alternatief ▶"| DesignAlternative
+
+  %% NEXUS
+  EcosystemAgent -.->|"is een ▶"| Agent
+  CollaborationCommitment -.->|"specialiseert"| SocialCommitment
+  CollaborationCommitment -->|"constitueert ▶"| EcosystemAgent
+  CollaborativeCapability -->|"inhereerrt in ▶"| EcosystemAgent
+  CollaborativeCapability -.->|"specialiseert"| Capability
+  CollaborationCondition -->|"vereist ▶"| CollaborationCommitment
+
+  %% DELIBERA
+  Tessera -->|"over ▶"| Situation
+  DecisionEpisode -->|"besluit over ▶"| Tessera
+  ValueAscription -->|"medieert ▶"| Agent
+
+
+  %% ═══════════════════════════════════════════════════════════════════════
+  %% ─── CROSS-MODULE INTEGRATIE-RELATIES (de kern van VALOR-O) ──────────
+  %% ═══════════════════════════════════════════════════════════════════════
+
+  %% ACTA → COVER: het transactieresultaat ÍS het waardeobject
+  TransactionResult -- "IS het\nValueObject ▶" --> ValueObject
+
+  %% COVER → COoDM: waardebeleving fundeert besluitvorming
+  ValueExperience -- "input voor ▶" --> ValueAscription
+
+  %% COVER → AXIA: waardetype als basis voor ontwerpcriterium
+  ValueType -- "basis voor ▶" --> ValueCriterion
+
+  %% AXIA → CAPAX: vereiste genereert capabiliteiteis
+  ValueBasedDesignReq -- "genereert ▶" --> CapabilityRequirement
+
+  %% CAPAX → DELIBERA: haalbaarheid als gate bij faseovergang
+  FeasibilityAssessment -- "gate-\ncriterium ▶" --> DecisionEpisode
+
+  %% CAUSA → DELIBERA: causalclaim als tessera
+  CausalClaim -- "wordt ▶" --> Tessera
+
+  %% SOCIA → ACTA: actor rol in transactie
+  Actor -- "vervult ▶" --> ActorRole
+
+  %% LEXA → ACTA: norm grondslag transactie
+  Norm -- "verankert ▶" --> LegalRelator_ACTA
+
+  %% LEXA → NEXUS: juridische grondslag samenwerking
+  Norm -- "verankert ▶" --> CollaborationCommitment
+
+  %% NEXUS → CAPAX: ecosysteemgap als subtype
+  GovernanceDevelopmentNeed -- "adresseert ▶" --> CapabilityGap
+
+  %% CAUSA → COVER: issue oorzaak raakt waarden
+  Issue -- "bedreigt ▶" --> ValueType
+
+  %% ACTA → NEXUS: architectuur bestaat uit transacties
+  TransactionType -- "onderdeel van ▶" --> CollaborationCondition
+
+  %% DELIBERA → ALLE: beslissing valideert tesserae uit elk perspectief
+  DecisionEpisode -. "valideert\nTesserae uit\nalle perspectieven" .-> Tessera
