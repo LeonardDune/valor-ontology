@@ -430,7 +430,52 @@ valor:FormaAgentPerspective     a valor:AgentPerspective ; rdfs:label "Forma"@en
 
 
 ###############################################################################
-#  §I — Properties
+#  §I — UncertaintyLevel (PAMS-taxonomie, Enserink et al. 2022)
+#
+#  DD-067: Vier niveaus van toenemende onzekerheid.
+#  valor:uncertaintyLevel is optioneel op elke Tessera.
+###############################################################################
+
+valor:UncertaintyLevel
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "UncertaintyLevel"@en , "Onzekerheidsniveau"@nl ;
+    rdfs:comment
+        """Het PAMS-onzekerheidsniveau van een Tessera. Vier waarden:
+         StatisticalRisk, Scenario, DeepUncertainty, Ignorance.
+         Conform PAMS-taxonomie (Enserink et al. 2022). (DD-067)"""@nl .
+
+valor:StatisticalRisk
+    a valor:UncertaintyLevel ;
+    rdfs:label "StatisticalRisk"@en , "Statistisch risico"@nl ;
+    rdfs:comment
+        """Kansverdelingen zijn bekend; onzekerheid uitdrukbaar als
+         waarschijnlijkheid. (PAMS niveau 1, DD-067)"""@nl .
+
+valor:Scenario
+    a valor:UncertaintyLevel ;
+    rdfs:label "Scenario"@en , "Scenario"@nl ;
+    rdfs:comment
+        """Meerdere mogelijke toekomsten zijn benoembaar maar kansen
+         zijn onbekend of betwist. (PAMS niveau 2, DD-067)"""@nl .
+
+valor:DeepUncertainty
+    a valor:UncertaintyLevel ;
+    rdfs:label "DeepUncertainty"@en , "Diepe onzekerheid"@nl ;
+    rdfs:comment
+        """Geen consensus over modellen, waarden of parameters. (PAMS niveau 3, DD-067)"""@nl .
+
+valor:Ignorance
+    a valor:UncertaintyLevel ;
+    rdfs:label "Ignorance"@en , "Onwetendheid"@nl ;
+    rdfs:comment
+        """Onbekend wat onbekend is. (PAMS niveau 4, DD-067)"""@nl .
+
+
+###############################################################################
+#  §J — Properties
 ###############################################################################
 
 # ── Properties op valor:Tessera ──────────────────────────────────────────────
@@ -480,6 +525,15 @@ valor:claimContent
     rdfs:comment
         """De mensleesbare propositionele inhoud van de Tessera. Verplicht
          (SHACL T5). (DD-061, SHACL T3)"""@nl .
+
+valor:uncertaintyLevel
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "uncertainty level"@en , "onzekerheidsniveau"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:UncertaintyLevel ;
+    rdfs:comment
+        """Het PAMS-onzekerheidsniveau van de claim. Optioneel. (DD-067)"""@nl .
 
 valor:inAlternative
     a owl:ObjectProperty ;
@@ -660,6 +714,6 @@ valor:isQuestion
          suggestie (false). Socratische agents stellen vragen. (DD-061)"""@nl .
 
 ###############################################################################
-#  Einde module 00j-tessera.trig (v0.2)
+#  Einde module 00j-tessera.trig (v0.2 + §I UncertaintyLevel DD-067)
 ###############################################################################
 }
