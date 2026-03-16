@@ -1,0 +1,262 @@
+@prefix disc:  <https://valor-ecosystem.nl/ontology/disc#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
+@prefix prov:  <https://www.w3.org/ns/prov#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+# TRiG version of 00w-valor-disc.trig
+<https://valor-ecosystem.nl/ontology/disc> {
+###############################################################################
+#  VALOR-O — Module 00w: DISC Discourse & Deliberation Threads Ontologie
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/disc#  (prefix disc:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00j-tessera, 00k-application, PROV-O (extern)
+#
+#  Kernprincipe:
+#    Een disc:ThreadResolution is de enige geautoriseerde trigger voor
+#    een formele causa:argue-relatie en de bijbehorende epistemische
+#    statuswijziging. De contestatie is daarmee altijd herleidbaar naar:
+#    - wie de discussie startte en wanneer
+#    - wat er gezegd werd (bijdragen, met type)
+#    - welk bewijs werd aangedragen (koppeling naar valor:Evidence)
+#    - wie de groepsbeslissing nam en op welke gronden
+#
+#  Structuur:
+#    §A  DiscussionThread
+#    §B  ThreadContribution + ContributionType
+#    §C  ThreadResolution
+#    §D  Properties
+###############################################################################
+
+valor:disc
+    a owl:Ontology ;
+    rdfs:label "VALOR-O Module 00w — DISC Discourse & Deliberation Threads Ontologie"@nl ;
+    owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/application> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment
+        """Formaliseert deliberatieve discussiethreads als eerste-klasse
+         ontologische entiteiten. Elke formele contestatie is herleidbaar
+         naar de discussie die eraan voorafging. Een disc:ThreadResolution
+         is de enige geautoriseerde trigger voor een argue-relatie en
+         epistemische statuswijziging. (Epic 16 — DISC)"""@nl .
+
+
+###############################################################################
+#  §A — DiscussionThread
+#
+#  Een DiscussionThread is een gestructureerde deliberatieve activiteit
+#  gekoppeld aan één Tessera in één DesignSpace. Als prov:Activity:
+#  wie startte de discussie, wanneer, in welke context.
+###############################################################################
+
+disc:DiscussionThread
+    a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "DiscussionThread"@en , "Discussiethread"@nl ;
+    rdfs:comment
+        """Een gestructureerde deliberatieve activiteit over één Tessera.
+         Verankerd in een DesignSpace als prov:Activity: wie startte de
+         discussie, wanneer, over welke claim. Elke formele contestatie
+         is herleidbaar naar de DiscussionThread die eraan voorafging.
+         Opgeslagen in de named graph van de DesignSpace. (DISC)"""@nl .
+
+
+###############################################################################
+#  §B — ThreadContribution + ContributionType
+#
+#  Een ThreadContribution is één bijdrage binnen een DiscussionThread.
+#  Als prov:Activity: wie droeg bij, wanneer, van welk type.
+#
+#  ContributionType: gesloten vocabulaire van zes bijdragetypes.
+###############################################################################
+
+disc:ThreadContribution
+    a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "ThreadContribution"@en , "Bijdrage"@nl ;
+    rdfs:comment
+        """Één bijdrage binnen een DiscussionThread. Het bijdragetype
+         bepaalt de deliberatieve rol (Vraag, Stelling, Bewijs, etc.).
+         Volledig PROV-O navolgbaar: wie, wanneer, wat. Bij type Bewijs
+         kan een valor:Evidence worden gekoppeld via disc:attachesEvidence.
+         (DISC)"""@nl .
+
+disc:ContributionType
+    a owl:Class ;
+    rdfs:label "ContributionType"@en , "Bijdragetype"@nl ;
+    rdfs:comment
+        """Gesloten vocabulaire van bijdragetypes voor disc:ThreadContributions.
+         Zes instanties bepalen de deliberatieve rol van een bijdrage."""@nl .
+
+# — ContributionType instanties ───────────────────────────────────────────────
+
+disc:Vraag
+    a disc:ContributionType ;
+    rdfs:label "Vraag"@nl , "Question"@en ;
+    rdfs:comment "Een bijdrage die een verduidelijkende vraag stelt over de Tessera."@nl .
+
+disc:Stelling
+    a disc:ContributionType ;
+    rdfs:label "Stelling"@nl , "Statement"@en ;
+    rdfs:comment "Een bewering of standpunt over de Tessera."@nl .
+
+disc:Bewijs
+    a disc:ContributionType ;
+    rdfs:label "Bewijs"@nl , "Evidence"@en ;
+    rdfs:comment "Een bijdrage die empirisch bewijs aandraagt voor of tegen de Tessera."@nl .
+
+disc:Bezwaar
+    a disc:ContributionType ;
+    rdfs:label "Bezwaar"@nl , "Objection"@en ;
+    rdfs:comment "Een bijdrage die bezwaar maakt tegen de Tessera of een eerder argument."@nl .
+
+disc:Toelichting
+    a disc:ContributionType ;
+    rdfs:label "Toelichting"@nl , "Clarification"@en ;
+    rdfs:comment "Een bijdrage die verduidelijking of context biedt bij de Tessera."@nl .
+
+disc:Akkoord
+    a disc:ContributionType ;
+    rdfs:label "Akkoord"@nl , "Agreement"@en ;
+    rdfs:comment "Een bijdrage die instemming uitdrukt met de Tessera of een eerder argument."@nl .
+
+
+###############################################################################
+#  §C — ThreadResolution
+#
+#  Een ThreadResolution is het formele groepsoordeel dat een
+#  DiscussionThread afsluit. Als prov:Entity: het gecreëerde kennisartefact
+#  van de deliberatie dat de argue-relatie autoriseert.
+###############################################################################
+
+disc:ThreadResolution
+    a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "ThreadResolution"@en , "Threadresolutie"@nl ;
+    rdfs:comment
+        """Het formele groepsoordeel dat een DiscussionThread afsluit.
+         Autoriseert de argue-relatie en de epistemische statuswijziging
+         van de doelTessera. Als prov:Entity: het gecreëerde kennisartefact
+         van de deliberatie — herleidbaar naar disc:motivatesArgue.
+         Vereist MODERATOR-rechten. (DISC)"""@nl .
+
+
+###############################################################################
+#  §D — Properties
+###############################################################################
+
+# ── Properties op disc:DiscussionThread ──────────────────────────────────────
+
+disc:aboutTessera
+    a owl:ObjectProperty ;
+    rdfs:label "about tessera"@en , "over tessera"@nl ;
+    rdfs:domain disc:DiscussionThread ;
+    rdfs:range  valor:Tessera ;
+    rdfs:comment "De Tessera waarover deze discussiethread gaat. (DISC)"@nl .
+
+disc:hasContribution
+    a owl:ObjectProperty ;
+    rdfs:label "has contribution"@en , "heeft bijdrage"@nl ;
+    rdfs:domain disc:DiscussionThread ;
+    rdfs:range  disc:ThreadContribution ;
+    rdfs:comment "Een bijdrage binnen deze discussiethread. (DISC)"@nl .
+
+disc:hasResolution
+    a owl:ObjectProperty ;
+    rdfs:label "has resolution"@en , "heeft resolutie"@nl ;
+    rdfs:domain disc:DiscussionThread ;
+    rdfs:range  disc:ThreadResolution ;
+    rdfs:comment "De formele resolutie die deze discussiethread afsluit. (DISC)"@nl .
+
+disc:threadInDesignSpace
+    a owl:ObjectProperty ;
+    rdfs:label "thread in design space"@en , "thread in design space"@nl ;
+    rdfs:domain disc:DiscussionThread ;
+    rdfs:range  app:DesignSpace ;
+    rdfs:comment "De DesignSpace waarbinnen deze discussiethread bestaat. (DISC)"@nl .
+
+# ── Properties op disc:ThreadContribution ────────────────────────────────────
+
+disc:contributionType
+    a owl:ObjectProperty ;
+    rdfs:label "contribution type"@en , "bijdragetype"@nl ;
+    rdfs:domain disc:ThreadContribution ;
+    rdfs:range  disc:ContributionType ;
+    rdfs:comment "Het type van deze bijdrage (Vraag, Stelling, Bewijs, etc.). (DISC)"@nl .
+
+disc:contributedBy
+    a owl:ObjectProperty ;
+    rdfs:label "contributed by"@en , "bijgedragen door"@nl ;
+    rdfs:domain disc:ThreadContribution ;
+    rdfs:comment "De gebruiker die deze bijdrage heeft ingediend. (DISC)"@nl .
+
+disc:contributedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "contributed at"@en , "bijgedragen op"@nl ;
+    rdfs:domain disc:ThreadContribution ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip van deze bijdrage. (DISC)"@nl .
+
+disc:messageContent
+    a owl:DatatypeProperty ;
+    rdfs:label "message content"@en , "berichtinhoud"@nl ;
+    rdfs:domain disc:ThreadContribution ;
+    rdfs:range  xsd:string ;
+    rdfs:comment "De tekstinhoud van deze bijdrage. (DISC)"@nl .
+
+disc:attachesEvidence
+    a owl:ObjectProperty ;
+    rdfs:label "attaches evidence"@en , "koppelt bewijs"@nl ;
+    rdfs:domain disc:ThreadContribution ;
+    rdfs:comment
+        """Koppelt een valor:Evidence-instantie aan deze bijdrage.
+         Brug tussen deliberatie en het formele bewijs-domein. (DISC)"""@nl .
+
+# ── Properties op disc:ThreadResolution ──────────────────────────────────────
+
+disc:resolutionOutcome
+    a owl:ObjectProperty ;
+    rdfs:label "resolution outcome"@en , "uitkomst resolutie"@nl ;
+    rdfs:domain disc:ThreadResolution ;
+    rdfs:range  valor:EpistemicStatus ;
+    rdfs:comment
+        """De epistemische status die door deze resolutie wordt toegekend
+         aan de doelTessera. Triggert de argue-logica. (DISC)"""@nl .
+
+disc:resolutionRationale
+    a owl:DatatypeProperty ;
+    rdfs:label "resolution rationale"@en , "resolutietoelichting"@nl ;
+    rdfs:domain disc:ThreadResolution ;
+    rdfs:range  xsd:string ;
+    rdfs:comment "De toelichting bij de resolutie (vrij tekst, verplicht). (DISC)"@nl .
+
+disc:resolvedBy
+    a owl:ObjectProperty ;
+    rdfs:label "resolved by"@en , "opgelost door"@nl ;
+    rdfs:domain disc:ThreadResolution ;
+    rdfs:comment "De moderator die de resolutie heeft vastgelegd. (DISC)"@nl .
+
+disc:resolvedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "resolved at"@en , "opgelost op"@nl ;
+    rdfs:domain disc:ThreadResolution ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:comment "Het tijdstip waarop de resolutie is vastgelegd. (DISC)"@nl .
+
+disc:motivatesArgue
+    a owl:ObjectProperty ;
+    rdfs:label "motivates argue"@en , "motiveert argue"@nl ;
+    rdfs:domain disc:ThreadResolution ;
+    rdfs:comment
+        """Traceerbaarheidspijl: koppelt de ThreadResolution aan de
+         argue-relatie die erdoor is getriggerd. Maakt de contestatie
+         herleidbaar naar de deliberatie. (DISC)"""@nl .
+
+###############################################################################
+#  Einde module 00w-valor-disc.trig (v0.1)
+###############################################################################
+}
