@@ -7,19 +7,19 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 # ============================================================
-# VALOR-O VoID Catalog — versie 0.2 (2026-03-07)
+# VALOR-O VoID Catalog — versie 0.3 (2026-03-16)
 # SPARQL endpoint: https://begrippen.valor-ecosystem.nl/sparql
 # ============================================================
 
 <https://valor-ecosystem.nl/void/catalog> {
 
 <https://valor-ecosystem.nl/void/catalog> a owl:Ontology ;
-    owl:versionInfo "0.2" ;
+    owl:versionInfo "0.3" ;
     dcterms:title "VALOR-O ontology & shapes catalog"@nl ;
     dcterms:description "VoID metadata voor alle VALOR-O module graphs"@nl ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-04"^^xsd:date ;
-    dcterms:modified "2026-03-13"^^xsd:date ;
+    dcterms:modified "2026-03-16"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 11000 ;
     void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
@@ -58,11 +58,17 @@
         <https://valor-ecosystem.nl/ontology/axia-vsd> ,
         <https://valor-ecosystem.nl/ontology/nexus> ,
         <https://valor-ecosystem.nl/ontology/valor-core> ,
+        <https://valor-ecosystem.nl/ontology/demos> ,
+        <https://valor-ecosystem.nl/ontology/lexa-ext> ,
+        <https://valor-ecosystem.nl/ontology/capax-ext> ,
         <https://valor-ecosystem.nl/shacl/sysont> ,
         <https://valor-ecosystem.nl/shacl/capax> ,
         <https://valor-ecosystem.nl/shacl/axia-vsd> ,
         <https://valor-ecosystem.nl/shacl/nexus> ,
-        <https://valor-ecosystem.nl/shacl/valor-core> .
+        <https://valor-ecosystem.nl/shacl/valor-core> ,
+        <https://valor-ecosystem.nl/shacl/demos> ,
+        <https://valor-ecosystem.nl/shacl/lexa-ext> ,
+        <https://valor-ecosystem.nl/shacl/capax-ext> .
 
 # ============================================================
 # Laag 1 — Foundational ontologies
@@ -432,9 +438,10 @@
 
 <https://valor-ecosystem.nl/ontology/tessera> a void:Dataset ;
     dcterms:title "TESSERA epistemic superclass module" ;
-    dcterms:description "Centrale Laag 3: valor:Tessera als superklasse van alle perspectief-claims. Definieert 5-state epistemische machine, DecisionEpisode, Vote, Evidence, IBIS-argumentatierelaties." ;
+    dcterms:description "Centrale Laag 3: valor:Tessera als superklasse van alle perspectief-claims. Definieert 5-state epistemische machine, DecisionEpisode, Vote, Evidence, IBIS-argumentatierelaties. v0.3: GDIFlag (DD-094), AgentPrinciple + agentPrinciple (DD-095)." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:modified "2026-03-16"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 87 ;
     void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
@@ -443,9 +450,10 @@
 
 <https://valor-ecosystem.nl/shacl/tessera> a void:Dataset ;
     dcterms:title "SHACL shapes for TESSERA" ;
-    dcterms:description "T1-T6 Tessera + DE1-DE2 DecisionEpisode + V1 Vote constraints." ;
+    dcterms:description "T1-T6 Tessera + DE1-DE2 DecisionEpisode + V1 Vote constraints. v0.2: TG-02 GDI TruthfulnessIssue Warning, TG-03 AgentTessera vereist agentPrinciple (DD-094, DD-095)." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:modified "2026-03-16"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 63 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/tessera> ;
@@ -470,9 +478,10 @@
 
 <https://valor-ecosystem.nl/shacl/application> a void:Dataset ;
     dcterms:title "SHACL shapes for APPLICATION" ;
-    dcterms:description "I1 Issue, DS1 DesignSpace, PH1 DesignPhase, ALT1 DesignAlternative, P1 Participant constraints." ;
+    dcterms:description "I1 Issue, DS1 DesignSpace, PH1 DesignPhase, ALT1 DesignAlternative, P1 Participant constraints. v0.2: PR1 mapsToRBACRole, PR2 roleWeight shapes toegevoegd (DD-091)." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-07"^^xsd:date ;
+    dcterms:modified "2026-03-16"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:triples 57 ;
     void:inDataset <https://valor-ecosystem.nl/ontology/application> ;
@@ -482,9 +491,10 @@
 
 <https://valor-ecosystem.nl/ontology/valor-core> a void:Dataset ;
     dcterms:title "VALOR-CORE toepassingsontologie kernlaag" ;
-    dcterms:description "Kernconcepten voor VALOR-toepassing: CollectiveIntentionalCommunity, IssueCommunity, Issue. Legitimeringsbasis van EcosystemAgent (DD-091, Searle 1995)." ;
+    dcterms:description "Kernconcepten voor VALOR-toepassing: CollectiveIntentionalCommunity, IssueCommunity, Issue. Legitimeringsbasis van EcosystemAgent (DD-091, Searle 1995). v0.2: perspectiveLoA annotaties, HardEthicsCompliance/SoftEthicsCommitment klassen (DD-096, DD-097)." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-12"^^xsd:date ;
+    dcterms:modified "2026-03-16"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/valor-core.trig> ;
@@ -492,13 +502,81 @@
 
 <https://valor-ecosystem.nl/shacl/valor-core> a void:Dataset ;
     dcterms:title "SHACL shapes for VALOR-CORE" ;
-    dcterms:description "VC-1 t/m VC-5: IssueCommunity, Issue, EcosystemAgent-legitimiteit en CollectiveIntentionalCommunity-partitie constraints." ;
+    dcterms:description "VC-1 t/m VC-5: IssueCommunity, Issue, EcosystemAgent-legitimiteit en CollectiveIntentionalCommunity-partitie constraints. v0.2: SC-01 HardEthicsCompliance, SC-02 SoftEthicsCommitment (DD-096, DD-097)." ;
     dcterms:creator "VALOR-O development team" ;
     dcterms:issued "2026-03-12"^^xsd:date ;
+    dcterms:modified "2026-03-16"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     void:inDataset <https://valor-ecosystem.nl/ontology/valor-core> ;
     void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
     void:dataDump <https://valor-ecosystem.nl/data/valor-core.shacl.trig> ;
+    void:vocabulary sh: .
+
+# ============================================================
+# Laag 5 — Extensie modules (gate-assessments)
+# ============================================================
+
+<https://valor-ecosystem.nl/ontology/demos> a void:Dataset ;
+    dcterms:title "DEMOS democratic inclusivity ontology" ;
+    dcterms:description "Democratische inclusiviteitstoetsing: RepresentationGap, ParticipationBarrier (4 subtypen), InclusivityAssessment. SOCIA-extensie: StakeholderGroup. Gate-assessment voor faseovergangen (DD-101, DD-102)." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/demos.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/shacl/demos> a void:Dataset ;
+    dcterms:title "SHACL shapes for DEMOS" ;
+    dcterms:description "DM-01 t/m DM-10: IssueCommunity assessment-eis (Warning), InclusivityAssessment completeness, RepresentationGap/ParticipationBarrier constraints, gecontroleerde vocabulaires (DD-101, DD-102)." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/demos> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/demos.shacl.trig> ;
+    void:vocabulary sh: .
+
+<https://valor-ecosystem.nl/ontology/lexa-ext> a void:Dataset ;
+    dcterms:title "LEXA-EXT legislative gap ontology" ;
+    dcterms:description "Wetgevingshiaten en normatieve haalbaarheid: LegislativeGap, LegislativeRequirement, LegislativeDevelopmentNeed, NormativeFeasibilityAssessment. UFO-L extensie. Gate-assessment voor faseovergangen (DD-103, DD-104)." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/lexa-ext.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/shacl/lexa-ext> a void:Dataset ;
+    dcterms:title "SHACL shapes for LEXA-EXT" ;
+    dcterms:description "LG-01 t/m LG-04 LegislativeGap, LR-01/LR-02 LegislativeRequirement, LD-01 t/m LD-03 LegislativeDevelopmentNeed, NF-01 t/m NF-05 NormativeFeasibilityAssessment constraints (DD-103, DD-104)." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/lexa-ext> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/lexa-ext.shacl.trig> ;
+    void:vocabulary sh: .
+
+<https://valor-ecosystem.nl/ontology/capax-ext> a void:Dataset ;
+    dcterms:title "CAPAX-EXT mandate & political will ontology" ;
+    dcterms:description "Mandaat- en politieke-wilcapaciteiten: MandateCapability, PoliticalWillCapability, CapabilityNature. UFO-L brug-axioma's (CompetenceRelator → MandateCapability). CAPAX extensie (DD-105, DD-106)." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/capax-ext.trig> ;
+    void:vocabulary gufo: .
+
+<https://valor-ecosystem.nl/shacl/capax-ext> a void:Dataset ;
+    dcterms:title "SHACL shapes for CAPAX-EXT" ;
+    dcterms:description "CX-01 MandateCapability inhereerrt aan InstitutionalAgent, CX-02 groundsMandate Warning, CX-03 MandateCapabilityGap, CX-04 PoliticalWillCapabilityGap vereist politicalSignal, CX-05 capabilityNature vocab (DD-105, DD-106)." ;
+    dcterms:creator "VALOR-O development team" ;
+    dcterms:issued "2026-03-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    void:inDataset <https://valor-ecosystem.nl/ontology/capax-ext> ;
+    void:sparqlEndpoint <https://begrippen.valor-ecosystem.nl/sparql> ;
+    void:dataDump <https://valor-ecosystem.nl/data/capax-ext.shacl.trig> ;
     void:vocabulary sh: .
 
 } # einde <https://valor-ecosystem.nl/void/catalog>

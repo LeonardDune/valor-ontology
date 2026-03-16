@@ -1,0 +1,564 @@
+@prefix demos: <https://valor-ecosystem.nl/ontology/demos#> .
+@prefix socia: <https://valor-ecosystem.nl/ontology/socia#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+<https://valor-ecosystem.nl/ontology/demos> {
+
+###############################################################################
+#  VALOR-O — Module 00t: DEMOS (Democratic Inclusivity Assessment)
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/demos#  (prefix demos:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00i-socia, 00s-valor-core, 00j-tessera
+#
+#  Doel:
+#    Formaliseert de democratische inclusiviteitstoetsing van VALOR: de mate
+#    waarin de IssueCommunity alle relevante stakeholdergroepen representeert.
+#
+#    Kernmechanisme:
+#      1. StakeholderGroup — een collectief van stakeholders met gedeeld belang
+#         (SOCIA-extensie; ontbrak in 00i-socia).
+#      2. RepresentationGap — as-is situatie waarbij een stakeholdergroep
+#         ontbreekt of onvoldoende vertegenwoordigd is.
+#      3. ParticipationBarrier — drempel die zinvolle deelname belemmert
+#         (4 subtypes: digitaal, taal, cognitief, machtsverschil).
+#      4. AccessibilityMeasure — to-be maatregel die een barrier adresseert.
+#      5. InclusivityAssessment — gate-Tessera bij elke faseovergang.
+#
+#    Platform-indicator (geen Tessera):
+#      demos:InclusivityCoverage = vertegenwoordigde High-belang-groepen /
+#      totaal High-belang-groepen (SPARQL-berekening, zie §F).
+#
+#  Design decisions: DD-101, DD-102
+#  Structuur:
+#    §A  StakeholderGroup (SOCIA-extensie)
+#    §B  RepresentationGap
+#    §C  ParticipationBarrier (+ 4 subtypes)
+#    §D  AccessibilityMeasure
+#    §E  InclusivityAssessment (gate-Tessera)
+#    §F  Gecontroleerde vocabulaires
+#    §G  Properties
+###############################################################################
+
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+vo:demos
+    a owl:Ontology ;
+    owl:imports <https://valor-ecosystem.nl/ontology/socia> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/valor-core> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
+    dcterms:title "VALOR-O — Module 00t: DEMOS — Democratic Inclusivity Assessment"@nl ;
+    dcterms:description
+        """Formaliseert democratische inclusiviteit als vierde gate-dimensie
+         in VALOR. Biedt de ontologische basis voor detectie van representatie-
+         gaps, participatiedrempels en de aggregerende InclusivityAssessment
+         als gate-Tessera bij faseovergangen. (DD-101, DD-102)"""@nl ;
+    owl:versionInfo "0.1" ;
+    dcterms:created "2026-03-16" ;
+    valor:primaryObservables
+        """Stakeholdergroepen (StakeholderGroup), representatie-gaps
+         (RepresentationGap), participatiedrempels (ParticipationBarrier,
+         4 subtypes), toegankelijkheidsmaatregelen (AccessibilityMeasure),
+         en de inclusiviteitstoets (InclusivityAssessment)."""@nl ;
+    valor:excludedCategories
+        """De inhoud van wat stakeholders bijdragen (→ Causa, Axia, Socia);
+         juridische inspraakverplichtingen (→ Lexa);
+         de uitvoerbaarheid van toegankelijkheidsmaatregelen (→ CAPAX)."""@nl ;
+    valor:resultingBlindspots
+        """DEMOS detecteert afwezigheid van groepen maar niet de kwaliteit
+         van hun bijdragen als ze wél aanwezig zijn (Delibera-blindspot).
+         Wat een 'voldoende representatieve groep' is, blijft normatief
+         contesteerbaar (→ SoftEthicsCommitment)."""@nl .
+
+
+###############################################################################
+#  §A — StakeholderGroup (SOCIA-extensie)  (DD-101)
+#
+#  socia:StakeholderGroup ontbreekt in 00i-socia. DEMOS introduceert het
+#  als collectieve klasse: een groep stakeholders met gedeeld belang bij
+#  een Issue. Analoog aan ufoc:CollectiveSocialAgent maar gericht op
+#  gedeeld belang (niet op gedeelde actie zoals EcosystemAgent).
+###############################################################################
+
+socia:StakeholderGroup
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:CollectiveSocialAgent ;
+    rdfs:label "StakeholderGroup"@en , "Stakeholdergroep"@nl ;
+    rdfs:comment
+        """Een collectief van stakeholders met een gedeeld belang bij een Issue.
+         Definieert een categorie van betrokkenen waarvan DEMOS controleert
+         of zij vertegenwoordigd zijn in de IssueCommunity.
+
+         Niet: een specifieke organisatie of individu, maar een groepering op basis
+         van gedeeld belang of gedeelde kwetsbaarheid (bijv. 'schuldenaren met
+         licht verstandelijke beperking', 'kleinschalige werkgevers').
+         (DD-101, SOCIA-extensie)"""@nl ;
+    skos:example
+        """'Schuldenaren zonder digitale toegang' — een StakeholderGroup die
+         een DigitalAccessBarrier ervaart en daardoor risico loopt op
+         een RepresentationGap in de IssueCommunity."""@nl .
+
+socia:interestLevel
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "interest level"@en , "belang-niveau"@nl ;
+    rdfs:domain socia:StakeholderGroup ;
+    rdfs:range  socia:InterestLevel ;
+    rdfs:comment
+        """Het belang-niveau van de stakeholdergroep bij het Issue.
+         Bepaalt de representatie-drempel voor DEMOS:
+         High → vertegenwoordiging verplicht documenteren indien afwezig.
+         (DD-101)"""@nl .
+
+socia:InterestLevel
+    a owl:Class ;
+    rdfs:label "InterestLevel"@en , "Belang-niveau"@nl ;
+    rdfs:comment "Gecontroleerd vocabulaire voor socia:interestLevel."@nl .
+
+socia:HighInterest    a socia:InterestLevel ; rdfs:label "High"@en , "Hoog"@nl .
+socia:MediumInterest  a socia:InterestLevel ; rdfs:label "Medium"@en , "Gemiddeld"@nl .
+socia:LowInterest     a socia:InterestLevel ; rdfs:label "Low"@en , "Laag"@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers ( socia:HighInterest socia:MediumInterest socia:LowInterest ) ] .
+
+
+###############################################################################
+#  §B — RepresentationGap  (DD-102)
+###############################################################################
+
+demos:RepresentationGap
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "RepresentationGap"@en , "Representatiekloof"@nl ;
+    rdfs:comment
+        """Een as-is situatie waarbij een socia:StakeholderGroup niet of
+         onvoldoende vertegenwoordigd is in de valor:IssueCommunity.
+
+         Als gufo:Situation: citeerbaar als Tessera-inhoud (AsIs-Tessera),
+         traceerbaar in Delibera, en als democratisch deficit zichtbaar
+         bij faseovergangen (DD-102).
+
+         Aanwezigheid van RepresentationGap impliceert dat de
+         InclusivityAssessment niet Adequate kan zijn tenzij de
+         afwezigheid expliciet is gedocumenteerd via absenceReason."""@nl ;
+    skos:example
+        """'Schuldenaren <25 jaar zijn geen lid van de IssueCommunity voor
+         de schuldhulpverlening-DesignSpace' — absenceReason: Uninvited."""@nl .
+
+
+###############################################################################
+#  §C — ParticipationBarrier (+ 4 subtypes)  (DD-102)
+###############################################################################
+
+demos:ParticipationBarrier
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "ParticipationBarrier"@en , "Participatiedrempel"@nl ;
+    rdfs:comment
+        """Een sociaal object dat een structurele drempel formaliseert die
+         een socia:StakeholderGroup belemmert om zinvol deel te nemen aan
+         de IssueCommunity of het VALOR-ontwerpproces.
+
+         Abstract: gebruik altijd een van de vier subtypes.
+         Adresseerbaar via demos:AccessibilityMeasure (to-be). (DD-102)"""@nl .
+
+demos:DigitalAccessBarrier
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf demos:ParticipationBarrier ;
+    rdfs:label "DigitalAccessBarrier"@en , "Digitale-toegangsdrempel"@nl ;
+    rdfs:comment
+        """Het VALOR-ontwerpproces vereist digitale toegang (platform, device,
+         internetverbinding) waarover de betrokken stakeholdergroep niet
+         beschikt. (DD-102)"""@nl .
+
+demos:LanguageBarrier
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf demos:ParticipationBarrier ;
+    rdfs:label "LanguageBarrier"@en , "Taaldrempel"@nl ;
+    rdfs:comment
+        """De werktaal van het VALOR-ontwerpproces sluit de stakeholdergroep
+         uit (anderstaligen, laaggeletterdheid, vakjargon). (DD-102)"""@nl .
+
+demos:CognitiveLoadBarrier
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf demos:ParticipationBarrier ;
+    rdfs:label "CognitiveLoadBarrier"@en , "Cognitieve-belastingsdrempel"@nl ;
+    rdfs:comment
+        """De complexiteit van het modelleringsproces of de hoeveelheid
+         informatie overstijgt het participatieniveau van de stakeholdergroep
+         (bijv. LVB, dementie, ernstige schulden-stress). (DD-102)"""@nl .
+
+demos:PowerImbalanceBarrier
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf demos:ParticipationBarrier ;
+    rdfs:label "PowerImbalanceBarrier"@en , "Machtsonevenwichtigheidsdrempel"@nl ;
+    rdfs:comment
+        """Machtsverschillen tussen stakeholdergroepen ontmoedigen bijdragen
+         van de minder machtige groep (bijv. burgers tegenover overheid,
+         uitvoerenden tegenover management). (DD-102)"""@nl .
+
+[ a owl:AllDisjointClasses ;
+  owl:members (
+      demos:DigitalAccessBarrier
+      demos:LanguageBarrier
+      demos:CognitiveLoadBarrier
+      demos:PowerImbalanceBarrier
+  ) ] .
+
+
+###############################################################################
+#  §D — AccessibilityMeasure  (DD-102)
+###############################################################################
+
+demos:AccessibilityMeasure
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "AccessibilityMeasure"@en , "Toegankelijkheidsmaatregel"@nl ;
+    rdfs:comment
+        """Een to-be sociaal object dat beschrijft hoe een
+         demos:ParticipationBarrier wordt geadresseerd.
+
+         Als ToBe-Tessera: alternatief-specifiek, aan te nemen in een
+         valor:DecisionEpisode. Effectiviteit is contesteerbaar.
+         (DD-102)"""@nl ;
+    skos:example
+        """'Inzet van ervaringsdeskundige als intermediair voor de groep
+         schuldenaren met LVB' — adresseert CognitiveLoadBarrier via
+         bemiddeling en vereenvoudigde communicatie."""@nl .
+
+
+###############################################################################
+#  §E — InclusivityAssessment (gate-Tessera)  (DD-101)
+###############################################################################
+
+demos:InclusivityAssessment
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "InclusivityAssessment"@en , "Inclusiviteitsbeoordeling"@nl ;
+    rdfs:comment
+        """Gate-Tessera die de mate van representativiteit van de
+         valor:IssueCommunity beoordeelt bij elke faseovergang.
+
+         Derde dimensie in de integrale haalbaarheidsmatrix per faseovergang:
+           1. capax:FeasibilityAssessment         — uitvoerbaarheid
+           2. causa:ClaimCoverageAssessment        — theoretische adequaatheid
+           3. demos:InclusivityAssessment          — democratische legitimiteit
+           4. lexa:NormativeFeasibilityAssessment  — normatieve haalbaarheid
+
+         Gate-logica:
+           Inadequate    → faseovergang geblokkeerd totdat epistemicStatus
+                           Accepted is met expliciete documentatie.
+           PartiallyAdequate → faseovergang mogelijk; gaps gedocumenteerd.
+           Adequate      → alle High-belang-groepen vertegenwoordigd of
+                           bewust gedocumenteerd afwezig.
+
+         Frequentie: één InclusivityAssessment per fase (per IssueCommunity).
+         (DD-101)"""@nl .
+
+
+###############################################################################
+#  §F — Gecontroleerde vocabulaires
+###############################################################################
+
+# ── demos:InclusivityOutcome ─────────────────────────────────────────────────
+
+demos:InclusivityOutcome
+    a owl:Class ;
+    rdfs:label "InclusivityOutcome"@en , "Inclusiviteitsuitkomst"@nl ;
+    rdfs:comment
+        "Gecontroleerd vocabulaire voor demos:assessmentOutcome. (DD-101)"@nl .
+
+demos:Adequate
+    a demos:InclusivityOutcome ;
+    rdfs:label "Adequate"@en , "Adequaat"@nl ;
+    rdfs:comment
+        """Alle stakeholdergroepen met hoog belang zijn vertegenwoordigd, óf
+         hebben actief afgezien van deelname met gedocumenteerde reden.
+         Faseovergang onbelemmerd. (DD-101)"""@nl .
+
+demos:PartiallyAdequate
+    a demos:InclusivityOutcome ;
+    rdfs:label "PartiallyAdequate"@en , "Gedeeltelijk adequaat"@nl ;
+    rdfs:comment
+        """Sommige High-belang-groepen ontbreken; het ontwerp gaat door met
+         expliciet vastgelegde RepresentationGaps en een plan om ze te
+         adresseren. Faseovergang mogelijk. (DD-101)"""@nl .
+
+demos:Inadequate
+    a demos:InclusivityOutcome ;
+    rdfs:label "Inadequate"@en , "Inadequaat"@nl ;
+    rdfs:comment
+        """Wezenlijke stakeholdergroepen ontbreken zonder documentatie of
+         plan. Faseovergang geblokkeerd totdat InclusivityAssessment
+         epistemicStatus = Accepted met onderbouwing. (DD-101)"""@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      demos:Adequate demos:PartiallyAdequate demos:Inadequate
+  ) ] .
+
+# ── demos:AbsenceReason ──────────────────────────────────────────────────────
+
+demos:AbsenceReason
+    a owl:Class ;
+    rdfs:label "AbsenceReason"@en , "Afwezigheidsreden"@nl ;
+    rdfs:comment
+        "Gecontroleerd vocabulaire voor demos:absenceReason. (DD-102)"@nl .
+
+demos:Uninvited
+    a demos:AbsenceReason ;
+    rdfs:label "Uninvited"@en , "Niet uitgenodigd"@nl ;
+    rdfs:comment "Groep is niet uitgenodigd voor deelname. Vereist actie."@nl .
+
+demos:DeclinedParticipation
+    a demos:AbsenceReason ;
+    rdfs:label "DeclinedParticipation"@en , "Deelname geweigerd"@nl ;
+    rdfs:comment
+        "Groep is uitgenodigd maar heeft actief afgezien van deelname.
+         Documentatie van weigering verplicht (PartiallyAdequate of Adequate)."@nl .
+
+demos:StructuralBarrier
+    a demos:AbsenceReason ;
+    rdfs:label "StructuralBarrier"@en , "Structurele drempel"@nl ;
+    rdfs:comment
+        "Groep is niet bereikbaar vanwege een ParticipationBarrier.
+         Vereist AccessibilityMeasure als to-be Tessera."@nl .
+
+demos:UnknownReason
+    a demos:AbsenceReason ;
+    rdfs:label "Unknown"@en , "Onbekend"@nl ;
+    rdfs:comment
+        "Reden van afwezigheid onbekend. Automatisch voorgesteld bij
+         gap-detectie; moet worden bijgewerkt."@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      demos:Uninvited demos:DeclinedParticipation
+      demos:StructuralBarrier demos:UnknownReason
+  ) ] .
+
+
+###############################################################################
+#  §G — Properties
+###############################################################################
+
+# ── Properties op valor:IssueCommunity ───────────────────────────────────────
+#  N.B.: valor:IssueCommunity is gedefinieerd in 00s-valor-core.
+#        Bridge-properties hier zijn geldig zodra de volledige set is geladen.
+
+demos:hasInclusivityAssessment
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "has inclusivity assessment"@en ,
+               "heeft inclusiviteitsbeoordeling"@nl ;
+    rdfs:domain valor:IssueCommunity ;
+    rdfs:range  demos:InclusivityAssessment ;
+    rdfs:comment
+        """Koppelt een IssueCommunity aan haar InclusivityAssessment voor de
+         huidige fase. Verplicht bij elke faseovergang (SHACL DM-01). Maximaal
+         één per fase; SPARQL-query bepaalt de actuele (nieuwste). (DD-101)"""@nl .
+
+# ── Properties op demos:RepresentationGap ────────────────────────────────────
+
+demos:absentGroup
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "absent group"@en , "afwezige groep"@nl ;
+    rdfs:domain demos:RepresentationGap ;
+    rdfs:range  socia:StakeholderGroup ;
+    rdfs:comment
+        "De stakeholdergroep die ontbreekt in de IssueCommunity. (DD-102)"@nl .
+
+demos:absenceReason
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "absence reason"@en , "afwezigheidsreden"@nl ;
+    rdfs:domain demos:RepresentationGap ;
+    rdfs:range  demos:AbsenceReason ;
+    rdfs:comment
+        """Waarom de groep afwezig is. Gecontroleerd vocabulaire:
+         Uninvited | DeclinedParticipation | StructuralBarrier | Unknown.
+         (DD-102)"""@nl .
+
+demos:relatedBarrier
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "related barrier"@en , "gerelateerde drempel"@nl ;
+    rdfs:domain demos:RepresentationGap ;
+    rdfs:range  demos:ParticipationBarrier ;
+    rdfs:comment
+        "Optioneel: de ParticipationBarrier(s) die de gap veroorzaken. (DD-102)"@nl .
+
+demos:gapOccursInCommunity
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "gap occurs in community"@en ,
+               "kloof treedt op in gemeenschap"@nl ;
+    rdfs:domain demos:RepresentationGap ;
+    rdfs:range  valor:IssueCommunity ;
+    rdfs:comment
+        "De IssueCommunity waarbinnen deze representatiekloof is geconstateerd."@nl .
+
+# ── Properties op demos:ParticipationBarrier ─────────────────────────────────
+
+demos:affectedGroup
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "affected group"@en , "betrokken groep"@nl ;
+    rdfs:domain demos:ParticipationBarrier ;
+    rdfs:range  socia:StakeholderGroup ;
+    rdfs:comment
+        "De stakeholdergroep die door deze drempel wordt belemmerd. (DD-102)"@nl .
+
+demos:barrierDescription
+    a owl:DatatypeProperty ;
+    rdfs:label "barrier description"@en , "drempel-omschrijving"@nl ;
+    rdfs:domain demos:ParticipationBarrier ;
+    rdfs:range  rdf:langString ;
+    rdfs:comment
+        "Beschrijving van de concrete drempel in context van het DesignSpace. (DD-102)"@nl .
+
+demos:addressedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "addressed by"@en , "geadresseerd door"@nl ;
+    rdfs:domain demos:ParticipationBarrier ;
+    rdfs:range  demos:AccessibilityMeasure ;
+    rdfs:comment
+        "De AccessibilityMeasure(s) die deze drempel beogen te adresseren. (DD-102)"@nl .
+
+# ── Properties op demos:InclusivityAssessment ─────────────────────────────────
+
+demos:assessmentOutcome
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "assessment outcome"@en , "beoordelingsuitkomst"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  demos:InclusivityOutcome ;
+    rdfs:comment
+        """Uitkomst van de inclusiviteitsbeoordeling. Gecontroleerd vocabulaire:
+         Adequate | PartiallyAdequate | Inadequate. (DD-101)"""@nl .
+
+demos:representedGroups
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "represented groups"@en , "vertegenwoordigde groepen"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  socia:StakeholderGroup ;
+    rdfs:comment
+        "De stakeholdergroepen die in de IssueCommunity vertegenwoordigd zijn. (DD-101)"@nl .
+
+demos:aggregatesGap
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "aggregates gap"@en , "aggregeert kloof"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  demos:RepresentationGap ;
+    rdfs:comment
+        "De RepresentationGaps die zijn geïdentificeerd voor deze beoordeling. (DD-101)"@nl .
+
+demos:gapDocumentation
+    a owl:DatatypeProperty ;
+    rdfs:label "gap documentation"@en , "kloof-documentatie"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  rdf:langString ;
+    rdfs:comment
+        """Vrije-tekst toelichting op de representatiegaps: welke groepen
+         ontbreken, waarom, en welk plan er is om ze alsnog te bereiken.
+         Verplicht bij PartiallyAdequate (SHACL DM-03). (DD-101)"""@nl .
+
+demos:assessesIssueCommunity
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "assesses issue community"@en ,
+               "beoordeelt issue-gemeenschap"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  valor:IssueCommunity ;
+    rdfs:comment
+        "De IssueCommunity waarvan de representativiteit wordt beoordeeld. (DD-101)"@nl .
+
+demos:assessedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "assessed by"@en , "beoordeeld door"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De agent(en) die de inclusiviteitsbeoordeling hebben opgesteld."@nl .
+
+demos:assessmentDate
+    a owl:DatatypeProperty ;
+    rdfs:label "assessment date"@en , "beoordelingsdatum"@nl ;
+    rdfs:domain demos:InclusivityAssessment ;
+    rdfs:range  xsd:date ;
+    rdfs:comment "Datum van de beoordeling."@nl .
+
+
+###############################################################################
+#  §H — InclusivityCoverage SPARQL-indicator (informatief, niet-normatief)
+#
+#  Platform-indicator: berekend via SPARQL CONSTRUCT, geen OWL-klasse.
+#  Formule: vertegenwoordigde High-belang-groepen / totaal High-belang-groepen
+#
+#  SPARQL (informatief):
+#
+#    SELECT ?community ?coverage
+#    WHERE {
+#      ?community a valor:IssueCommunity .
+#
+#      { SELECT (COUNT(DISTINCT ?rg) AS ?rep)
+#        WHERE {
+#          ?community demos:hasInclusivityAssessment ?ia .
+#          ?ia demos:representedGroups ?rg .
+#          ?rg socia:interestLevel socia:HighInterest .
+#        }
+#      }
+#
+#      { SELECT (COUNT(DISTINCT ?ag) AS ?tot)
+#        WHERE {
+#          ?ag a socia:StakeholderGroup ;
+#              socia:interestLevel socia:HighInterest .
+#        }
+#      }
+#
+#      BIND (IF(?tot > 0, ?rep / ?tot, 0.0) AS ?coverage)
+#    }
+###############################################################################
+
+
+###############################################################################
+#  Einde module 00t-demos.trig (v0.1)
+###############################################################################
+
+}

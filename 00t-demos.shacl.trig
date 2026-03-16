@@ -1,0 +1,269 @@
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix demos:  <https://valor-ecosystem.nl/ontology/demos#> .
+@prefix socia:  <https://valor-ecosystem.nl/ontology/socia#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shvdm:  <https://valor-ecosystem.nl/shacl/demos#> .
+@prefix vo:     <https://valor-ecosystem.nl/ontology/> .
+
+<https://valor-ecosystem.nl/shacl/demos> {
+
+###############################################################################
+#  VALOR-O — SHACL Shapes: DEMOS — Democratic Inclusivity Assessment (00t)
+#
+#  Versie  : 0.1  (maart 2026)
+#
+#  Constraints:
+#    DM-01  — IssueCommunity heeft minimaal 1 InclusivityAssessment (Warning)
+#    DM-02  — InclusivityAssessment heeft 1 assessmentOutcome
+#    DM-03  — PartiallyAdequate vereist gapDocumentation
+#    DM-04  — InclusivityAssessment heeft 1 assessesIssueCommunity
+#    DM-05  — RepresentationGap heeft 1 absentGroup + 1 absenceReason
+#    DM-06  — RepresentationGap heeft 1 gapOccursInCommunity
+#    DM-07  — ParticipationBarrier heeft 1 affectedGroup + 1 barrierDescription
+#    DM-08  — ParticipationBarrier is concreet subtype (niet abstract)
+#    DM-09  — assessmentOutcome gecontroleerd vocabulaire
+#    DM-10  — absenceReason gecontroleerd vocabulaire
+###############################################################################
+
+
+###############################################################################
+#  Ontologie-declaratie + prefix-declaraties
+###############################################################################
+
+shvdm:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — DEMOS Democratic Inclusivity Assessment"@nl ;
+    owl:versionInfo "0.1" .
+
+shvdm:
+    a sh:PrefixDeclaration ;
+    sh:declare [ sh:prefix "demos" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/demos#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "socia" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/socia#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufoc"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "xsd"   ;
+                 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+###############################################################################
+#  DM-01 — IssueCommunity heeft minimaal 1 InclusivityAssessment (Warning)
+###############################################################################
+
+demos:IssueCommunityAssessmentShape
+    a sh:NodeShape ;
+    sh:targetClass valor:IssueCommunity ;
+    sh:name "DM-01 — IssueCommunity vereist InclusivityAssessment" ;
+    sh:description
+        """DM-01: Een IssueCommunity zonder InclusivityAssessment heeft haar
+         democratische inclusiviteit niet getoetst. Warning — niet geblokkeerd
+         maar gesignaleerd. (DD-101)""" ;
+    sh:property [
+        sh:path     demos:hasInclusivityAssessment ;
+        sh:minCount 1 ;
+        sh:class    demos:InclusivityAssessment ;
+        sh:severity sh:Warning ;
+        sh:message  "DM-01: IssueCommunity heeft geen demos:InclusivityAssessment — democratische inclusiviteit niet getoetst (DD-101)."
+    ] .
+
+
+###############################################################################
+#  DM-02 — InclusivityAssessment heeft 1 assessmentOutcome
+###############################################################################
+
+demos:AssessmentOutcomeShape
+    a sh:NodeShape ;
+    sh:targetClass demos:InclusivityAssessment ;
+    sh:name "DM-02 — InclusivityAssessment vereist uitkomst" ;
+    sh:property [
+        sh:path     demos:assessmentOutcome ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    demos:InclusivityOutcome ;
+        sh:message  "DM-02: InclusivityAssessment.assessmentOutcome is verplicht (DD-101)."
+    ] .
+
+
+###############################################################################
+#  DM-03 — PartiallyAdequate vereist gapDocumentation
+###############################################################################
+
+demos:PartiallyAdequateDocShape
+    a sh:NodeShape ;
+    sh:targetClass demos:InclusivityAssessment ;
+    sh:name "DM-03 — PartiallyAdequate vereist documentatie" ;
+    sh:sparql [
+        sh:name    "DM-03-partial-needs-doc" ;
+        sh:message "DM-03: InclusivityAssessment met uitkomst PartiallyAdequate vereist demos:gapDocumentation. (DD-101)" ;
+        sh:prefixes shvdm: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this demos:assessmentOutcome
+                    <https://valor-ecosystem.nl/ontology/demos#PartiallyAdequate> .
+                FILTER NOT EXISTS { $this demos:gapDocumentation ?doc }
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  DM-04 — InclusivityAssessment heeft 1 assessesIssueCommunity
+###############################################################################
+
+demos:AssessmentCommunityShape
+    a sh:NodeShape ;
+    sh:targetClass demos:InclusivityAssessment ;
+    sh:name "DM-04 — InclusivityAssessment vereist IssueCommunity" ;
+    sh:property [
+        sh:path     demos:assessesIssueCommunity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    valor:IssueCommunity ;
+        sh:message  "DM-04: InclusivityAssessment.assessesIssueCommunity vereist precies één valor:IssueCommunity (DD-101)."
+    ] .
+
+
+###############################################################################
+#  DM-05 — RepresentationGap heeft 1 absentGroup + 1 absenceReason
+###############################################################################
+
+demos:RepresentationGapShape
+    a sh:NodeShape ;
+    sh:targetClass demos:RepresentationGap ;
+    sh:name "DM-05 — RepresentationGap vereist groep en reden" ;
+    sh:property [
+        sh:path     demos:absentGroup ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    socia:StakeholderGroup ;
+        sh:message  "DM-05a: RepresentationGap.absentGroup vereist precies één socia:StakeholderGroup (DD-102)."
+    ] ;
+    sh:property [
+        sh:path     demos:absenceReason ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    demos:AbsenceReason ;
+        sh:message  "DM-05b: RepresentationGap.absenceReason is verplicht (DD-102)."
+    ] .
+
+
+###############################################################################
+#  DM-06 — RepresentationGap heeft 1 gapOccursInCommunity
+###############################################################################
+
+demos:RepGapCommunityShape
+    a sh:NodeShape ;
+    sh:targetClass demos:RepresentationGap ;
+    sh:name "DM-06 — RepresentationGap vereist IssueCommunity" ;
+    sh:property [
+        sh:path     demos:gapOccursInCommunity ;
+        sh:minCount 1 ;
+        sh:class    valor:IssueCommunity ;
+        sh:message  "DM-06: RepresentationGap.gapOccursInCommunity vereist minimaal één valor:IssueCommunity."
+    ] .
+
+
+###############################################################################
+#  DM-07 — ParticipationBarrier heeft affectedGroup + barrierDescription
+###############################################################################
+
+demos:ParticipationBarrierShape
+    a sh:NodeShape ;
+    sh:targetClass demos:ParticipationBarrier ;
+    sh:name "DM-07 — ParticipationBarrier vereist groep en omschrijving" ;
+    sh:property [
+        sh:path     demos:affectedGroup ;
+        sh:minCount 1 ;
+        sh:class    socia:StakeholderGroup ;
+        sh:message  "DM-07a: ParticipationBarrier.affectedGroup vereist minimaal één socia:StakeholderGroup (DD-102)."
+    ] ;
+    sh:property [
+        sh:path     demos:barrierDescription ;
+        sh:minCount 1 ;
+        sh:datatype rdf:langString ;
+        sh:message  "DM-07b: ParticipationBarrier.barrierDescription is verplicht (DD-102)."
+    ] .
+
+
+###############################################################################
+#  DM-08 — ParticipationBarrier is concreet subtype (niet abstract)
+###############################################################################
+
+demos:ParticipationBarrierSubtypeShape
+    a sh:NodeShape ;
+    sh:targetClass demos:ParticipationBarrier ;
+    sh:name "DM-08 — ParticipationBarrier vereist concreet subtype" ;
+    sh:or (
+        [ sh:class demos:DigitalAccessBarrier   ]
+        [ sh:class demos:LanguageBarrier        ]
+        [ sh:class demos:CognitiveLoadBarrier   ]
+        [ sh:class demos:PowerImbalanceBarrier  ]
+    ) ;
+    sh:message "DM-08: Gebruik een concreet subtype van demos:ParticipationBarrier (DD-102)." .
+
+
+###############################################################################
+#  DM-09 — assessmentOutcome gecontroleerd vocabulaire
+###############################################################################
+
+demos:OutcomeVocabShape
+    a sh:NodeShape ;
+    sh:targetClass demos:InclusivityAssessment ;
+    sh:name "DM-09 — assessmentOutcome gecontroleerd vocabulaire" ;
+    sh:sparql [
+        sh:name    "DM-09-outcome-vocab" ;
+        sh:message "DM-09: assessmentOutcome moet Adequate, PartiallyAdequate of Inadequate zijn." ;
+        sh:prefixes shvdm: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this demos:assessmentOutcome ?outcome .
+                FILTER (?outcome NOT IN (
+                    <https://valor-ecosystem.nl/ontology/demos#Adequate>,
+                    <https://valor-ecosystem.nl/ontology/demos#PartiallyAdequate>,
+                    <https://valor-ecosystem.nl/ontology/demos#Inadequate>
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  DM-10 — absenceReason gecontroleerd vocabulaire
+###############################################################################
+
+demos:AbsenceReasonVocabShape
+    a sh:NodeShape ;
+    sh:targetClass demos:RepresentationGap ;
+    sh:name "DM-10 — absenceReason gecontroleerd vocabulaire" ;
+    sh:sparql [
+        sh:name    "DM-10-reason-vocab" ;
+        sh:message "DM-10: absenceReason moet Uninvited, DeclinedParticipation, StructuralBarrier of Unknown zijn." ;
+        sh:prefixes shvdm: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this demos:absenceReason ?reason .
+                FILTER (?reason NOT IN (
+                    <https://valor-ecosystem.nl/ontology/demos#Uninvited>,
+                    <https://valor-ecosystem.nl/ontology/demos#DeclinedParticipation>,
+                    <https://valor-ecosystem.nl/ontology/demos#StructuralBarrier>,
+                    <https://valor-ecosystem.nl/ontology/demos#UnknownReason>
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  Einde 00t-demos.shacl.trig (v0.1)
+###############################################################################
+
+}
