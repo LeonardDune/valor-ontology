@@ -1,0 +1,281 @@
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+<https://valor-ecosystem.nl/ontology/capax-ext> {
+
+###############################################################################
+#  VALOR-O — Module 00v: CAPAX+ (Mandate & Political Will Extension)
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/capax#  (prefix capax:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00o-capax, 00d-ufo-l, 00c-ufo-c
+#
+#  Doel:
+#    Formaliseert twee typen capability die ontbreken in de basis-CAPAX module:
+#    1. MandateCapability — juridisch verankerde bevoegdheid (dispositioneel)
+#    2. PoliticalWillCapability — politieke wil en bestuurlijk draagvlak (intentioneel)
+#
+#    Beide genereren eigen subtypes van capax:CapabilityGap, zodat mandaat-
+#    en draagvlaktekorten als afzonderlijke Tesserae citeerbaar zijn in
+#    VALOR's deliberatieproces.
+#
+#  Inferentieregel (SPARQL CONSTRUCT — zie §D):
+#    Een ufoc:InstitutionalAgent met een ufol:CompetenceRelator die verwijst
+#    naar een relevante ufol:CompetenceNorm heeft een MandateCapability.
+#    Ontbreekt de CompetenceRelator terwijl de CapabilityRequirement die
+#    verwijst naar een MandateCapability aanwezig is → MandateCapabilityGap.
+#
+#  Design decisions: DD-105, DD-106
+#  Structuur:
+#    §A  MandateCapability
+#    §B  PoliticalWillCapability
+#    §C  capabilityNature — cross-cutting property
+#    §D  Gap-subtypes: MandateCapabilityGap, PoliticalWillCapabilityGap
+#    §E  Bridge-axioma: CompetenceRelator → MandateCapability
+###############################################################################
+
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+vo:capax-ext
+    a owl:Ontology ;
+    owl:imports <https://valor-ecosystem.nl/ontology/capax> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    dcterms:title "VALOR-O — Module 00v: CAPAX+ — Mandate & Political Will Extension"@nl ;
+    dcterms:description
+        """Voegt MandateCapability en PoliticalWillCapability toe als subtypes
+         van capax:Capability, met bijbehorende Gap-subtypes. Fundament voor de
+         normatieve haalbaarheidscheck in LEXA+ (module 00u). (DD-105, DD-106)"""@nl ;
+    owl:versionInfo "0.1" ;
+    dcterms:created "2026-03-16" .
+
+
+###############################################################################
+#  §A — MandateCapability  (DD-105)
+###############################################################################
+
+capax:MandateCapability
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf capax:Capability ;
+    rdfs:label "MandateCapability"@en , "Mandaat-capability"@nl ;
+    rdfs:comment
+        """Een capability die formaliseert dat een ufoc:InstitutionalAgent
+         juridisch gemandateerd is om een bepaalde handeling te verrichten.
+         Grondslag is een ufol:CompetenceRelator die de agent koppelt aan
+         een ufol:CompetenceNorm (gebonden of discretionair).
+
+         Type: capabilityNature = Dispositional — de bevoegdheid bestaat
+         als juridisch feit, ongeacht of zij wordt uitgeoefend.
+
+         Bronkoppeling (DD-106): wanneer een ufoc:InstitutionalAgent een
+         ufol:CompetenceRelator heeft die verwijst naar een relevante
+         ufol:CompetenceNorm, is een MandateCapability infereerbaar via
+         SPARQL CONSTRUCT (zie §E). (DD-105)"""@nl ;
+    skos:example
+        """Een gemeente heeft de capability 'schuldhulpverlening toewijzen'
+         op grond van de Wgs (Wet gemeentelijke schuldhulpverlening) —
+         een BoundCompetence die de toewijzingsbevoegdheid formeel verleent."""@nl .
+
+capax:MandateCapability
+    capax:capabilityNature capax:Dispositional .
+
+
+###############################################################################
+#  §B — PoliticalWillCapability  (DD-105)
+###############################################################################
+
+capax:PoliticalWillCapability
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf capax:Capability ;
+    rdfs:label "PoliticalWillCapability"@en , "Politieke-wil-capability"@nl ;
+    rdfs:comment
+        """Een capability die formaliseert dat een ufoc:InstitutionalAgent
+         aantoonbaar bereid en bestuurlijk in staat is een maatregel te
+         ondersteunen en door te voeren.
+
+         Type: capabilityNature = Intentional — de bereidheid is geen
+         juridisch feit maar een intentionele toestand van de agent;
+         inherent aan politieke constellaties en daarmee per definitie
+         volatiel.
+
+         Epistemisch gevolg (DD-105): een PoliticalWillCapabilityGap heeft
+         altijd uncertaintyLevel ≥ Scenario, omdat politieke wil niet
+         objectief meetbaar is maar alleen infereerbaar uit signalen
+         (coalitieprogramma, moties, consultaties). (DD-105)"""@nl ;
+    skos:example
+        """Een coalitie heeft in haar akkoord opgenomen dat zij de
+         inkomenstoets in de schuldhulpverlening wil afschaffen — dit
+         constitueert een PoliticalWillCapability voor die specifieke
+         maatregel, maar is aanvechtbaar als het akkoord verandert."""@nl .
+
+capax:PoliticalWillCapability
+    capax:capabilityNature capax:Intentional .
+
+
+###############################################################################
+#  §C — capabilityNature  (cross-cutting property op Capability)
+###############################################################################
+
+capax:capabilityNature
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "capability nature"@en , "capability-aard"@nl ;
+    rdfs:domain capax:Capability ;
+    rdfs:range  capax:CapabilityNature ;
+    rdfs:comment
+        """Karakteriseert of een capability dispositioneel (juridisch verankerd,
+         objectief toetsbaar) of intentioneel (afhankelijk van bestuurlijke wil,
+         per definitie volatiel) van aard is. (DD-105)"""@nl .
+
+capax:CapabilityNature
+    a owl:Class ;
+    rdfs:label "CapabilityNature"@en , "Capability-aard"@nl ;
+    rdfs:comment "Gecontroleerd vocabulaire voor capax:capabilityNature."@nl .
+
+capax:Dispositional
+    a capax:CapabilityNature ;
+    rdfs:label "Dispositional"@en , "Dispositioneel"@nl ;
+    rdfs:comment
+        "De capability is juridisch verankerd en objectief toetsbaar via
+         ufol:CompetenceRelator / ufol:CompetenceNorm."@nl .
+
+capax:Intentional
+    a capax:CapabilityNature ;
+    rdfs:label "Intentional"@en , "Intentioneel"@nl ;
+    rdfs:comment
+        "De capability is afhankelijk van bestuurlijke wil en daarmee
+         volatiel. Bijbehorende gaps hebben uncertaintyLevel ≥ Scenario."@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers ( capax:Dispositional capax:Intentional ) ] .
+
+
+###############################################################################
+#  §D — Gap-subtypes  (DD-105)
+###############################################################################
+
+capax:MandateCapabilityGap
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf capax:CapabilityGap ;
+    rdfs:label "MandateCapabilityGap"@en , "Mandaat-capabiliteitstekort"@nl ;
+    rdfs:comment
+        """Een capabiliteitstekort waarbij een ufoc:InstitutionalAgent de
+         juridische bevoegdheid ontbeert om een voor het ontwerpalternatief
+         vereiste handeling te verrichten.
+
+         Derivatieregel (DD-106): een MandateCapabilityGap is infereerbaar
+         wanneer een lexa:LegislativeGap van type lexa:InsufficientAuthority
+         betrekking heeft op de actor die een CapabilityRequirement met
+         capabilityNature = Dispositional moet vervullen.
+
+         Prioriteit bij FeasibilityAssessment: wordt als blocker beschouwd
+         tenzij een lexa:LegislativeDevelopmentNeed het tekort adresseert
+         met een geaccepteerde tijdlijn. (DD-105)"""@nl .
+
+capax:groundedInLegislativeGap
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "grounded in legislative gap"@en ,
+               "gegrond in wetgevingstekort"@nl ;
+    rdfs:domain capax:MandateCapabilityGap ;
+    rdfs:range  <https://valor-ecosystem.nl/ontology/lexa#LegislativeGap> ;
+    rdfs:comment
+        """Koppelt een MandateCapabilityGap aan de lexa:LegislativeGap
+         (type InsufficientAuthority) die hem fundeert. (DD-106)"""@nl .
+
+capax:PoliticalWillCapabilityGap
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf capax:CapabilityGap ;
+    rdfs:label "PoliticalWillCapabilityGap"@en ,
+               "Politieke-wil-capabiliteitstekort"@nl ;
+    rdfs:comment
+        """Een capabiliteitstekort waarbij aantoonbaar draagvlak of politieke
+         wil ontbreekt voor de implementatie van een maatregel.
+
+         Epistemische beperking (DD-105): het uncertaintyLevel van een
+         Tessera die een PoliticalWillCapabilityGap beschrijft is altijd
+         minimaal Scenario — politieke wil is niet objectief observeerbaar.
+
+         Signaleringsbronnen: coalitieprogramma, aangenomen/verworpen moties,
+         consultatiefeedback, media-analyse. Al deze bronnen zijn contestable
+         en kunnen worden weerlegd door nieuwere Tesserae."""@nl .
+
+capax:politicalSignal
+    a owl:DatatypeProperty ;
+    rdfs:label "political signal"@en , "politiek signaal"@nl ;
+    rdfs:domain capax:PoliticalWillCapabilityGap ;
+    rdfs:range  xsd:string ;
+    rdfs:comment
+        """Beschrijving van het signaal dat het gebrek aan politieke wil
+         onderbouwt. Voorbeelden: verworpen motie, ontbrekend coalitieakkoord-
+         passage, weerstand in consultatie. (DD-105)"""@nl .
+
+
+###############################################################################
+#  §E — Bridge-axioma: CompetenceRelator → MandateCapability  (DD-106)
+#
+#  De formele inferentieregel is niet in OWL/SWRL uit te drukken zonder
+#  risico op ongewenste gevolgtrekkingen, en wordt daarom als SPARQL CONSTRUCT
+#  geïmplementeerd in de triplestore.
+#
+#  Logica:
+#    ?agent ufol:CompetenceRelator / [ufol:hasRightHolder ?agent]
+#       → capax:MandateCapability inheresIn ?agent
+#
+#  SPARQL CONSTRUCT (informatief, niet-normatief):
+#
+#    CONSTRUCT {
+#      ?cap a capax:MandateCapability ;
+#           capax:inhereInAgent ?agent ;
+#           capax:capabilityNature capax:Dispositional ;
+#           capax:groundsMandate ?comp .
+#    }
+#    WHERE {
+#      ?comp a ufol:CompetenceRelator ;
+#            ufol:hasRightHolder ?agent .
+#      ?agent a ufoc:InstitutionalAgent .
+#      BIND (IRI(CONCAT(STR(?agent), "_mandateCapability")) AS ?cap)
+#    }
+#
+#  De inverse — afwezigheid van CompetenceRelator bij aanwezige eis → gap —
+#  wordt gedetecteerd door SHACL-constraint CX-01 (zie 00v-capax-ext.shacl.trig).
+###############################################################################
+
+capax:groundsMandate
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "grounds mandate"@en , "fundeert mandaat"@nl ;
+    rdfs:domain capax:MandateCapability ;
+    rdfs:range  ufol:CompetenceRelator ;
+    rdfs:comment
+        """Koppelt een MandateCapability aan de ufol:CompetenceRelator die haar
+         juridisch fundeert. Wordt ingesteld door de SPARQL CONSTRUCT-inferentieregel
+         (zie §E). (DD-106)"""@nl .
+
+
+###############################################################################
+#  Einde module 00v-capax-ext.trig (v0.1)
+###############################################################################
+
+}

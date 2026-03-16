@@ -12,7 +12,11 @@
 ###############################################################################
 #  VALOR-O — SHACL Shapes voor Module 00k: Application
 #
-#  Versie  : 0.1  (maart 2026)
+#  Versie  : 0.2  (maart 2026)
+#
+#  Wijzigingen t.o.v. v0.1:
+#   [PR1] app:mapsToRBACRole shape toegevoegd op ParticipantRole (K-001, US-3.6 #354)
+#   [PR2] app:roleWeight shape toegevoegd op ParticipantRole (K-002, US-3.6 #354)
 #
 #  Constraints:
 #    I1   — elk Issue heeft >= 1 hasConcernedAgent
@@ -22,6 +26,8 @@
 #           + phaseBeginPoint/EndPoint verplicht als Closed/Archived
 #    ALT1 — elke DesignAlternative heeft 1 alternativeStatus
 #    P1   — elke Participant heeft precies 1 hasRole
+#    PR1  — elke ParticipantRole heeft 1 mapsToRBACRole (xsd:string)
+#    PR2  — elke ParticipantRole heeft 1 roleWeight (xsd:integer >= 1)
 ###############################################################################
 
 
@@ -159,6 +165,43 @@ vo:P1-ParticipantRoleShape
     ] .
 
 ###############################################################################
-#  Einde 00k-application.shacl.trig (v0.1)
+#  PR1 — elke ParticipantRole heeft een mapsToRBACRole
+###############################################################################
+
+vo:PR1-ParticipantRoleMapsToRBACShape
+    a sh:NodeShape ;
+    sh:targetClass app:ParticipantRole ;
+    sh:name "PR1 — ParticipantRole vereist RBAC-rolnaam" ;
+    sh:description "Elke ParticipantRole vereist precies één app:mapsToRBACRole. (K-001, US-3.6 #354)" ;
+    sh:property [
+        sh:path app:mapsToRBACRole ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "PR1: Een ParticipantRole vereist precies één app:mapsToRBACRole (xsd:string)."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  PR2 — elke ParticipantRole heeft een roleWeight
+###############################################################################
+
+vo:PR2-ParticipantRoleWeightShape
+    a sh:NodeShape ;
+    sh:targetClass app:ParticipantRole ;
+    sh:name "PR2 — ParticipantRole vereist rolgewicht" ;
+    sh:description "Elke ParticipantRole vereist precies één app:roleWeight als positief geheel getal. (K-002, US-3.6 #354)" ;
+    sh:property [
+        sh:path app:roleWeight ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:message "PR2: Een ParticipantRole vereist precies één app:roleWeight (xsd:integer >= 1)."@nl ;
+        sh:severity sh:Violation ;
+    ] .
+
+###############################################################################
+#  Einde 00k-application.shacl.trig (v0.2)
 ###############################################################################
 }

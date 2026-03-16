@@ -100,7 +100,21 @@ vo:causa
         """Formaliseert Causal Loop Diagrams in UFO. v0.3: drie-laags causale
          architectuur (DD-092, DD-093): hasManifestationCondition, realisedBy,
          ClaimCoverageAssessment. v0.2: Issue naar 00k-application, CausalClaim
-         subclasseert valor:Tessera. (DD-052, DD-061, DD-062, DD-092, DD-093)"""@nl .
+         subclasseert valor:Tessera. (DD-052, DD-061, DD-062, DD-092, DD-093)"""@nl ;
+    valor:primaryObservables
+        """Causale relaties tussen variabelen (CausalVariable, CausalSituation,
+         CausalClaim), interventies (Intervention, SolutionModel), feedback-
+         loops (FeedbackLoop), en manifestatiecondities (hasManifestationCondition)."""@nl ;
+    valor:excludedCategories
+        """Normatieve wenselijkheid van causale uitkomsten (→ Axia);
+         wie de interventie uitvoert en hoe transacties zijn georganiseerd (→ Acta);
+         stakeholder-belangen bij de causale claims (→ Socia);
+         juridische grondslag voor interventies (→ Lexa)."""@nl ;
+    valor:resultingBlindspots
+        """CAUSA modelleert causale mechanismen maar niet of ze wenselijk zijn.
+         Een causale keten kan technisch kloppen maar waarden schenden (Axia-blindspot).
+         Mandaat- en bevoegdheidsvragen voor interventies vallen buiten beeld (Lexa-blindspot).
+         Distributionele effecten op specifieke groepen zijn niet zichtbaar (Socia-blindspot)."""@nl .
 
 
 ###############################################################################

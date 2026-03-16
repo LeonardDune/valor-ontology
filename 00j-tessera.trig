@@ -13,8 +13,18 @@
 #  VALOR-O — Module 00j: Epistemische Module (Tessera)
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/tessera#  (prefix tess:)
-#  Versie     : 0.2  (maart 2026)
+#  Versie     : 0.3  (maart 2026)
 #  Imports    : 00a-gufo-core, 00c-ufo-c
+#
+#  Wijzigingen t.o.v. v0.2:
+#   [T-010] valor:GDIFlag + valor:gdiFlag TOEGEVOEGD (§K)
+#           Signaleert informatietekortkomingen conform Floridi's General
+#           Data Intelligence (GDI): wellFormedness, meaningfulness, truthfulness.
+#           Auto-rule: Tessera zonder hasEvidence krijgt GDIFlag = TruthfulnessIssue
+#           (gedetecteerd via SHACL-warning TG-02 in 00j-tessera.shacl.trig).
+#   [T-011] valor:AgentPrinciple + valor:agentPrinciple TOEGEVOEGD (§K)
+#           Expliceert welk redeneerprincipe een AgentTessera activeerde.
+#           Ondersteunt verklaarbaarheidsvereiste (Floridi Explicability).
 #
 #  Architectuurprincipe (DD-061):
 #    Alle claims in VALOR-O — causale beweringen, stakeholder-analyses,
@@ -43,7 +53,9 @@
 #    §F  DecisionEpisode — besluitvormingsepisode als gufo:Event
 #    §G  Vote — stem als gufo:IntrinsicMode
 #    §H  AgentTessera — claim van een Socratische Agent
-#    §I  Properties
+#    §I  UncertaintyLevel
+#    §J  Properties
+#    §K  GDIFlag + AgentPrinciple (v0.3)
 ###############################################################################
 
 
@@ -56,7 +68,8 @@ vo:tessera
     rdfs:label "VALOR-O Module 00j — Epistemische Module (Tessera)"@nl ;
     owl:imports <https://valor-ecosystem.nl/ontology/gufo-core> ;
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
-    owl:versionInfo "0.2" ;
+    owl:versionInfo "0.3" ;
+    owl:priorVersion "0.2" ;
     rdfs:comment
         """Centraliseert de epistemische infrastructuur van VALOR-O.
          Alle module-specifieke claim-klassen subclasseeren valor:Tessera
@@ -714,6 +727,145 @@ valor:isQuestion
          suggestie (false). Socratische agents stellen vragen. (DD-061)"""@nl .
 
 ###############################################################################
-#  Einde module 00j-tessera.trig (v0.2 + §I UncertaintyLevel DD-067)
+#  §K — GDIFlag + AgentPrinciple  (v0.3, T-010, T-011)
+#
+#  Floridi's General Data Intelligence (GDI) onderscheidt drie informatieve
+#  kwaliteitsdimensies die elke Tessera kan schenden:
+#    WellFormednessIssue  — structureel/syntactisch probleem
+#    MeaningfulnessIssue  — semantisch probleem (interpreteerbaar maar leeg)
+#    TruthfulnessIssue    — onvoldoende empirische onderbouwing
+#
+#  Auto-signalering: een Tessera zonder valor:hasEvidence krijgt automatisch
+#  gdiFlag = TruthfulnessIssue (SHACL TG-02, severity Warning).
+###############################################################################
+
+valor:GDIFlag
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "GDIFlag"@en , "GDI-vlag"@nl ;
+    rdfs:comment
+        """Een kwaliteitssignalering op een Tessera conform Floridi's
+         General Data Intelligence: wellFormedness (structuur),
+         meaningfulness (semantiek), truthfulness (onderbouwing).
+         Meerdere vlaggen per Tessera zijn toegestaan. (T-010)"""@nl .
+
+valor:WellFormednessIssue
+    a valor:GDIFlag ;
+    rdfs:label "WellFormednessIssue"@en , "Welgevormdheidsgebrek"@nl ;
+    rdfs:comment
+        """De Tessera vertoont een structureel of syntactisch probleem:
+         ontbrekende verplichte properties, ongeldig datatype, inconsistente
+         argumentatierelaties. Wordt gedetecteerd door SHACL-validatie. (T-010)"""@nl .
+
+valor:MeaningfulnessIssue
+    a valor:GDIFlag ;
+    rdfs:label "MeaningfulnessIssue"@en , "Betekenisgebrek"@nl ;
+    rdfs:comment
+        """De Tessera is syntactisch correct maar semantisch leeg, ambiguë
+         of niet-interpreteerbaar in de context van het vraagstuk. Handmatig
+         te markeren door deelnemers of Socratische agents. (T-010)"""@nl .
+
+valor:TruthfulnessIssue
+    a valor:GDIFlag ;
+    rdfs:label "TruthfulnessIssue"@en , "Onderbouwingsgebrek"@nl ;
+    rdfs:comment
+        """De Tessera ontbeert voldoende empirische of theoretische
+         onderbouwing: geen valor:hasEvidence aanwezig.
+         Auto-signalering via SHACL TG-02 (Warning). (T-010)"""@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      valor:WellFormednessIssue
+      valor:MeaningfulnessIssue
+      valor:TruthfulnessIssue
+  ) ] .
+
+valor:gdiFlag
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "GDI flag"@en , "GDI-vlag"@nl ;
+    rdfs:domain valor:Tessera ;
+    rdfs:range  valor:GDIFlag ;
+    rdfs:comment
+        """Een kwaliteitsvlag conform Floridi GDI. Optioneel; meerdere
+         vlaggen per Tessera toegestaan. TruthfulnessIssue wordt automatisch
+         gesignaleerd bij ontbreken van valor:hasEvidence (SHACL TG-02). (T-010)"""@nl .
+
+# ── AgentPrinciple ────────────────────────────────────────────────────────────
+
+valor:AgentPrinciple
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf gufo:IntrinsicMode ;
+    rdfs:label "AgentPrinciple"@en , "Agentprincipe"@nl ;
+    rdfs:comment
+        """Het ontologische redeneerprincipe dat een Socratische Agent heeft
+         toegepast bij het formuleren van een AgentTessera. Ondersteunt het
+         Floridi-verklaarbaarheidsvereiste (Explicability): deelnemers kunnen
+         zien op basis van welk principe een Agent een vraag of suggestie heeft
+         gegenereerd. (T-011)"""@nl .
+
+valor:GDI_TruthfulnessCheck
+    a valor:AgentPrinciple ;
+    rdfs:label "GDI_TruthfulnessCheck"@en ;
+    rdfs:comment "Agent signaleerde ontbrekende onderbouwing (GDI truthfulness). (T-011)"@nl .
+
+valor:GDI_WellFormednessCheck
+    a valor:AgentPrinciple ;
+    rdfs:label "GDI_WellFormednessCheck"@en ;
+    rdfs:comment "Agent signaleerde structureel probleem (GDI wellFormedness). (T-011)"@nl .
+
+valor:GDI_MeaningfulnessCheck
+    a valor:AgentPrinciple ;
+    rdfs:label "GDI_MeaningfulnessCheck"@en ;
+    rdfs:comment "Agent signaleerde semantisch gebrek (GDI meaningfulness). (T-011)"@nl .
+
+valor:CAPAX_EmergenceDetection
+    a valor:AgentPrinciple ;
+    rdfs:label "CAPAX_EmergenceDetection"@en ;
+    rdfs:comment "Agent detecteerde mogelijke emergente capability-gap. (T-011)"@nl .
+
+valor:DEMOS_RepresentationGap
+    a valor:AgentPrinciple ;
+    rdfs:label "DEMOS_RepresentationGap"@en ;
+    rdfs:comment "Agent signaleerde ontbrekende stakeholdergroep (DEMOS). (T-011)"@nl .
+
+valor:VSD_IndirectStakeholder
+    a valor:AgentPrinciple ;
+    rdfs:label "VSD_IndirectStakeholder"@en ;
+    rdfs:comment "Agent identificeerde indirecte stakeholder (VSD). (T-011)"@nl .
+
+valor:CAUSA_ManifestationCondition
+    a valor:AgentPrinciple ;
+    rdfs:label "CAUSA_ManifestationCondition"@en ;
+    rdfs:comment "Agent bevroeg de manifestatieconditie van een causal claim (CAUSA). (T-011)"@nl .
+
+valor:LEXA_LegislativeGap
+    a valor:AgentPrinciple ;
+    rdfs:label "LEXA_LegislativeGap"@en ;
+    rdfs:comment "Agent detecteerde mogelijk wetgevingstekort (LEXA+). (T-011)"@nl .
+
+valor:PAMS_UncertaintyLevel
+    a valor:AgentPrinciple ;
+    rdfs:label "PAMS_UncertaintyLevel"@en ;
+    rdfs:comment "Agent bevroeg het onzekerheidsniveau van een bewering (PAMS). (T-011)"@nl .
+
+valor:agentPrinciple
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "agent principle"@en , "agentprincipe"@nl ;
+    rdfs:domain valor:AgentTessera ;
+    rdfs:range  valor:AgentPrinciple ;
+    rdfs:comment
+        """Het redeneerprincipe dat de Agent heeft toegepast. Verplicht
+         op AgentTessera (SHACL TG-03). Meerdere principes per
+         AgentTessera zijn toegestaan. (T-011)"""@nl .
+
+
+###############################################################################
+#  Einde module 00j-tessera.trig (v0.3)
 ###############################################################################
 }

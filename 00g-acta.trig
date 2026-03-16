@@ -84,7 +84,22 @@
         owl:versionInfo "0.7" ;
         owl:priorVersion "0.6" ;
         rdfs:comment
-            "Formaliseert het DEMO Complete Transaction Pattern in UFO, conform Almeida et al. (EEWC 2013). v0.7: acta:realisesIntervention toegevoegd als inverse van causa:realisedBy (DD-093). v0.5: CTAR als RoleMixin; TransactorNetwork als Collection."@nl .
+            "Formaliseert het DEMO Complete Transaction Pattern in UFO, conform Almeida et al. (EEWC 2013). v0.7: acta:realisesIntervention toegevoegd als inverse van causa:realisedBy (DD-093). v0.5: CTAR als RoleMixin; TransactorNetwork als Collection."@nl ;
+        valor:primaryObservables
+            """Transactierollen (Initiator, Executor), transactietypes en
+             -executies (TransactionType, TransactionExecution), transactie-
+             resultaten (TransactionResult), actornetwerken (TransactorNetwork),
+             en koppeling naar CAUSA via realisesIntervention."""@nl ;
+        valor:excludedCategories
+            """Waarom actoren een transactie uitvoeren of weigeren (→ Socia, Axia);
+             causale effecten van transacties op de maatschappij (→ Causa);
+             normatieve bevoegdheid om transacties te mogen uitvoeren (→ Lexa, CAPAX+);
+             de waarde die transacties creëren voor burgers (→ Cover)."""@nl ;
+        valor:resultingBlindspots
+            """ACTA ziet wie wat doet maar niet of ze het mogen (Lexa/CAPAX-blindspot)
+             en niet of het de goede dingen zijn (Axia/Causa-blindspot).
+             Informele transacties buiten geformaliseerde transactiepatronen
+             zijn onzichtbaar."""@nl .
     
     
     ###############################################################################

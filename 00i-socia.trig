@@ -61,7 +61,21 @@ vo:socia
     rdfs:comment
         """Formaliseert het i*-framework in UFO. v0.2: import causa vervangen
          door tessera + application; StakeholderClaim toegevoegd als
-         valor:Tessera subklasse. (DD-061, DD-062)"""@nl .
+         valor:Tessera subklasse. (DD-061, DD-062)"""@nl ;
+    valor:primaryObservables
+        """Stakeholders en hun rollen (Stakeholder, StakeholderRole), belangen
+         (StakeholderInterestProfile), afhankelijkheden, macht/urgentie/
+         legitimiteitsattributen, en stakeholder-claims."""@nl ;
+    valor:excludedCategories
+        """Causale mechanismen achter stakeholder-effecten (→ Causa);
+         de transacties waaraan stakeholders deelnemen (→ Acta);
+         de waarden die stakeholders nastreven (→ Axia);
+         de juridische rechten en plichten van stakeholders (→ Lexa)."""@nl ;
+    valor:resultingBlindspots
+        """SOCIA brengt wie betrokken is in kaart, maar niet waarom bepaalde groepen
+         afwezig zijn (democratische inclusiviteit → DEMOS).
+         Macht-asymmetrieën tussen stakeholders zijn zichtbaar maar de structurele
+         oorzaken ervan (normen, mandaten) niet (Lexa-blindspot)."""@nl .
 
 
 ###############################################################################

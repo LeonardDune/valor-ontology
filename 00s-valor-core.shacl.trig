@@ -1,6 +1,7 @@
 @prefix sh:     <http://www.w3.org/ns/shacl#> .
 @prefix valor:  <https://valor-ecosystem.nl/ontology/> .
 @prefix nexus:  <https://valor-ecosystem.nl/ontology/nexus#> .
+@prefix app:    <https://valor-ecosystem.nl/ontology/application#> .
 @prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
 @prefix gufo:   <http://purl.org/nemo/gufo#> .
 @prefix owl:    <http://www.w3.org/2002/07/owl#> .
@@ -16,8 +17,12 @@
     ###############################################################################
     # VALOR-O — SHACL Shapes: VALOR-CORE (Module 00s)
     #
-    # Shapes VC-1 through VC-5 (DD-091)
-    # Version : 0.1  |  March 2026
+    # Shapes VC-1 through VC-5 (DD-091); SC-01, SC-02 (S-001)
+    # Version : 0.2  |  March 2026
+    #
+    # Wijzigingen t.o.v. v0.1:
+    #   [SC-01] DesignSpace vereist valor:hasHardEthicsCompliance (S-001)
+    #   [SC-02] DesignSpace vereist valor:hasSoftEthicsCommitment (S-001)
     ###############################################################################
 
     shvc:
@@ -144,7 +149,49 @@
 
 
     ###############################################################################
-    # END OF SHACL — VALOR-CORE  (v0.1)
+    # SC-01 — DesignSpace vereist HardEthicsCompliance  (S-001)
+    ###############################################################################
+
+    valor:DesignSpaceHardEthicsShape
+        a sh:NodeShape ;
+        sh:targetClass app:DesignSpace ;
+        sh:name "SC-01 — DesignSpace vereist HardEthicsCompliance" ;
+        sh:description
+            "SC-01: Elk app:DesignSpace moet een valor:HardEthicsCompliance-instantie
+             hebben. Niet-onderhandelbare wettelijke verplichtingen moeten
+             expliciet zijn gedocumenteerd. (S-001)" ;
+        sh:property [
+            sh:path     valor:hasHardEthicsCompliance ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    valor:HardEthicsCompliance ;
+            sh:message  "SC-01: DesignSpace.hasHardEthicsCompliance is verplicht (S-001)."
+        ] .
+
+
+    ###############################################################################
+    # SC-02 — DesignSpace vereist SoftEthicsCommitment  (S-001)
+    ###############################################################################
+
+    valor:DesignSpaceSoftEthicsShape
+        a sh:NodeShape ;
+        sh:targetClass app:DesignSpace ;
+        sh:name "SC-02 — DesignSpace vereist SoftEthicsCommitment" ;
+        sh:description
+            "SC-02: Elk app:DesignSpace moet een valor:SoftEthicsCommitment-instantie
+             hebben. Een lege set aspiraties is toegestaan maar moet expliciet zijn.
+             (S-001)" ;
+        sh:property [
+            sh:path     valor:hasSoftEthicsCommitment ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+            sh:class    valor:SoftEthicsCommitment ;
+            sh:message  "SC-02: DesignSpace.hasSoftEthicsCommitment is verplicht (S-001)."
+        ] .
+
+
+    ###############################################################################
+    # END OF SHACL — VALOR-CORE  (v0.2)
     ###############################################################################
 
 }

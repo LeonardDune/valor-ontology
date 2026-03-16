@@ -61,7 +61,22 @@ vo:axia
         """Formaliseert het Axia-perspectief: waarden die op het spel staan,
          spanningen tussen waarden, en de waarde-implicaties van ontwerp-
          keuzes. Bouwt op 00f-cover; voegt valor:Tessera subklassen toe
-         voor epistemisch bevraagbare waarde-claims."""@nl .
+         voor epistemisch bevraagbare waarde-claims."""@nl ;
+    valor:primaryObservables
+        """Waarden en waardetypen (ValueType, ValueCriterion), waardegerichte
+         ontwerpeisen (ValueBasedDesignRequirement), waarde-spanningen
+         (ValueTension), waarde-claims (ValueClaim), en afgeleide capability-
+         eisen (generatesCapabilityRequirement)."""@nl ;
+    valor:excludedCategories
+        """Hoe transacties operationeel zijn ingericht (→ Acta);
+         de causale mechanismen waardoor waarden worden gerealiseerd of geschonden (→ Causa);
+         wie welke belangen heeft bij de waarden (→ Socia);
+         de juridische normen die waarden codificeren (→ Lexa)."""@nl ;
+    valor:resultingBlindspots
+        """AXIA identificeert welke waarden op het spel staan maar niet of ze
+         daadwerkelijk worden gerealiseerd in de uitvoering (Causa/Acta-blindspot).
+         Waarden van niet-gerepresenteerde stakeholders zijn onzichtbaar (Socia/DEMOS-blindspot).
+         Spanning tussen aspiratieve waarden en juridische randvoorwaarden is niet direct zichtbaar."""@nl .
 
 
 ###############################################################################

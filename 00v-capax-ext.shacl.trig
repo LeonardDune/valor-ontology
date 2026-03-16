@@ -1,0 +1,168 @@
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix capax:  <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix ufol:   <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shvcx:  <https://valor-ecosystem.nl/shacl/capax-ext#> .
+@prefix vo:     <https://valor-ecosystem.nl/ontology/> .
+
+<https://valor-ecosystem.nl/shacl/capax-ext> {
+
+###############################################################################
+#  VALOR-O — SHACL Shapes: CAPAX+ — Mandate & Political Will Extension (00v)
+#
+#  Versie  : 0.1  (maart 2026)
+#
+#  Constraints:
+#    CX-01  — MandateCapability inhereerrt uitsluitend aan InstitutionalAgent
+#    CX-02  — MandateCapability heeft minimaal 1 groundsMandate
+#    CX-03  — MandateCapabilityGap heeft minimaal 1 gapAffectsAgent (InstitutionalAgent)
+#    CX-04  — PoliticalWillCapabilityGap heeft minimaal 1 politicalSignal
+#    CX-05  — capabilityNature is Dispositional of Intentional (vocab-check)
+###############################################################################
+
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+shvcx:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — CAPAX+ Mandate & Political Will Extension"@nl ;
+    owl:versionInfo "0.1" .
+
+shvcx:
+    a sh:PrefixDeclaration ;
+    sh:declare [ sh:prefix "capax" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufoc"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufol"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/ufo-l#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "xsd"   ;
+                 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+###############################################################################
+#  CX-01 — MandateCapability inhereerrt uitsluitend aan InstitutionalAgent
+###############################################################################
+
+capax:MandateCapabilityAgentShape
+    a sh:NodeShape ;
+    sh:targetClass capax:MandateCapability ;
+    sh:name "CX-01 — MandateCapability vereist InstitutionalAgent" ;
+    sh:description
+        """CX-01: Een MandateCapability is juridisch verankerd en kan alleen
+         inhereren aan een ufoc:InstitutionalAgent, niet aan een individuele persoon.
+         (DD-105)""" ;
+    sh:property [
+        sh:path     capax:inhereInAgent ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    ufoc:InstitutionalAgent ;
+        sh:message  "CX-01: MandateCapability.inhereInAgent vereist precies één ufoc:InstitutionalAgent (DD-105)."
+    ] .
+
+
+###############################################################################
+#  CX-02 — MandateCapability heeft minimaal 1 groundsMandate
+###############################################################################
+
+capax:MandateCapabilityGroundsShape
+    a sh:NodeShape ;
+    sh:targetClass capax:MandateCapability ;
+    sh:name "CX-02 — MandateCapability vereist juridische grondslag" ;
+    sh:description
+        """CX-02: Een MandateCapability moet gekoppeld zijn aan de
+         ufol:CompetenceRelator die haar juridisch fundeert.
+         Zonder grondslag is de capability niet onderbouwd en dus aanvechtbaar
+         als Tessera. (DD-106)""" ;
+    sh:property [
+        sh:path     capax:groundsMandate ;
+        sh:minCount 1 ;
+        sh:class    ufol:CompetenceRelator ;
+        sh:severity sh:Warning ;
+        sh:message  "CX-02: MandateCapability heeft geen capax:groundsMandate. Voeg een ufol:CompetenceRelator toe als juridische grondslag (DD-106)."
+    ] .
+
+
+###############################################################################
+#  CX-03 — MandateCapabilityGap treft een InstitutionalAgent
+###############################################################################
+
+capax:MandateGapAgentShape
+    a sh:NodeShape ;
+    sh:targetClass capax:MandateCapabilityGap ;
+    sh:name "CX-03 — MandateCapabilityGap vereist InstitutionalAgent" ;
+    sh:description
+        """CX-03: Een MandateCapabilityGap betreft altijd een
+         ufoc:InstitutionalAgent — mandaattekorten zijn institutioneel,
+         niet individueel. (DD-105)""" ;
+    sh:property [
+        sh:path     capax:gapAffectsAgent ;
+        sh:minCount 1 ;
+        sh:class    ufoc:InstitutionalAgent ;
+        sh:message  "CX-03: MandateCapabilityGap.gapAffectsAgent vereist minimaal één ufoc:InstitutionalAgent (DD-105)."
+    ] .
+
+
+###############################################################################
+#  CX-04 — PoliticalWillCapabilityGap heeft minimaal 1 politicalSignal
+###############################################################################
+
+capax:PoliticalWillGapSignalShape
+    a sh:NodeShape ;
+    sh:targetClass capax:PoliticalWillCapabilityGap ;
+    sh:name "CX-04 — PoliticalWillCapabilityGap vereist signaal" ;
+    sh:description
+        """CX-04: Een PoliticalWillCapabilityGap moet onderbouwd zijn met
+         minimaal één capax:politicalSignal. Zonder signaal is de bewering
+         over ontbrekende politieke wil niet herleidbaar en daarmee te zwak
+         als Tessera. (DD-105)""" ;
+    sh:property [
+        sh:path     capax:politicalSignal ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message  "CX-04: PoliticalWillCapabilityGap.politicalSignal is verplicht (DD-105)."
+    ] .
+
+
+###############################################################################
+#  CX-05 — capabilityNature gecontroleerd vocabulaire
+###############################################################################
+
+capax:CapabilityNatureVocabShape
+    a sh:NodeShape ;
+    sh:targetClass capax:Capability ;
+    sh:name "CX-05 — capabilityNature gecontroleerd vocabulaire" ;
+    sh:description
+        """CX-05: De waarde van capax:capabilityNature moet capax:Dispositional
+         of capax:Intentional zijn. (DD-105)""" ;
+    sh:sparql [
+        sh:name    "CX-05-nature-vocab" ;
+        sh:message "CX-05: capabilityNature moet capax:Dispositional of capax:Intentional zijn (DD-105)." ;
+        sh:prefixes shvcx: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this capax:capabilityNature ?nature .
+                FILTER (?nature NOT IN (
+                    <https://valor-ecosystem.nl/ontology/capax#Dispositional>,
+                    <https://valor-ecosystem.nl/ontology/capax#Intentional>
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  Einde 00v-capax-ext.shacl.trig (v0.1)
+###############################################################################
+
+}

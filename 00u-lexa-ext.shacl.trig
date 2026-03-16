@@ -1,0 +1,353 @@
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix lexa:   <https://valor-ecosystem.nl/ontology/lexa#> .
+@prefix ufol:   <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix ufoc:   <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix capax:  <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix valor:  <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix shvlx:  <https://valor-ecosystem.nl/shacl/lexa-ext#> .
+@prefix vo:     <https://valor-ecosystem.nl/ontology/> .
+
+<https://valor-ecosystem.nl/shacl/lexa-ext> {
+
+###############################################################################
+#  VALOR-O — SHACL Shapes: LEXA+ — Legislative Gap & Normative Feasibility (00u)
+#
+#  Versie  : 0.1  (maart 2026)
+#
+#  Constraints:
+#    LG-01  — LegislativeGap heeft 1 requiredNorm (ufol:LegalNorm)
+#    LG-02  — LegislativeGap heeft 1 gapType (gecontroleerd vocabulaire)
+#    LG-03  — LegislativeGap heeft 1 gapOccursInAlternative
+#    LG-04  — gapSeverity gecontroleerd vocabulaire
+#    LR-01  — LegislativeRequirement is NewNorm of NormRevision (subtype verplicht)
+#    LR-02  — NormRevisionRequirement heeft minimaal 1 existingNormToRevise
+#    LD-01  — LegislativeDevelopmentNeed heeft 1 addressesGap
+#    LD-02  — LegislativeDevelopmentNeed heeft 1 developmentType
+#    LD-03  — LegislativeDevelopmentNeed heeft 1 responsibleActor (InstitutionalAgent)
+#    NF-01  — NormativeFeasibilityAssessment heeft 1 assessesAlternative
+#    NF-02  — NormativeFeasibilityAssessment heeft 1 assessmentOutcome
+#    NF-03  — assessmentOutcome gecontroleerd vocabulaire
+#    NF-04  — NormativelyFeasibleWithConditions vereist minimaal 1 DevelopmentNeed
+#    NF-05  — NormativelyNotFeasible vereist minimaal 1 Critical/Significant gap
+###############################################################################
+
+
+###############################################################################
+#  Ontologie-declaratie + prefix-declaraties
+###############################################################################
+
+shvlx:
+    a owl:Ontology ;
+    dcterms:title "VALOR-O SHACL — LEXA+ Legislative Gap & Normative Feasibility"@nl ;
+    owl:versionInfo "0.1" .
+
+shvlx:
+    a sh:PrefixDeclaration ;
+    sh:declare [ sh:prefix "lexa"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/lexa#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufol"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/ufo-l#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "ufoc"  ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/ufo-c#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "capax" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/capax#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "valor" ;
+                 sh:namespace "https://valor-ecosystem.nl/ontology/"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "xsd"   ;
+                 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+
+###############################################################################
+#  LG-01 — LegislativeGap heeft 1 requiredNorm
+###############################################################################
+
+lexa:LegislativeGapNormShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeGap ;
+    sh:name "LG-01 — LegislativeGap vereist een LegalNorm" ;
+    sh:property [
+        sh:path     lexa:requiredNorm ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    ufol:LegalNorm ;
+        sh:message  "LG-01: LegislativeGap.requiredNorm vereist precies één ufol:LegalNorm (DD-103)."
+    ] .
+
+
+###############################################################################
+#  LG-02 — LegislativeGap heeft 1 gapType (gecontroleerd vocabulaire)
+###############################################################################
+
+lexa:LegislativeGapTypeShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeGap ;
+    sh:name "LG-02 — LegislativeGap vereist gapType" ;
+    sh:property [
+        sh:path     lexa:gapType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    lexa:LegislativeGapType ;
+        sh:message  "LG-02: LegislativeGap.gapType is verplicht (DD-103)."
+    ] .
+
+lexa:LegislativeGapTypeVocabShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeGap ;
+    sh:name "LG-02b — gapType gecontroleerd vocabulaire" ;
+    sh:sparql [
+        sh:name    "LG-02b-gaptype-vocab" ;
+        sh:message "LG-02b: gapType moet lexa:MissingNorm, lexa:ConflictingNorm of lexa:InsufficientAuthority zijn." ;
+        sh:prefixes shvlx: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this lexa:gapType ?type .
+                FILTER (?type NOT IN (
+                    <https://valor-ecosystem.nl/ontology/lexa#MissingNorm>,
+                    <https://valor-ecosystem.nl/ontology/lexa#ConflictingNorm>,
+                    <https://valor-ecosystem.nl/ontology/lexa#InsufficientAuthority>
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  LG-03 — LegislativeGap heeft 1 gapOccursInAlternative
+###############################################################################
+
+lexa:LegislativeGapAlternativeShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeGap ;
+    sh:name "LG-03 — LegislativeGap vereist DesignAlternative" ;
+    sh:property [
+        sh:path     lexa:gapOccursInAlternative ;
+        sh:minCount 1 ;
+        sh:class    valor:DesignAlternative ;
+        sh:message  "LG-03: LegislativeGap.gapOccursInAlternative vereist minimaal één valor:DesignAlternative."
+    ] .
+
+
+###############################################################################
+#  LG-04 — gapSeverity gecontroleerd vocabulaire
+###############################################################################
+
+lexa:LegislativeGapSeverityShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeGap ;
+    sh:name "LG-04 — gapSeverity gecontroleerd vocabulaire" ;
+    sh:sparql [
+        sh:name    "LG-04-severity-vocab" ;
+        sh:message "LG-04: gapSeverity moet 'Critical', 'Significant' of 'Minor' zijn." ;
+        sh:prefixes shvlx: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this lexa:gapSeverity ?sev .
+                FILTER (?sev NOT IN ("Critical", "Significant", "Minor"))
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  LR-01 — LegislativeRequirement is NewNorm of NormRevision
+###############################################################################
+
+lexa:LegislativeRequirementSubtypeShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeRequirement ;
+    sh:name "LR-01 — LegislativeRequirement vereist concreet subtype" ;
+    sh:description
+        "LR-01: LegislativeRequirement is abstract — gebruik NewNormRequirement of NormRevisionRequirement." ;
+    sh:or (
+        [ sh:class lexa:NewNormRequirement      ]
+        [ sh:class lexa:NormRevisionRequirement ]
+    ) ;
+    sh:message "LR-01: Gebruik lexa:NewNormRequirement of lexa:NormRevisionRequirement, niet de abstracte superklasse." .
+
+
+###############################################################################
+#  LR-02 — NormRevisionRequirement heeft minimaal 1 existingNormToRevise
+###############################################################################
+
+lexa:NormRevisionNormShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:NormRevisionRequirement ;
+    sh:name "LR-02 — NormRevisionRequirement vereist bestaande norm" ;
+    sh:property [
+        sh:path     lexa:existingNormToRevise ;
+        sh:minCount 1 ;
+        sh:class    ufol:LegalNorm ;
+        sh:message  "LR-02: NormRevisionRequirement.existingNormToRevise vereist minimaal één ufol:LegalNorm."
+    ] .
+
+
+###############################################################################
+#  LD-01 — LegislativeDevelopmentNeed heeft 1 addressesGap
+###############################################################################
+
+lexa:DevNeedGapShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeDevelopmentNeed ;
+    sh:name "LD-01 — LegislativeDevelopmentNeed vereist LegislativeGap" ;
+    sh:property [
+        sh:path     lexa:addressesGap ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    lexa:LegislativeGap ;
+        sh:message  "LD-01: LegislativeDevelopmentNeed.addressesGap vereist precies één lexa:LegislativeGap (DD-103)."
+    ] .
+
+
+###############################################################################
+#  LD-02 — LegislativeDevelopmentNeed heeft 1 developmentType
+###############################################################################
+
+lexa:DevNeedTypeShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeDevelopmentNeed ;
+    sh:name "LD-02 — LegislativeDevelopmentNeed vereist developmentType" ;
+    sh:property [
+        sh:path     lexa:developmentType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    lexa:DevelopmentType ;
+        sh:message  "LD-02: LegislativeDevelopmentNeed.developmentType is verplicht (DD-103)."
+    ] .
+
+
+###############################################################################
+#  LD-03 — LegislativeDevelopmentNeed heeft 1 responsibleActor
+###############################################################################
+
+lexa:DevNeedActorShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:LegislativeDevelopmentNeed ;
+    sh:name "LD-03 — LegislativeDevelopmentNeed vereist verantwoordelijke actor" ;
+    sh:property [
+        sh:path     lexa:responsibleActor ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    ufoc:InstitutionalAgent ;
+        sh:message  "LD-03: LegislativeDevelopmentNeed.responsibleActor vereist precies één ufoc:InstitutionalAgent (DD-103)."
+    ] .
+
+
+###############################################################################
+#  NF-01 — NormativeFeasibilityAssessment heeft 1 assessesAlternative
+###############################################################################
+
+lexa:NfaAlternativeShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:NormativeFeasibilityAssessment ;
+    sh:name "NF-01 — NormativeFeasibilityAssessment vereist DesignAlternative" ;
+    sh:property [
+        sh:path     lexa:assessesAlternative ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    valor:DesignAlternative ;
+        sh:message  "NF-01: NormativeFeasibilityAssessment.assessesAlternative vereist precies één valor:DesignAlternative (DD-104)."
+    ] .
+
+
+###############################################################################
+#  NF-02 — NormativeFeasibilityAssessment heeft 1 assessmentOutcome
+###############################################################################
+
+lexa:NfaOutcomeShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:NormativeFeasibilityAssessment ;
+    sh:name "NF-02 — NormativeFeasibilityAssessment vereist uitkomst" ;
+    sh:property [
+        sh:path     lexa:assessmentOutcome ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class    lexa:NormativeFeasibilityOutcome ;
+        sh:message  "NF-02: NormativeFeasibilityAssessment.assessmentOutcome is verplicht (DD-104)."
+    ] .
+
+
+###############################################################################
+#  NF-03 — assessmentOutcome gecontroleerd vocabulaire
+###############################################################################
+
+lexa:NfaOutcomeVocabShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:NormativeFeasibilityAssessment ;
+    sh:name "NF-03 — assessmentOutcome gecontroleerd vocabulaire" ;
+    sh:sparql [
+        sh:name    "NF-03-outcome-vocab" ;
+        sh:message "NF-03: assessmentOutcome moet NormativelyFeasible, NormativelyFeasibleWithConditions of NormativelyNotFeasible zijn." ;
+        sh:prefixes shvlx: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this lexa:assessmentOutcome ?outcome .
+                FILTER (?outcome NOT IN (
+                    <https://valor-ecosystem.nl/ontology/lexa#NormativelyFeasible>,
+                    <https://valor-ecosystem.nl/ontology/lexa#NormativelyFeasibleWithConditions>,
+                    <https://valor-ecosystem.nl/ontology/lexa#NormativelyNotFeasible>
+                ))
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  NF-04 — NormativelyFeasibleWithConditions vereist minimaal 1 DevelopmentNeed
+###############################################################################
+
+lexa:NfaWithConditionsShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:NormativeFeasibilityAssessment ;
+    sh:name "NF-04 — WithConditions vereist DevelopmentNeed" ;
+    sh:sparql [
+        sh:name    "NF-04-conditions-need-devneed" ;
+        sh:message "NF-04: NormativeFeasibilityAssessment 'NormativelyFeasibleWithConditions' vereist minimaal één lexa:LegislativeDevelopmentNeed via lexa:aggregatesDevelopmentNeed." ;
+        sh:prefixes shvlx: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this lexa:assessmentOutcome
+                    <https://valor-ecosystem.nl/ontology/lexa#NormativelyFeasibleWithConditions> .
+                FILTER NOT EXISTS {
+                    $this lexa:aggregatesDevelopmentNeed ?dn .
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  NF-05 — NormativelyNotFeasible vereist minimaal 1 Critical/Significant gap
+###############################################################################
+
+lexa:NfaNotFeasibleShape
+    a sh:NodeShape ;
+    sh:targetClass lexa:NormativeFeasibilityAssessment ;
+    sh:name "NF-05 — NotFeasible vereist ernstige gap" ;
+    sh:sparql [
+        sh:name    "NF-05-notfeasible-needs-gap" ;
+        sh:message "NF-05: NormativeFeasibilityAssessment 'NormativelyNotFeasible' vereist minimaal één gap met severity Critical of Significant." ;
+        sh:prefixes shvlx: ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this lexa:assessmentOutcome
+                    <https://valor-ecosystem.nl/ontology/lexa#NormativelyNotFeasible> .
+                FILTER NOT EXISTS {
+                    $this lexa:aggregatesGap ?gap .
+                    ?gap lexa:gapSeverity ?sev .
+                    FILTER (?sev IN ("Critical", "Significant"))
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  Einde 00u-lexa-ext.shacl.trig (v0.1)
+###############################################################################
+
+}

@@ -1,0 +1,517 @@
+@prefix lexa:  <https://valor-ecosystem.nl/ontology/lexa#> .
+@prefix ufol:  <https://valor-ecosystem.nl/ontology/ufo-l#> .
+@prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
+@prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix axia:  <https://valor-ecosystem.nl/ontology/axia#> .
+@prefix gufo:  <http://purl.org/nemo/gufo#> .
+@prefix valor: <https://valor-ecosystem.nl/ontology/> .
+@prefix vo:    <https://valor-ecosystem.nl/ontology/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+<https://valor-ecosystem.nl/ontology/lexa-ext> {
+
+###############################################################################
+#  VALOR-O — Module 00u: LEXA+ (Legislative Gap & Normative Feasibility)
+#
+#  Namespace  : https://valor-ecosystem.nl/ontology/lexa#  (prefix lexa:)
+#  Versie     : 0.1  (maart 2026)
+#  Imports    : 00d-ufo-l, 00c-ufo-c, 00o-capax, 00v-capax-ext
+#
+#  Doel:
+#    Formaliseert de normatieve haalbaarheidslaag van VALOR: de situaties
+#    waarbij een ontwerpalternatief vereist dat de juridische werkelijkheid
+#    verandert. Spiegelt capax:CapabilityGap en capax:FeasibilityAssessment
+#    naar het wetgevingsdomein.
+#
+#    Kernmechanisme:
+#      1. LegislativeGap — een as-is situatie waarbij vereiste norm ontbreekt,
+#         conflicteert of onvoldoende autoriteit biedt.
+#      2. LegislativeRequirement — normatieve eis op een DesignAlternative.
+#      3. LegislativeDevelopmentNeed — wetgevingstraject dat gap adresseert.
+#      4. NormativeFeasibilityAssessment — gate-Tessera bij faseovergang:
+#         aggregeert alle LegislativeGaps per alternatief.
+#
+#    Koppeling CAPAX+:
+#      lexa:LegislativeDevelopmentNeed.responsibleActor MOET beschikken over
+#      capax:MandateCapability (juridische bevoegdheid) én
+#      capax:PoliticalWillCapability (bestuurlijk draagvlak).
+#      Ontbreekt één van beide → capax:MandateCapabilityGap resp.
+#      capax:PoliticalWillCapabilityGap (DD-106).
+#
+#  Design decisions: DD-103, DD-104
+#  Structuur:
+#    §A  LegislativeGap
+#    §B  LegislativeRequirement (+ subtypes)
+#    §C  LegislativeDevelopmentNeed
+#    §D  NormativeFeasibilityAssessment (gate-Tessera)
+#    §E  Gecontroleerde vocabulaires
+#    §F  Properties
+###############################################################################
+
+
+###############################################################################
+#  Ontologie-declaratie
+###############################################################################
+
+vo:lexa-ext
+    a owl:Ontology ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-l> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/capax> ;
+    owl:imports <https://valor-ecosystem.nl/ontology/capax-ext> ;
+    dcterms:title "VALOR-O — Module 00u: LEXA+ — Legislative Gap & Normative Feasibility"@nl ;
+    dcterms:description
+        """Formaliseert normatieve haalbaarheid als vierde gate-dimensie in VALOR.
+         Biedt de ontologische basis voor detectie van wetgevingstekorten,
+         normatieve eisen op ontwerpalternatieven, en de aggregerende
+         NormativeFeasibilityAssessment als gate-Tessera bij faseovergangen.
+         (DD-103, DD-104)"""@nl ;
+    owl:versionInfo "0.1" ;
+    dcterms:created "2026-03-16" .
+
+
+###############################################################################
+#  §A — LegislativeGap  (DD-103)
+###############################################################################
+
+lexa:LegislativeGap
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "LegislativeGap"@en , "Wetgevingstekort"@nl ;
+    rdfs:comment
+        """Een situatie waarbij een ontwerpkeuze vereist dat een norm bestaat
+         (of niet bestaat) die in de huidige juridische werkelijkheid ontbreekt,
+         conflicteert of onvoldoende autoriteit biedt.
+
+         Analoog aan capax:CapabilityGap maar in het normatieve domein:
+         de gap beschrijft niet wat een actor niet kán, maar wat de wet
+         niet toestaat, verplicht of mogelijk maakt.
+
+         Als gufo:Situation: citeerbaar als Tessera-inhoud, traceerbaar in
+         Delibera, en als normatieve blokkade formeel zichtbaar bij
+         faseovergangen (DD-103)."""@nl ;
+    skos:example
+        """Ontwerpalternatief A vereist dat gemeenten schuldengegevens
+         automatisch mogen uitwisselen met het CJIB. De Wgs biedt hiervoor
+         onvoldoende grondslag (InsufficientAuthority) — dit constitueert
+         een LegislativeGap."""@nl .
+
+
+###############################################################################
+#  §B — LegislativeRequirement (+ subtypes)  (DD-103)
+###############################################################################
+
+lexa:LegislativeRequirement
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "LegislativeRequirement"@en , "Wetgevingseis"@nl ;
+    rdfs:comment
+        """Het normatieve equivalent van capax:CapabilityRequirement. Een sociaal
+         object dat specificeert welke normatieve conditie een ontwerpalternatief
+         stelt aan de juridische werkelijkheid.
+
+         Abstract: gebruik altijd een van de subtypes
+         lexa:NewNormRequirement of lexa:NormRevisionRequirement. (DD-103)"""@nl .
+
+lexa:NewNormRequirement
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegislativeRequirement ;
+    rdfs:label "NewNormRequirement"@en , "Nieuwe-normeis"@nl ;
+    rdfs:comment
+        """Het alternatief vereist dat een nieuwe norm tot stand komt: een wet,
+         AMvB, ministeriële regeling of beleidsregel die op dit moment niet
+         bestaat. Correspondeert met lexa:LegislativeGapType = MissingNorm.
+         (DD-103)"""@nl .
+
+lexa:NormRevisionRequirement
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegislativeRequirement ;
+    rdfs:label "NormRevisionRequirement"@en , "Normwijzigingseis"@nl ;
+    rdfs:comment
+        """Het alternatief vereist dat een bestaande norm wordt gewijzigd of
+         ingetrokken. Correspondeert met lexa:LegislativeGapType = ConflictingNorm
+         of InsufficientAuthority. (DD-103)"""@nl .
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( lexa:NewNormRequirement lexa:NormRevisionRequirement ) ] .
+
+
+###############################################################################
+#  §C — LegislativeDevelopmentNeed  (DD-103)
+###############################################################################
+
+lexa:LegislativeDevelopmentNeed
+    a owl:Class ;
+    rdf:type gufo:NonQualitativeIntrinsicAspect ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:SocialObject ;
+    rdfs:label "LegislativeDevelopmentNeed"@en ,
+               "Wetgevingsontwikkelingsbehoefte"@nl ;
+    rdfs:comment
+        """Een sociaal object dat articuleert welk wetgevingstraject of
+         welke beleidswijziging nodig is om een LegislativeGap te dichten.
+
+         Spiegelt capax:CapabilityDevelopmentNeed in het normatieve domein.
+         Afhankelijkheidsregel: een LegislativeDevelopmentNeed MOET gerealiseerd
+         zijn vóór de bijbehorende capax:CapabilityDevelopmentNeed kan starten —
+         bevoegdheid (juridisch) gaat voor capaciteit (operationeel).
+
+         Koppeling CAPAX+: de lexa:responsibleActor MOET beschikken over
+         capax:MandateCapability (bevoegdheid om traject te initiëren) én
+         capax:PoliticalWillCapability (bereidheid het door te voeren).
+         Ontbreekt één van beide → automatisch gap-detectie via DD-106.
+         (DD-103)"""@nl ;
+    skos:example
+        """Om de schuldengegevens-gap te dichten: uitbreiding Wgs artikel 9
+         via een AMvB — lexa:developmentType = MinisterialDecree,
+         lexa:responsibleActor = Ministerie van SZW."""@nl .
+
+
+###############################################################################
+#  §D — NormativeFeasibilityAssessment (gate-Tessera)  (DD-104)
+###############################################################################
+
+lexa:NormativeFeasibilityAssessment
+    a owl:Class ;
+    rdf:type gufo:SituationType ;
+    valor:ontoumlStereotype "situation" ;
+    rdfs:subClassOf gufo:Situation ;
+    rdfs:label "NormativeFeasibilityAssessment"@en ,
+               "Normatieve-haalbaarheidsbeoordeling"@nl ;
+    rdfs:comment
+        """Gate-Tessera die alle LegislativeGaps voor een ontwerpalternatief
+         aggregeert en een overkoepelend normatief haalbaarheidsordeel uitdrukt.
+
+         Vierde dimensie in de integrale haalbaarheidsmatrix per alternatief:
+           1. capax:FeasibilityAssessment       — uitvoerbaarheid (capabilities)
+           2. causa:ClaimCoverageAssessment     — theoretische adequaatheid
+           3. demos:InclusivityAssessment       — democratische inclusiviteit
+           4. lexa:NormativeFeasibilityAssessment — normatieve haalbaarheid
+
+         Gate-positie:
+           Fase 2→3: oordeel NormativelyFeasibleWithConditions volstaat
+           Fase 3→4: verplicht; alle gaps voorzien van DevelopmentNeed
+           Fase 4→5: epistemicStatus = Accepted vereist (DD-104)."""@nl .
+
+
+###############################################################################
+#  §E — Gecontroleerde vocabulaires
+###############################################################################
+
+# ── lexa:LegislativeGapType ───────────────────────────────────────────────────
+
+lexa:LegislativeGapType
+    a owl:Class ;
+    rdfs:label "LegislativeGapType"@en , "Wetgevingstekort-type"@nl ;
+    rdfs:comment "Gecontroleerd vocabulaire voor lexa:gapType. (DD-103)"@nl .
+
+lexa:MissingNorm
+    a lexa:LegislativeGapType ;
+    rdfs:label "MissingNorm"@en , "Ontbrekende norm"@nl ;
+    rdfs:comment
+        "De vereiste norm bestaat niet: nieuwe wetgeving is nodig. (DD-103)"@nl .
+
+lexa:ConflictingNorm
+    a lexa:LegislativeGapType ;
+    rdfs:label "ConflictingNorm"@en , "Conflicterende norm"@nl ;
+    rdfs:comment
+        """Een bestaande norm verhindert of conflicteert met wat het alternatief
+         vereist: wetswijziging of ontheffing is nodig. (DD-103)"""@nl .
+
+lexa:InsufficientAuthority
+    a lexa:LegislativeGapType ;
+    rdfs:label "InsufficientAuthority"@en , "Onvoldoende bevoegdheid"@nl ;
+    rdfs:comment
+        """De huidige bevoegdheidsgrondslag is onvoldoende: uitbreiding van
+         de bestaande bevoegdheid is nodig. Fundeert automatisch een
+         capax:MandateCapabilityGap via DD-106. (DD-103)"""@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      lexa:MissingNorm lexa:ConflictingNorm lexa:InsufficientAuthority
+  ) ] .
+
+# ── lexa:DevelopmentType ──────────────────────────────────────────────────────
+
+lexa:DevelopmentType
+    a owl:Class ;
+    rdfs:label "DevelopmentType"@en , "Wetgevingstraject-type"@nl ;
+    rdfs:comment
+        "Gecontroleerd vocabulaire voor lexa:developmentType. (DD-103)"@nl .
+
+lexa:NewLegislation
+    a lexa:DevelopmentType ;
+    rdfs:label "NewLegislation"@en , "Nieuwe wetgeving"@nl ;
+    rdfs:comment "Volledig nieuwe wet vereist parlementaire behandeling."@nl .
+
+lexa:PolicyRevision
+    a lexa:DevelopmentType ;
+    rdfs:label "PolicyRevision"@en , "Beleidswijziging"@nl ;
+    rdfs:comment
+        "Wijziging van beleid of beleidsregels; geen parlementaire behandeling."@nl .
+
+lexa:MinisterialDecree
+    a lexa:DevelopmentType ;
+    rdfs:label "MinisterialDecree"@en , "AMvB of ministeriële regeling"@nl ;
+    rdfs:comment
+        "Algemene Maatregel van Bestuur of ministeriële regeling; sneller dan wet."@nl .
+
+lexa:EuropeanRegulation
+    a lexa:DevelopmentType ;
+    rdfs:label "EuropeanRegulation"@en , "Europese regelgeving"@nl ;
+    rdfs:comment
+        """EU-verordening, richtlijn of besluit: traject loopt via Brussel;
+         nationaal slechts implementeerbaar, niet initieerbaar."""@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      lexa:NewLegislation lexa:PolicyRevision
+      lexa:MinisterialDecree lexa:EuropeanRegulation
+  ) ] .
+
+# ── lexa:NormativeFeasibilityOutcome ─────────────────────────────────────────
+
+lexa:NormativeFeasibilityOutcome
+    a owl:Class ;
+    rdfs:label "NormativeFeasibilityOutcome"@en ,
+               "Normatief-haalbaarheidsuitkomst"@nl ;
+    rdfs:comment
+        "Gecontroleerd vocabulaire voor lexa:assessmentOutcome. (DD-104)"@nl .
+
+lexa:NormativelyFeasible
+    a lexa:NormativeFeasibilityOutcome ;
+    rdfs:label "NormativelyFeasible"@en , "Normatief haalbaar"@nl ;
+    rdfs:comment
+        "Alle normatieve condities zijn aanwezig of realiseerbaar binnen planhorizon."@nl .
+
+lexa:NormativelyFeasibleWithConditions
+    a lexa:NormativeFeasibilityOutcome ;
+    rdfs:label "NormativelyFeasibleWithConditions"@en ,
+               "Normatief haalbaar met voorwaarden"@nl ;
+    rdfs:comment
+        """Sommige normatieve condities ontbreken maar zijn adresseerbaar via
+         geïdentificeerde LegislativeDevelopmentNeeds met geaccepteerde tijdlijn.
+         Volstaat voor faseovergang 2→3."""@nl .
+
+lexa:NormativelyNotFeasible
+    a lexa:NormativeFeasibilityOutcome ;
+    rdfs:label "NormativelyNotFeasible"@en , "Normatief niet haalbaar"@nl ;
+    rdfs:comment
+        """Kritieke normatieve condities ontbreken en zijn niet realiseerbaar
+         binnen de planhorizon (bijv. EuropeanRegulation zonder EU-agenda-steun).
+         Blocker voor alle faseovergangen."""@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      lexa:NormativelyFeasible
+      lexa:NormativelyFeasibleWithConditions
+      lexa:NormativelyNotFeasible
+  ) ] .
+
+
+###############################################################################
+#  §F — Properties
+###############################################################################
+
+# ── lexa:LegislativeGap ───────────────────────────────────────────────────────
+
+lexa:requiredNorm
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "required norm"@en , "vereiste norm"@nl ;
+    rdfs:domain lexa:LegislativeGap ;
+    rdfs:range  ufol:LegalNorm ;
+    rdfs:comment
+        """De norm (to-be) die het alternatief vereist maar die in de
+         huidige juridische werkelijkheid ontbreekt, conflicteert of
+         onvoldoende grondslag biedt. (DD-103)"""@nl .
+
+lexa:gapType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "gap type"@en , "tekort-type"@nl ;
+    rdfs:domain lexa:LegislativeGap ;
+    rdfs:range  lexa:LegislativeGapType ;
+    rdfs:comment
+        """Diagnostisch type van het wetgevingstekort. Gecontroleerd vocabulaire:
+         MissingNorm | ConflictingNorm | InsufficientAuthority.
+         Bij InsufficientAuthority: fundeert automatisch capax:MandateCapabilityGap
+         via DD-106. (DD-103)"""@nl .
+
+lexa:gapOccursInAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "gap occurs in alternative"@en ,
+               "tekort treedt op in alternatief"@nl ;
+    rdfs:domain lexa:LegislativeGap ;
+    rdfs:range  valor:DesignAlternative ;
+    rdfs:comment
+        "Het ontwerpalternatief waarbinnen dit wetgevingstekort is geconstateerd."@nl .
+
+lexa:gapSeverity
+    a owl:DatatypeProperty ;
+    rdfs:label "gap severity"@en , "tekort-ernst"@nl ;
+    rdfs:domain lexa:LegislativeGap ;
+    rdfs:range  xsd:string ;
+    rdfs:comment
+        """Ernst van het wetgevingstekort. Gecontroleerd vocabulaire:
+         'Critical' — blokkeert implementatie volledig.
+         'Significant' — belemmert uitvoering substantieel.
+         'Minor' — adresseerbaar via bestaande discretionaire ruimte."""@nl .
+
+# ── lexa:LegislativeRequirement ──────────────────────────────────────────────
+
+lexa:requirementAddressesGap
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "requirement addresses gap"@en , "eis adresseert tekort"@nl ;
+    rdfs:domain lexa:LegislativeRequirement ;
+    rdfs:range  lexa:LegislativeGap ;
+    rdfs:comment
+        "De LegislativeGap waarop deze normatieve eis betrekking heeft. (DD-103)"@nl .
+
+lexa:requirementForAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "requirement for alternative"@en , "eis voor alternatief"@nl ;
+    rdfs:domain lexa:LegislativeRequirement ;
+    rdfs:range  valor:DesignAlternative ;
+    rdfs:comment
+        "Het ontwerpalternatief waarop deze wetgevingseis betrekking heeft."@nl .
+
+lexa:existingNormToRevise
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "existing norm to revise"@en , "te herziene bestaande norm"@nl ;
+    rdfs:domain lexa:NormRevisionRequirement ;
+    rdfs:range  ufol:LegalNorm ;
+    rdfs:comment
+        """De bestaande norm die gewijzigd of ingetrokken moet worden.
+         Alleen van toepassing op lexa:NormRevisionRequirement. (DD-103)"""@nl .
+
+# ── lexa:LegislativeDevelopmentNeed ──────────────────────────────────────────
+
+lexa:addressesGap
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "addresses gap"@en , "adresseert tekort"@nl ;
+    rdfs:domain lexa:LegislativeDevelopmentNeed ;
+    rdfs:range  lexa:LegislativeGap ;
+    rdfs:comment
+        "De LegislativeGap die door dit traject wordt geadresseerd. (DD-103)"@nl .
+
+lexa:developmentType
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "development type"@en , "wetgevingstraject-type"@nl ;
+    rdfs:domain lexa:LegislativeDevelopmentNeed ;
+    rdfs:range  lexa:DevelopmentType ;
+    rdfs:comment
+        """Het type wetgevingstraject. Gecontroleerd vocabulaire:
+         NewLegislation | PolicyRevision | MinisterialDecree | EuropeanRegulation.
+         (DD-103)"""@nl .
+
+lexa:responsibleActor
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "responsible actor"@en , "verantwoordelijke actor"@nl ;
+    rdfs:domain lexa:LegislativeDevelopmentNeed ;
+    rdfs:range  ufoc:InstitutionalAgent ;
+    rdfs:comment
+        """De institutionele actor met de bevoegdheid en/of verantwoordelijkheid
+         om het wetgevingstraject te initiëren.
+
+         CAPAX+-check (DD-106): deze actor MOET beschikken over
+         capax:MandateCapability (formele bevoegdheid) en
+         capax:PoliticalWillCapability (bestuurlijk draagvlak).
+         Ontbreekt MandateCapability → capax:MandateCapabilityGap met
+         capax:groundedInLegislativeGap koppeling.
+         Ontbreekt PoliticalWillCapability → capax:PoliticalWillCapabilityGap. (DD-103)"""@nl .
+
+lexa:estimatedTimelineMonths
+    a owl:DatatypeProperty ;
+    rdfs:label "estimated timeline months"@en ,
+               "geschatte doorlooptijd (maanden)"@nl ;
+    rdfs:domain lexa:LegislativeDevelopmentNeed ;
+    rdfs:range  xsd:positiveInteger ;
+    rdfs:comment
+        "Indicatieve doorlooptijd in maanden. Bepaalt haalbaarheid binnen planhorizon."@nl .
+
+# ── lexa:NormativeFeasibilityAssessment ──────────────────────────────────────
+
+lexa:assessesAlternative
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "assesses alternative"@en , "beoordeelt alternatief"@nl ;
+    rdfs:domain lexa:NormativeFeasibilityAssessment ;
+    rdfs:range  valor:DesignAlternative ;
+    rdfs:comment
+        "Het ontwerpalternatief waarop deze normatieve haalbaarheidsbeoordeling betrekking heeft."@nl .
+
+lexa:aggregatesGap
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "aggregates gap"@en , "aggregeert tekort"@nl ;
+    rdfs:domain lexa:NormativeFeasibilityAssessment ;
+    rdfs:range  lexa:LegislativeGap ;
+    rdfs:comment
+        "Een LegislativeGap die deel uitmaakt van deze beoordeling."@nl .
+
+lexa:aggregatesDevelopmentNeed
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "aggregates development need"@en ,
+               "aggregeert ontwikkelingsbehoefte"@nl ;
+    rdfs:domain lexa:NormativeFeasibilityAssessment ;
+    rdfs:range  lexa:LegislativeDevelopmentNeed ;
+    rdfs:comment
+        """Een LegislativeDevelopmentNeed geïdentificeerd als onderdeel van
+         deze beoordeling. Aanwezigheid duidt op uitkomst
+         NormativelyFeasibleWithConditions."""@nl .
+
+lexa:assessmentOutcome
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "characterization" ;
+    rdfs:label "assessment outcome"@en , "beoordelingsuitkomst"@nl ;
+    rdfs:domain lexa:NormativeFeasibilityAssessment ;
+    rdfs:range  lexa:NormativeFeasibilityOutcome ;
+    rdfs:comment
+        """Overkoepelend normatief haalbaarheidsordeel. Gecontroleerd vocabulaire:
+         NormativelyFeasible | NormativelyFeasibleWithConditions |
+         NormativelyNotFeasible. (DD-104)"""@nl .
+
+lexa:assessedBy
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "assessed by"@en , "beoordeeld door"@nl ;
+    rdfs:domain lexa:NormativeFeasibilityAssessment ;
+    rdfs:range  ufoc:Agent ;
+    rdfs:comment
+        "De agent(en) die de normatieve haalbaarheidsbeoordeling hebben opgesteld."@nl .
+
+lexa:assessmentDate
+    a owl:DatatypeProperty ;
+    rdfs:label "assessment date"@en , "beoordelingsdatum"@nl ;
+    rdfs:domain lexa:NormativeFeasibilityAssessment ;
+    rdfs:range  xsd:date ;
+    rdfs:comment "Datum waarop de normatieve haalbaarheidsbeoordeling is opgesteld."@nl .
+
+
+###############################################################################
+#  Einde module 00u-lexa-ext.trig (v0.1)
+###############################################################################
+
+}

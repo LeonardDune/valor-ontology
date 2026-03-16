@@ -57,7 +57,20 @@ vo:delibera
     rdfs:comment
         """Formaliseert het Delibera-perspectief: besluitvormingsepisodes,
          argumentatienetwerken en de democratische kwaliteit van het
-         ontwerpproces. Bouwt op valor:DecisionEpisode uit 00j-tessera."""@nl .
+         ontwerpproces. Bouwt op valor:DecisionEpisode uit 00j-tessera."""@nl ;
+    valor:primaryObservables
+        """Argumentatienetwerken (ArgumentationNetwork), deliberatieve kwaliteit
+         (DeliberativeQuality), besluitvormingsprocessen (DecisionEpisode),
+         participatiepatronen, en de redeneergeschiedenis van het ontwerp."""@nl ;
+    valor:excludedCategories
+        """De inhoud van de claims waarover wordt gediscussieerd (→ Causa, Axia, Socia, Lexa);
+         de operationele uitvoering van besluiten (→ Acta);
+         wie ontbreekt in de deliberatie (→ DEMOS — dit is een bekende blindspot)."""@nl ;
+    valor:resultingBlindspots
+        """DELIBERA observeert het deliberatieproces maar niet de representativiteit ervan:
+         afwezige stemmen zijn per definitie onzichtbaar in een deliberatie-ontologie
+         (DEMOS-blindspot: vereist actieve inclusiviteitstoetsing buiten het proces).
+         Machtsdynamieken die de deliberatie kleuren zijn moeilijk te formaliseren."""@nl .
 
 
 ###############################################################################

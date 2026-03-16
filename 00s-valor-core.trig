@@ -1,6 +1,7 @@
 @prefix valor: <https://valor-ecosystem.nl/ontology/> .
 @prefix nexus: <https://valor-ecosystem.nl/ontology/nexus#> .
 @prefix capax: <https://valor-ecosystem.nl/ontology/capax#> .
+@prefix app:   <https://valor-ecosystem.nl/ontology/application#> .
 @prefix ufoc:  <https://valor-ecosystem.nl/ontology/ufo-c#> .
 @prefix gufo:  <http://purl.org/nemo/gufo#> .
 @prefix vo:    <https://valor-ecosystem.nl/ontology/> .
@@ -46,7 +47,13 @@
     #           Osborne et al. (2022), Value Creation in the Public Service Ecosystem;
     #           VALOR-O reflectie DD-091 (2026-03-12).
     #
-    # Version : 0.1  |  March 2026
+    # Version : 0.2  |  March 2026
+    #
+    # Wijzigingen t.o.v. v0.1:
+    #   [S-001] valor:HardEthicsCompliance + valor:SoftEthicsCommitment TOEGEVOEGD (§6)
+    #           Ethics-framework op DesignSpace-niveau (Floridi).
+    #   [S-002] valor:ComplianceItem vocabulaire TOEGEVOEGD: AVG, AI_Act,
+    #           Archiefwet, WOO, WCAG, OpenStandards (§6).
     ###############################################################################
 
     vo:valor-core
@@ -61,7 +68,8 @@
              en EcosystemAgent (conatieve modus), alsmede de relatie
              addressesIssue die de legitimeringsbasis van het ecosysteem
              ten opzichte van de bredere Issue-gemeenschap vastlegt."@nl ;
-        owl:versionInfo "0.1" ;
+        owl:versionInfo "0.2" ;
+        owl:priorVersion "0.1" ;
         dcterms:created "2026-03-12" ;
         dcterms:modified "2026-03-12" ;
         dcterms:source
@@ -291,7 +299,193 @@
 
 
     ###############################################################################
-    # END OF MODULE 00s — VALOR-CORE  (v0.1)
+    # §6  perspectiveLoA — Level of Abstraction annotaties (Floridi)
+    #
+    #  Floridi's Level of Abstraction (LoA) documenteert per perspectief:
+    #    primaryObservables  — wat het perspectief wél observeert
+    #    excludedCategories  — wat bewust buiten scope is gelaten
+    #    resultingBlindspots — welke blindespots hieruit voortvloeien
+    #
+    #  Gebruikt als annotatie op owl:Ontology-declaraties in perspectief-modules.
+    ###############################################################################
+
+    valor:primaryObservables
+        a owl:AnnotationProperty ;
+        rdfs:label "primary observables"@en , "primaire observabelen"@nl ;
+        rdfs:comment
+            "Floridi LoA: de fenomenen/entiteiten die dit perspectief primair
+             observeert en modelleert."@nl .
+
+    valor:excludedCategories
+        a owl:AnnotationProperty ;
+        rdfs:label "excluded categories"@en , "bewust uitgesloten categorieën"@nl ;
+        rdfs:comment
+            "Floridi LoA: categorieën die bewust buiten dit perspectief zijn
+             gelaten en waarom."@nl .
+
+    valor:resultingBlindspots
+        a owl:AnnotationProperty ;
+        rdfs:label "resulting blindspots"@en , "resulterende blindespots"@nl ;
+        rdfs:comment
+            "Floridi LoA: bekende blindespots die voortvloeien uit de bewuste
+             uitsluitingen van dit perspectief."@nl .
+
+
+    ###############################################################################
+    # §7  Hard/Soft Ethics — compliance-framework op DesignSpace-niveau  (S-001, S-002)
+    #
+    #  Floridi's ethics-onderscheid:
+    #    Hard ethics — niet-onderhandelbare wettelijke verplichtingen
+    #                  (AVG, AI Act, Archiefwet, WOO, WCAG, Open Standarden)
+    #    Soft ethics — project-configureerbare normen en aspiratieve waarden
+    #                  (bijv. proactieve openbaarmaking, inclusief taalgebruik)
+    #
+    #  Beide zijn verplicht op elk app:DesignSpace.
+    ###############################################################################
+
+    valor:HardEthicsCompliance
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf gufo:IntrinsicMode ;
+        rdfs:label "HardEthicsCompliance"@en , "Harde-ethiek-naleving"@nl ;
+        rdfs:comment
+            """Een checklist-instantie die vastlegt in hoeverre een DesignSpace
+             voldoet aan niet-onderhandelbare wettelijke en regulatoire
+             verplichtingen (Floridi hard ethics).
+
+             Verplicht op elk app:DesignSpace via valor:hasHardEthicsCompliance.
+             Compliance-items zijn gecontroleerd vocabulaire (valor:ComplianceItem).
+             (S-001)"""@nl ;
+        skos:example
+            """Een DesignSpace voor schuldhulpverlening heeft een
+             HardEthicsCompliance-instantie met items AVG (verwerkings-
+             grondslag vastgelegd) en AI_Act (transparantieverplichting
+             voor ondersteunend AI-systeem)."""@nl .
+
+    valor:SoftEthicsCommitment
+        a owl:Class ;
+        rdf:type gufo:NonQualitativeIntrinsicAspect ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf gufo:IntrinsicMode ;
+        rdfs:label "SoftEthicsCommitment"@en , "Zachte-ethiek-commitment"@nl ;
+        rdfs:comment
+            """Een project-configureerbare set aspiratieve ethische normen
+             die het DesignSpace nastreeft boven en buiten de wettelijke
+             minimum (Floridi soft ethics).
+
+             Verplicht op elk app:DesignSpace via valor:hasSoftEthicsCommitment,
+             maar de inhoud (welke soft-items zijn gecommitteerd) is per project
+             te configureren. Een lege set is toegestaan maar moet expliciet
+             worden gedocumenteerd. (S-001)"""@nl ;
+        skos:example
+            """Commitment: proactieve openbaarmaking van algoritme-documentatie
+             (WOO+), toegankelijk taalgebruik (B1-niveau), en betrokkenheid
+             van ervaringsdeskundigen in elke DesignPhase."""@nl .
+
+    # ── ComplianceItem — gecontroleerd vocabulaire ────────────────────────────
+
+    valor:ComplianceItem
+        a owl:Class ;
+        rdfs:label "ComplianceItem"@en , "Naleving-item"@nl ;
+        rdfs:comment
+            "Gecontroleerd vocabulaire voor hard- en soft-ethiek items. (S-002)"@nl .
+
+    # Hard items — wettelijk verplicht
+
+    valor:AVG
+        a valor:ComplianceItem ;
+        rdfs:label "AVG"@en , "Algemene Verordening Gegevensbescherming"@nl ;
+        rdfs:comment "EU-verordening 2016/679 — gegevensbescherming."@nl .
+
+    valor:AI_Act
+        a valor:ComplianceItem ;
+        rdfs:label "AI Act"@en , "EU AI-verordening"@nl ;
+        rdfs:comment "EU AI Act (2024) — risicogebaseerde AI-regulering."@nl .
+
+    valor:Archiefwet
+        a valor:ComplianceItem ;
+        rdfs:label "Archiefwet"@en , "Archiefwet 1995"@nl ;
+        rdfs:comment "Archiefwet 1995 — bewaar- en vernietigingsplichten."@nl .
+
+    valor:WOO
+        a valor:ComplianceItem ;
+        rdfs:label "WOO"@en , "Wet open overheid"@nl ;
+        rdfs:comment "WOO — actieve en passieve openbaarmaking van overheidsinformatie."@nl .
+
+    valor:WCAG
+        a valor:ComplianceItem ;
+        rdfs:label "WCAG"@en , "Web Content Accessibility Guidelines"@nl ;
+        rdfs:comment "WCAG 2.1 AA — toegankelijkheid digitale overheidsdiensten."@nl .
+
+    valor:OpenStandards
+        a valor:ComplianceItem ;
+        rdfs:label "Open Standards"@en , "Open Standaarden (Forum Standaardisatie)"@nl ;
+        rdfs:comment "Verplichte open standaarden Forum Standaardisatie (pas-toe-of-leg-uit)."@nl .
+
+    # Soft items — aspiratief (voorbeelden)
+
+    valor:ProactiveDisclosure
+        a valor:ComplianceItem ;
+        rdfs:label "ProactiveDisclosure"@en , "Proactieve openbaarmaking"@nl ;
+        rdfs:comment
+            "Soft commitment: algoritme-documentatie en beleidsonderbouwing proactief publiceren. (S-002)"@nl .
+
+    valor:PlainLanguage
+        a valor:ComplianceItem ;
+        rdfs:label "PlainLanguage"@en , "Begrijpelijk taalgebruik (B1)"@nl ;
+        rdfs:comment
+            "Soft commitment: alle burgergerichte communicatie op B1-taalniveau. (S-002)"@nl .
+
+    # ── Properties op app:DesignSpace ────────────────────────────────────────
+    #  N.B.: app:DesignSpace is gedefinieerd in module 00k-application.
+    #        Bridge-axioma's hier zijn geldig zodra de volledige set is geladen.
+
+    valor:hasHardEthicsCompliance
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "has hard ethics compliance"@en , "heeft harde-ethiek-naleving"@nl ;
+        rdfs:domain app:DesignSpace ;
+        rdfs:range  valor:HardEthicsCompliance ;
+        rdfs:comment
+            """Koppelt een DesignSpace aan zijn HardEthicsCompliance-instantie.
+             Verplicht (SHACL SC-01). (S-001)"""@nl .
+
+    valor:hasSoftEthicsCommitment
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "mediation" ;
+        rdfs:label "has soft ethics commitment"@en , "heeft zachte-ethiek-commitment"@nl ;
+        rdfs:domain app:DesignSpace ;
+        rdfs:range  valor:SoftEthicsCommitment ;
+        rdfs:comment
+            """Koppelt een DesignSpace aan zijn SoftEthicsCommitment-instantie.
+             Verplicht (SHACL SC-02); lege set is toegestaan maar moet expliciet
+             zijn. (S-001)"""@nl .
+
+    valor:includesComplianceItem
+        a owl:ObjectProperty ;
+        valor:ontoumlStereotype "characterization" ;
+        rdfs:label "includes compliance item"@en , "omvat naleving-item"@nl ;
+        rdfs:domain [
+            owl:unionOf ( valor:HardEthicsCompliance valor:SoftEthicsCommitment )
+        ] ;
+        rdfs:range  valor:ComplianceItem ;
+        rdfs:comment
+            """Een ComplianceItem dat is opgenomen in deze checklist-instantie.
+             HardEthicsCompliance bevat de niet-onderhandelbare items;
+             SoftEthicsCommitment de project-specifieke aspiraties. (S-001)"""@nl .
+
+    valor:complianceNote
+        a owl:DatatypeProperty ;
+        rdfs:label "compliance note"@en , "naleving-toelichting"@nl ;
+        rdfs:domain valor:HardEthicsCompliance ;
+        rdfs:range  rdf:langString ;
+        rdfs:comment
+            "Vrije-tekst toelichting op de compliance-status (bijv. afwijking + motivering)."@nl .
+
+
+    ###############################################################################
+    # END OF MODULE 00s — VALOR-CORE  (v0.2)
     ###############################################################################
 
 }

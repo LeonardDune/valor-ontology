@@ -12,7 +12,11 @@
 ###############################################################################
 #  VALOR-O — SHACL Shapes voor Module 00j: Tessera
 #
-#  Versie  : 0.1  (maart 2026)
+#  Versie  : 0.2  (maart 2026)
+#
+#  Wijzigingen t.o.v. v0.1:
+#   [TG-02] Auto-warning: Tessera zonder hasEvidence → TruthfulnessIssue (T-010)
+#   [TG-03] AgentTessera vereist minimaal 1 agentPrinciple (T-011)
 #
 #  Constraints:
 #    T1  — elke Tessera heeft precies 1 valor:epistemicStatus
@@ -244,6 +248,56 @@ vo:V1-VoteShape
     ] .
 
 ###############################################################################
-#  Einde 00j-tessera.shacl.trig (v0.1)
+#  TG-02 — Tessera zonder hasEvidence krijgt TruthfulnessIssue-warning  (T-010)
+###############################################################################
+
+vo:TG02-TruthfulnessIssueWarningShape
+    a sh:NodeShape ;
+    sh:targetClass valor:Tessera ;
+    sh:name "TG-02 — Tessera zonder bewijs: TruthfulnessIssue" ;
+    sh:description
+        """TG-02: Een Tessera zonder valor:hasEvidence heeft een potentieel
+         TruthfulnessIssue (GDI). Dit is een Warning, geen Violation — de
+         Tessera mag bestaan maar de agent-laag signaleert het gebrek. (T-010)""" ;
+    sh:sparql [
+        sh:name    "TG-02-truthfulness-warning" ;
+        sh:message "TG-02: Tessera heeft geen valor:hasEvidence — overweeg valor:gdiFlag valor:TruthfulnessIssue toe te voegen. (T-010)" ;
+        sh:severity sh:Warning ;
+        sh:prefixes vo:tessera ;
+        sh:select  """
+            SELECT $this WHERE {
+                $this a valor:Tessera .
+                FILTER NOT EXISTS { $this valor:hasEvidence ?ev }
+                FILTER NOT EXISTS {
+                    $this valor:gdiFlag
+                        <https://valor-ecosystem.nl/ontology/TruthfulnessIssue>
+                }
+            }
+        """
+    ] .
+
+
+###############################################################################
+#  TG-03 — AgentTessera vereist minimaal 1 agentPrinciple  (T-011)
+###############################################################################
+
+vo:TG03-AgentPrincipleShape
+    a sh:NodeShape ;
+    sh:targetClass valor:AgentTessera ;
+    sh:name "TG-03 — AgentTessera vereist agentPrinciple" ;
+    sh:description
+        """TG-03: Elke AgentTessera moet expliciet maken op basis van welk
+         redeneerprincipe de Agent de Tessera heeft geformuleerd.
+         Verklaarbaarheidsvereiste (Floridi Explicability). (T-011)""" ;
+    sh:property [
+        sh:path     valor:agentPrinciple ;
+        sh:minCount 1 ;
+        sh:class    valor:AgentPrinciple ;
+        sh:message  "TG-03: AgentTessera.agentPrinciple is verplicht (T-011)."
+    ] .
+
+
+###############################################################################
+#  Einde 00j-tessera.shacl.trig (v0.2)
 ###############################################################################
 }
