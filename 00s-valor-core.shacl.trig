@@ -54,8 +54,8 @@
         sh:targetClass valor:IssueCommunity ;
         sh:name "IssueCommunityShape" ;
         sh:description
-            "VC-1: Een IssueCommunity moet betrokkenheid hebben over ten
-             minste één Issue via valor:hasConcernAbout (DD-091)." ;
+            """VC-1: Een IssueCommunity moet betrokkenheid hebben over ten
+             minste één Issue via valor:hasConcernAbout (DD-091).""" ;
         sh:property [
             sh:path     valor:hasConcernAbout ;
             sh:minCount 1 ;
@@ -73,8 +73,8 @@
         sh:targetClass valor:Issue ;
         sh:name "IssueShape" ;
         sh:description
-            "VC-2: Een Issue moet gegrond zijn in een onderliggende
-             gufo:Situation via valor:concernedWithSituation (DD-091)." ;
+            """VC-2: Een Issue moet gegrond zijn in een onderliggende
+             gufo:Situation via valor:concernedWithSituation (DD-091).""" ;
         sh:property [
             sh:path     valor:concernedWithSituation ;
             sh:minCount 1 ;
@@ -92,9 +92,9 @@
         sh:targetClass nexus:EcosystemAgent ;
         sh:name "EcosystemAgentLegitimacyShape" ;
         sh:description
-            "VC-3: Een EcosystemAgent moet ten minste één Issue adresseren
+            """VC-3: Een EcosystemAgent moet ten minste één Issue adresseren
              via nexus:addressesIssue. Een ecosysteem zonder legitimeringsbasis
-             mist zijn democratische grondslag (DD-091)." ;
+             mist zijn democratische grondslag (DD-091).""" ;
         sh:property [
             sh:path     nexus:addressesIssue ;
             sh:minCount 1 ;
@@ -112,8 +112,8 @@
         sh:targetClass valor:Issue ;
         sh:name "IssueDesignSpaceShape" ;
         sh:description
-            "VC-4 (waarschuwing): Een Issue dat geen DesignSpace heeft is
-             nog niet geoperationaliseerd in het VALOR-ontwerpproces." ;
+            """VC-4 (waarschuwing): Een Issue dat geen DesignSpace heeft is
+             nog niet geoperationaliseerd in het VALOR-ontwerpproces.""" ;
         sh:severity sh:Warning ;
         sh:sparql [
             sh:name    "VC-4-issue-in-designspace" ;
@@ -138,9 +138,9 @@
         sh:targetClass valor:CollectiveIntentionalCommunity ;
         sh:name "CollectiveIntentionalCommunityPartitionShape" ;
         sh:description
-            "VC-5: Een CollectiveIntentionalCommunity moet een IssueCommunity
+            """VC-5: Een CollectiveIntentionalCommunity moet een IssueCommunity
              of een EcosystemAgent zijn (DD-091: de twee modi van collectieve
-             intentionaliteit)." ;
+             intentionaliteit).""" ;
         sh:or (
             [ sh:class valor:IssueCommunity  ]
             [ sh:class nexus:EcosystemAgent  ]
@@ -157,9 +157,9 @@
         sh:targetClass app:DesignSpace ;
         sh:name "SC-01 — DesignSpace vereist HardEthicsCompliance" ;
         sh:description
-            "SC-01: Elk app:DesignSpace moet een valor:HardEthicsCompliance-instantie
+            """SC-01: Elk app:DesignSpace moet een valor:HardEthicsCompliance-instantie
              hebben. Niet-onderhandelbare wettelijke verplichtingen moeten
-             expliciet zijn gedocumenteerd. (S-001)" ;
+             expliciet zijn gedocumenteerd. (S-001)""" ;
         sh:property [
             sh:path     valor:hasHardEthicsCompliance ;
             sh:minCount 1 ;
@@ -178,9 +178,9 @@
         sh:targetClass app:DesignSpace ;
         sh:name "SC-02 — DesignSpace vereist SoftEthicsCommitment" ;
         sh:description
-            "SC-02: Elk app:DesignSpace moet een valor:SoftEthicsCommitment-instantie
+            """SC-02: Elk app:DesignSpace moet een valor:SoftEthicsCommitment-instantie
              hebben. Een lege set aspiraties is toegestaan maar moet expliciet zijn.
-             (S-001)" ;
+             (S-001)""" ;
         sh:property [
             sh:path     valor:hasSoftEthicsCommitment ;
             sh:minCount 1 ;

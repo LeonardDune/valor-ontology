@@ -89,17 +89,17 @@
         dcterms:title
             "VALOR-O — Module 00r: SYSONT — System Core Ontology"@nl ;
         dcterms:description
-            "Formaliseert het systemistische wereldbeeld van Bunge (1979) en
+            """Formaliseert het systemistische wereldbeeld van Bunge (1979) en
              Calhau et al. (2023) als ontologisch fundament voor het
              emergence-fenomeen in CAPAX en NEXUS. Biedt de concepten
              System, Component, FunctionalRole, BondingRelation,
-             SystemSituation en SystemMoment als UFO-conforme klassen."@nl ;
+             SystemSituation en SystemMoment als UFO-conforme klassen."""@nl ;
         owl:versionInfo "0.1" ;
         dcterms:created "2026-03-12" ;
         dcterms:source
-            "Calhau et al. (2023) EDOC; Bunge (1977, 1979) Treatise;
+            """Calhau et al. (2023) EDOC; Bunge (1977, 1979) Treatise;
              Barton et al. (2017) disposition-parthood;
-             Guizzardi (2005) UFO." .
+             Guizzardi (2005) UFO.""" .
 
 
     ###############################################################################
@@ -113,7 +113,7 @@
         rdfs:subClassOf gufo:FunctionalComplex ;
         rdfs:label "System"@en , "Systeem"@nl ;
         rdfs:comment
-            "Een FunctionalComplex van onderling verbonden componenten waaruit
+            """Een FunctionalComplex van onderling verbonden componenten waaruit
              nieuwe eigenschappen emergeren die niet aanwezig zijn in de
              componenten afzonderlijk (Bunge 1979, Dori & Sillitto 2017).
 
@@ -129,13 +129,13 @@
              teams, organisaties, ecosystemen) of niet-agentieve objecten
              (machines, infrastructuren). In VALOR-context zijn de
              relevante systemen primair socio-technische systemen: organisaties
-             als InstitutionalAgents en ecosystemen als CollectiveSocialAgents."@nl ;
+             als InstitutionalAgents en ecosystemen als CollectiveSocialAgents."""@nl ;
         skos:example
-            "Een gemeente als socio-technisch systeem bestaande uit
+            """Een gemeente als socio-technisch systeem bestaande uit
              medewerkers (sociale componenten), informatiesystemen
              (technische componenten) en procedures (normatieve componenten)
              die in bonding-relaties staan en samen capabilities voortbrengen
-             die geen individu alleen heeft."@nl .
+             die geen individu alleen heeft."""@nl .
 
     sysont:Component
         a owl:Class ;
@@ -144,7 +144,7 @@
         rdfs:subClassOf gufo:Object ;
         rdfs:label "Component"@en , "Component"@nl ;
         rdfs:comment
-            "Een Mixin van onderling verbonden objects (FunctionalComplexen,
+            """Een Mixin van onderling verbonden objects (FunctionalComplexen,
              quantities en collectives) die als deel van een System fungeren.
              Als Mixin in UFO: Components kunnen entiteiten van verschillende
              kinds zijn — personen, tools, procedures, informatiesystemen —
@@ -152,7 +152,7 @@
 
              De parthood-relatie is sysont:isComponentOf (specialiseert
              gufo:isComponentOf): een Component is een proper part van zijn
-             System met een functionele rol in dat System."@nl .
+             System met een functionele rol in dat System."""@nl .
 
     sysont:Subsystem
         a owl:Class ;
@@ -161,10 +161,10 @@
         rdfs:subClassOf sysont:System ;
         rdfs:label "Subsystem"@en , "Subsysteem"@nl ;
         rdfs:comment
-            "Een System dat zelf Component is van een groter System. Subsystems
+            """Een System dat zelf Component is van een groter System. Subsystems
              zijn tegelijkertijd heel (ten opzichte van hun eigen componenten)
              en deel (ten opzichte van het hogere systeem). Dit ermogenlijkt
-             hiërarchische systeemdecompositie."@nl .
+             hiërarchische systeemdecompositie."""@nl .
 
     # ── 1.1 Composition Properties ───────────────────────────────────────────────
 
@@ -175,9 +175,9 @@
         rdfs:domain sysont:Component ;
         rdfs:range  sysont:System ;
         rdfs:comment
-            "Mereologische relatie: de Component is een proper part van het
+            """Mereologische relatie: de Component is een proper part van het
              System, met een functionele rol in dat System. Specialiseert
-             gufo:isComponentOf voor de System-Component binding."@nl .
+             gufo:isComponentOf voor de System-Component binding."""@nl .
 
     sysont:hasComponent
         a owl:ObjectProperty ;
@@ -192,10 +192,10 @@
         rdfs:domain sysont:System ;
         rdfs:range  gufo:Situation ;
         rdfs:comment
-            "Het systeem heeft betrekking op (wordt gekarakteriseerd door)
+            """Het systeem heeft betrekking op (wordt gekarakteriseerd door)
              een bepaalde Situation — de SystemSituation die het systeem
              op een bepaald moment beschrijft. Conform Calhau et al. (2023)
-             Fig. 4: 'System concerns SystemSituation'."@nl .
+             Fig. 4: 'System concerns SystemSituation'."""@nl .
 
 
     ###############################################################################
@@ -209,7 +209,7 @@
         rdfs:subClassOf gufo:MaterialRelation ;
         rdfs:label "BondingRelation"@en , "Bondingrelatie"@nl ;
         rdfs:comment
-            "Een materiële relatie waarbij één relatum causaal invloed heeft
+            """Een materiële relatie waarbij één relatum causaal invloed heeft
              op de andere: energie, materie of informatie stroomt tussen
              de verbonden componenten (Bunge 1979).
 
@@ -220,11 +220,11 @@
 
              capax:DispositionRelation specialiseert BondingRelation voor
              het dispositie-niveau: de mediator IS de afhankelijke dispositie
-             die de component aanneemt in het System-verband (DD-084, DD-087)."@nl ;
+             die de component aanneemt in het System-verband (DD-084, DD-087)."""@nl ;
         skos:example
-            "De 'supports'-relatie tussen een agile coach en een developer
+            """De 'supports'-relatie tussen een agile coach en een developer
              in een squad (Calhau et al. 2023 §6): de coach beïnvloedt de
-             leerbereidheid van de developer via coaching-interacties."@nl .
+             leerbereidheid van de developer via coaching-interacties."""@nl .
 
     sysont:NonBondingRelation
         a owl:Class ;
@@ -233,10 +233,10 @@
         rdfs:subClassOf gufo:ComparativeRelation ;
         rdfs:label "NonBondingRelation"@en , "Non-bondingrelatie"@nl ;
         rdfs:comment
-            "Een vergelijkende relatie waarbij de relata niet causaal door
+            """Een vergelijkende relatie waarbij de relata niet causaal door
              elkaar worden beïnvloed. Ze drukt restricties, constraints of
              vergelijkingen uit die de componenten moeten satisfiëren om hun
-             functionele rol te kunnen vervullen (Bunge 1979)."@nl .
+             functionele rol te kunnen vervullen (Bunge 1979)."""@nl .
 
     sysont:InternalConnection
         a owl:Class ;
@@ -245,8 +245,8 @@
         rdfs:subClassOf sysont:BondingRelation ;
         rdfs:label "InternalConnection"@en , "Interne verbinding"@nl ;
         rdfs:comment
-            "Een BondingRelation uitsluitend tussen componenten van hetzelfde
-             System. Constitueert de interne bondingstructuur van het System."@nl .
+            """Een BondingRelation uitsluitend tussen componenten van hetzelfde
+             System. Constitueert de interne bondingstructuur van het System."""@nl .
 
     sysont:ExternalConnection
         a owl:Class ;
@@ -255,9 +255,9 @@
         rdfs:subClassOf sysont:BondingRelation ;
         rdfs:label "ExternalConnection"@en , "Externe verbinding"@nl ;
         rdfs:comment
-            "Een BondingRelation tussen een Component en een ExternalEntity
+            """Een BondingRelation tussen een Component en een ExternalEntity
              (entiteit buiten het System). Constitueert de externe bonding-
-             structuur — de relaties van het System met zijn omgeving."@nl .
+             structuur — de relaties van het System met zijn omgeving."""@nl .
 
     sysont:ExternalEntity
         a owl:Class ;
@@ -266,9 +266,9 @@
         rdfs:subClassOf gufo:Object ;
         rdfs:label "ExternalEntity"@en , "Externe entiteit"@nl ;
         rdfs:comment
-            "Een entiteit buiten het System die in bonding- of non-bonding
+            """Een entiteit buiten het System die in bonding- of non-bonding
              relaties staat met System-componenten. Constitueert de
-             Environment-laag van Bunge's CESM-model."@nl .
+             Environment-laag van Bunge's CESM-model."""@nl .
 
     # ── 2.1 Structure Properties ─────────────────────────────────────────────────
 
@@ -279,8 +279,8 @@
         rdfs:domain sysont:BondingRelation ;
         rdfs:range  gufo:Object ;
         rdfs:comment
-            "De objecten (Components of ExternalEntities) die door deze
-             BondingRelation worden gemedieerd."@nl .
+            """De objecten (Components of ExternalEntities) die door deze
+             BondingRelation worden gemedieerd."""@nl .
 
     sysont:isContrastedWith
         a owl:ObjectProperty ;
@@ -288,8 +288,8 @@
         rdfs:domain sysont:NonBondingRelation ;
         rdfs:range  gufo:Object ;
         rdfs:comment
-            "De objecten die door deze NonBondingRelation worden vergeleken
-             of geconstrained."@nl .
+            """De objecten die door deze NonBondingRelation worden vergeleken
+             of geconstrained."""@nl .
 
 
     ###############################################################################
@@ -303,16 +303,16 @@
         rdfs:subClassOf gufo:Role ;
         rdfs:label "FunctionalRole"@en , "Functionele rol"@nl ;
         rdfs:comment
-            "Het anti-rigide, relationele type dat de 'positie' van een
+            """Het anti-rigide, relationele type dat de 'positie' van een
              Component in een System beschrijft (Calhau et al. 2023 §4).
 
              Anti-rigide: een Component instantiëert deze FunctionalRole
              contingent — alleen zolang hij deel is van het specifieke System
-             in de vereiste configuratie. Buiten die context vervalt de rol."@nl ;
+             in de vereiste configuratie. Buiten die context vervalt de rol."""@nl ;
         skos:example
-            "In Calhau et al. (2023) §6 (Spotify): de 'Agile Coach'-
+            """In Calhau et al. (2023) §6 (Spotify): de 'Agile Coach'-
              functionele rol vereist MomentTypes 'supporting', 'leader
-             boosting' en 'communication skills'."@nl .
+             boosting' en 'communication skills'."""@nl .
 
     sysont:MomentType
         a owl:Class ;
@@ -321,13 +321,13 @@
         rdfs:subClassOf gufo:Type ;
         rdfs:label "MomentType"@en , "Momenttype"@nl ;
         rdfs:comment
-            "Een type-niveau concept dat specificeert welk type moment
+            """Een type-niveau concept dat specificeert welk type moment
              (eigenschap: kwaliteit, modus, dispositie) een Component moet
              bezitten om een bepaalde FunctionalRole te kunnen vervullen.
 
              MomentType is de brug tussen het type-niveau (systeemontwerp:
              welke eigenschappen zijn vereist?) en het instantie-niveau
-             (welke concrete capabilities heeft deze Component?)."@nl .
+             (welke concrete capabilities heeft deze Component?)."""@nl .
 
     # ── 3.1 Functional Role Properties ───────────────────────────────────────────
 
@@ -337,8 +337,8 @@
         rdfs:domain sysont:FunctionalRole ;
         rdfs:range  sysont:MomentType ;
         rdfs:comment
-            "Het MomentType dat een Component moet instantiëren om deze
-             FunctionalRole te vervullen."@nl .
+            """Het MomentType dat een Component moet instantiëren om deze
+             FunctionalRole te vervullen."""@nl .
 
     sysont:constitutes
         a owl:ObjectProperty ;
@@ -346,8 +346,8 @@
         rdfs:domain sysont:FunctionalRole ;
         rdfs:range  sysont:FunctionalRole ;
         rdfs:comment
-            "Functionele compositierelatie: een sub-FunctionalRole constitueert
-             een macro-FunctionalRole (functionele decompositie)."@nl .
+            """Functionele compositierelatie: een sub-FunctionalRole constitueert
+             een macro-FunctionalRole (functionele decompositie)."""@nl .
 
     sysont:instantiatesRole
         a owl:ObjectProperty ;
@@ -355,8 +355,8 @@
         rdfs:domain gufo:Object ;
         rdfs:range  sysont:FunctionalRole ;
         rdfs:comment
-            "Een Object instantiëert een FunctionalRole wanneer het de vereiste
-             MomentTypes bezit en in de vereiste bonding/non-bonding relaties staat."@nl .
+            """Een Object instantiëert een FunctionalRole wanneer het de vereiste
+             MomentTypes bezit en in de vereiste bonding/non-bonding relaties staat."""@nl .
 
     sysont:complementsMomentType
         a owl:ObjectProperty ;
@@ -365,11 +365,11 @@
         rdfs:domain sysont:MomentType ;
         rdfs:range  sysont:MomentType ;
         rdfs:comment
-            "Een MomentType complementeert een ander MomentType wanneer de
+            """Een MomentType complementeert een ander MomentType wanneer de
              concrete momenten die beide typen instantiëren in een dispositie-
              relatie staan (reciprocal of additional — Barton et al. 2017).
 
-             Type-niveau brug naar capax:DispositionRelation."@nl .
+             Type-niveau brug naar capax:DispositionRelation."""@nl .
 
     sysont:isBondedTo
         a owl:ObjectProperty ;
@@ -391,7 +391,7 @@
         rdfs:subClassOf gufo:Situation ;
         rdfs:label "SystemSituation"@en , "Systeemtoestand"@nl ;
         rdfs:comment
-            "De configuratietoestand van een System op een bepaald moment:
+            """De configuratietoestand van een System op een bepaald moment:
              de verzameling componenten én hun onderlinge relaties
              (bonding structure) op dat tijdstip.
 
@@ -402,11 +402,11 @@
              In VALOR-context:
              — nexus:CollaborationCondition IS de SystemSituation van het
                ecosysteem: de configuratietoestand waarbij de leden in de
-               juiste bonding structure staan (DD-085, DD-089)."@nl ;
+               juiste bonding structure staan (DD-085, DD-089)."""@nl ;
         skos:example
-            "De SystemSituation 'integrale schuldhulpverlening actief':
+            """De SystemSituation 'integrale schuldhulpverlening actief':
              componenten staan in de vereiste bonding relations
-             (gedeeld cliëntvolgsysteem, gezamenlijk intakeprotocol)."@nl .
+             (gedeeld cliëntvolgsysteem, gezamenlijk intakeprotocol)."""@nl .
 
     sysont:SystemMoment
         a owl:Class ;
@@ -415,9 +415,9 @@
         rdfs:subClassOf gufo:Moment ;
         rdfs:label "SystemMoment"@en , "Systeemeigenschap"@nl ;
         rdfs:comment
-            "Een eigenschap (moment) van het System als geheel — niet
+            """Een eigenschap (moment) van het System als geheel — niet
              van een individueel component. Bunge (1977): 'global properties
-             not founded in their parts'."@nl .
+             not founded in their parts'."""@nl .
 
     sysont:EmergentSystemMoment
         a owl:Class ;
@@ -427,7 +427,7 @@
         rdfs:label "EmergentSystemMoment"@en ,
                    "Emergente systeemeigenschap"@nl ;
         rdfs:comment
-            "Een SystemMoment dat superveniëert op de bonding structure van
+            """Een SystemMoment dat superveniëert op de bonding structure van
              het System: aanwezig in het geheel maar niet reduceerbaar naar
              de componenten afzonderlijk. Bunge (1977): emergente eigenschappen.
 
@@ -435,11 +435,11 @@
              — capax:OrganizationalCapability met emergenceNature = 'Emergent'
                IS een EmergentSystemMoment (DD-084, DD-089).
              — nexus:CollaborativeCapability IS altijd een EmergentSystemMoment
-               van het EcosystemAgent (DD-085, DD-089)."@nl ;
+               van het EcosystemAgent (DD-085, DD-089)."""@nl ;
         skos:example
-            "De 'adaptability capability' van Spotify (Calhau et al. 2023 §6)
+            """De 'adaptability capability' van Spotify (Calhau et al. 2023 §6)
              emergeert uit de enabling-relaties van agile coaches op de
-             leerbereidheid van developers."@nl .
+             leerbereidheid van developers."""@nl .
 
     sysont:ResultantSystemMoment
         a owl:Class ;
@@ -449,13 +449,13 @@
         rdfs:label "ResultantSystemMoment"@en ,
                    "Resultante systeemeigenschap"@nl ;
         rdfs:comment
-            "Een SystemMoment dat mathematisch afleidbaar is uit de som van
+            """Een SystemMoment dat mathematisch afleidbaar is uit de som van
              de component-momenten. Bunge (1977): 'resultant properties can
              be decomposed, explained, or reduced into properties of parts'.
 
              In VALOR:
              — capax:OrganizationalCapability met emergenceNature = 'Resultant'
-               IS een ResultantSystemMoment (DD-084, DD-089)."@nl .
+               IS een ResultantSystemMoment (DD-084, DD-089)."""@nl .
 
     [ a owl:AllDisjointClasses ;
       owl:members ( sysont:EmergentSystemMoment sysont:ResultantSystemMoment ) ] .
@@ -468,8 +468,8 @@
         rdfs:domain sysont:SystemMoment ;
         rdfs:range  sysont:SystemSituation ;
         rdfs:comment
-            "De SystemSituation waarin dit SystemMoment emergeert
-             (historische afhankelijkheid — Calhau et al. 2023 Fig. 4)."@nl .
+            """De SystemSituation waarin dit SystemMoment emergeert
+             (historische afhankelijkheid — Calhau et al. 2023 Fig. 4)."""@nl .
 
     sysont:emergesFrom
         a owl:ObjectProperty ;
@@ -477,8 +477,8 @@
         rdfs:domain sysont:SystemMoment ;
         rdfs:range  gufo:Moment ;
         rdfs:comment
-            "De component-momenten waaruit dit SystemMoment emergeert.
-             Calhau et al. (2023) Fig. 4: historische afhankelijkheid."@nl .
+            """De component-momenten waaruit dit SystemMoment emergeert.
+             Calhau et al. (2023) Fig. 4: historische afhankelijkheid."""@nl .
 
     sysont:inheresInSystem
         a owl:ObjectProperty ;
@@ -505,22 +505,22 @@
     capax:DispositionRelation
         rdfs:subClassOf sysont:BondingRelation ;
         rdfs:comment
-            "SYSONT-brug (B1): een capax:DispositionRelation is een
-             sysont:BondingRelation op het niveau van disposities. (DD-087, DD-089)."@nl .
+            """SYSONT-brug (B1): een capax:DispositionRelation is een
+             sysont:BondingRelation op het niveau van disposities. (DD-087, DD-089)."""@nl .
 
     # B2: CollaborationCondition is een SystemSituation
     nexus:CollaborationCondition
         rdfs:subClassOf sysont:SystemSituation ;
         rdfs:comment
-            "SYSONT-brug (B2): de nexus:CollaborationCondition IS de
-             SystemSituation van het EcosystemAgent. (DD-085, DD-089)."@nl .
+            """SYSONT-brug (B2): de nexus:CollaborationCondition IS de
+             SystemSituation van het EcosystemAgent. (DD-085, DD-089)."""@nl .
 
     # B3: CollaborativeCapability is een EmergentSystemMoment
     nexus:CollaborativeCapability
         rdfs:subClassOf sysont:EmergentSystemMoment ;
         rdfs:comment
-            "SYSONT-brug (B3): een nexus:CollaborativeCapability IS altijd een
-             sysont:EmergentSystemMoment van het EcosystemAgent. (DD-085, DD-089)."@nl .
+            """SYSONT-brug (B3): een nexus:CollaborativeCapability IS altijd een
+             sysont:EmergentSystemMoment van het EcosystemAgent. (DD-085, DD-089)."""@nl .
 
     # B4: Manifestatieconditie van emergente OrganizationalCapability is SystemSituation
     sysont:hasEmergentManifestationCondition
@@ -531,9 +531,9 @@
         rdfs:domain capax:OrganizationalCapability ;
         rdfs:range  sysont:SystemSituation ;
         rdfs:comment
-            "SYSONT-brug (B4): specialiseert capax:hasManifestationCondition
+            """SYSONT-brug (B4): specialiseert capax:hasManifestationCondition
              voor OrganizationalCapabilities met emergenceNature = 'Emergent'.
-             De manifestatieconditie IS een SystemSituation. (DD-089)."@nl .
+             De manifestatieconditie IS een SystemSituation. (DD-089)."""@nl .
 
 
     ###############################################################################
@@ -547,16 +547,16 @@
         rdfs:subClassOf gufo:Type ;
         rdfs:label "EmergencePattern"@en , "Emergentiepatroon"@nl ;
         rdfs:comment
-            "Een herbruikbaar patroon dat de vereiste configuratie beschrijft
+            """Een herbruikbaar patroon dat de vereiste configuratie beschrijft
              voor het emergeren van een bepaald type SystemMoment. Gebaseerd
              op Calhau et al. (2023) §5.
 
              In VALOR: EmergencePatterns zijn referentiepatronen bij het
-             ontwerpen van CollaborationArchitectures (DD-090)."@nl ;
+             ontwerpen van CollaborationArchitectures (DD-090)."""@nl ;
         skos:example
-            "EmergencePattern 'Integrale schuldhulpverlening':
+            """EmergencePattern 'Integrale schuldhulpverlening':
              vereist FunctionalRoles: Toegangspoort, Schuldregeling,
-             Huisvestingsstabilisering, Psychosociale ondersteuning."@nl .
+             Huisvestingsstabilisering, Psychosociale ondersteuning."""@nl .
 
     sysont:patternRequiresFunctionalRole
         a owl:ObjectProperty ;
@@ -565,8 +565,8 @@
         rdfs:domain sysont:EmergencePattern ;
         rdfs:range  sysont:FunctionalRole ;
         rdfs:comment
-            "De FunctionalRole(s) die in een instantiëring van dit patroon
-             aanwezig moeten zijn."@nl .
+            """De FunctionalRole(s) die in een instantiëring van dit patroon
+             aanwezig moeten zijn."""@nl .
 
     sysont:patternYieldsSystemMoment
         a owl:ObjectProperty ;
@@ -575,8 +575,8 @@
         rdfs:domain sysont:EmergencePattern ;
         rdfs:range  sysont:EmergentSystemMoment ;
         rdfs:comment
-            "Het type EmergentSystemMoment dat bij correcte instantiëring
-             van dit patroon optreedt."@nl .
+            """Het type EmergentSystemMoment dat bij correcte instantiëring
+             van dit patroon optreedt."""@nl .
 
     sysont:satisfiesPattern
         a owl:ObjectProperty ;
@@ -584,9 +584,9 @@
         rdfs:domain sysont:SystemSituation ;
         rdfs:range  sysont:EmergencePattern ;
         rdfs:comment
-            "De SystemSituation satisfieert een EmergencePattern wanneer alle
+            """De SystemSituation satisfieert een EmergencePattern wanneer alle
              vereiste FunctionalRoles zijn geïnstantiëerd, alle BondingRelations
-             aanwezig zijn, en alle NonBondingRelation-constraints gelden. (DD-090)."@nl .
+             aanwezig zijn, en alle NonBondingRelation-constraints gelden. (DD-090)."""@nl .
 
 
     ###############################################################################

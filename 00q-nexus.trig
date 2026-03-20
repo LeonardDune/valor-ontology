@@ -79,23 +79,23 @@
         dcterms:title
             "VALOR-O — Module 00q: NEXUS — Ecosystem Capability & Collaborative Capability"@nl ;
         dcterms:description
-            "Formaliseert capabilities die emergeren uit samenwerking tussen
+            """Formaliseert capabilities die emergeren uit samenwerking tussen
              autonome, onafhankelijke organisaties in een publiek service
              ecosysteem. Breidt CAPAX uit voor het inter-organisationele niveau
              waar geen hiërarchisch gezag bestaat en capabilities tot stand komen
-             via gecoördineerde transactionele interdependentie."@nl ;
+             via gecoördineerde transactionele interdependentie."""@nl ;
         owl:versionInfo "0.4" ;
         dcterms:created "2026-03-10" ;
         dcterms:modified "2026-03-12" ;
         dcterms:source
-            "Osborne et al. (2022) Public Service Ecosystem;
+            """Osborne et al. (2022) Public Service Ecosystem;
              Calhau et al. (2023) EDOC — System Core Ontology for Capability Emergence;
              Calhau (2024) DIECO emergentie-theorie;
              Guizzardi et al. (2013) UFO-C;
              Almeida et al. (2013) DEMO-UFO;
              Bunge (1979) CESM;
              Barton et al. (2017) disposition-parthood;
-             Searle (1995) The Construction of Social Reality — DD-091." .
+             Searle (1995) The Construction of Social Reality — DD-091.""" .
 
 
     ###############################################################################
@@ -117,7 +117,7 @@
         # eigenschappen van CollectiveSocialAgent via de intermediaire category.
         rdfs:label "EcosystemAgent"@en , "Ecosysteemagent"@nl ;
         rdfs:comment
-            "Een valor:CollectiveIntentionalCommunity in de CONATIEVE MODUS (DD-091):
+            """Een valor:CollectiveIntentionalCommunity in de CONATIEVE MODUS (DD-091):
              geconstitueerd door een nexus:CollaborationCommitment — het multilateraal
              sociaal commitment van autonome InstitutionalAgents om gecoördineerd te
              handelen ten aanzien van een Issue.
@@ -143,13 +143,13 @@
              - Zijn bestaan is gegrond in wederzijdse erkenning via Commitment
 
              Zijn capabilities zijn CollaborativeCapabilities die emergeren
-             uit gecoördineerde transactionele samenwerking van de leden."@nl ;
+             uit gecoördineerde transactionele samenwerking van de leden."""@nl ;
         skos:example
-            "Het Regionaal Team Schuldhulpverlening Rotterdam (gemeente, kredietbank,
+            """Het Regionaal Team Schuldhulpverlening Rotterdam (gemeente, kredietbank,
              woningcorporaties, zorginstelling, Belastingdienst) als EcosystemAgent
              — adresseert het Issue 'schuldenproblematiek in Rotterdam' dat wordt
              erkend door de IssueCommunity die bestaat uit burgers, uitvoerders,
-             raadsleden en maatschappelijke organisaties in die gemeente."@nl .
+             raadsleden en maatschappelijke organisaties in die gemeente."""@nl .
 
     nexus:hasMember
         a owl:ObjectProperty ;
@@ -157,10 +157,10 @@
         rdfs:domain nexus:EcosystemAgent ;
         rdfs:range  ufoc:InstitutionalAgent ;
         rdfs:comment
-            "Een deelnemende organisatie (lid) van dit ecosysteem. Leden zijn
+            """Een deelnemende organisatie (lid) van dit ecosysteem. Leden zijn
              autonome InstitutionalAgents die hun onafhankelijkheid behouden —
              lidmaatschap impliceert geen gezagsrelatie, uitsluitend
-             CollaborationCommitment."@nl .
+             CollaborationCommitment."""@nl .
 
     nexus:hasGovernanceArrangement
         a owl:ObjectProperty ;
@@ -169,9 +169,9 @@
         rdfs:domain nexus:EcosystemAgent ;
         rdfs:range  nexus:GovernanceArrangement ;
         rdfs:comment
-            "Het governance-arrangement dat de spelregels van het ecosysteem
+            """Het governance-arrangement dat de spelregels van het ecosysteem
              vastlegt: besluitvorming, taakverdeling, informatiedeling,
-             geschillenbeslechting."@nl .
+             geschillenbeslechting."""@nl .
 
     nexus:isGroundedInCommitment
         a owl:ObjectProperty ;
@@ -180,9 +180,9 @@
         rdfs:domain nexus:EcosystemAgent ;
         rdfs:range  nexus:CollaborationCommitment ;
         rdfs:comment
-            "Het CollaborationCommitment dat de EcosystemAgent in het leven
+            """Het CollaborationCommitment dat de EcosystemAgent in het leven
              roept en in stand houdt. Zonder dit commitment bestaat de
-             EcosystemAgent niet als agent."@nl .
+             EcosystemAgent niet als agent."""@nl .
 
 
     ###############################################################################
@@ -197,7 +197,7 @@
         rdfs:label "CollaborationCommitment"@en ,
                    "Samenwerkingstoezegging"@nl ;
         rdfs:comment
-            "Een multilaterale SocialCommitment waarbij meerdere autonome
+            """Een multilaterale SocialCommitment waarbij meerdere autonome
              organisaties zich wederzijds committeren aan het coördineren van
              hun transacties ten behoeve van een gedeelde CollaborativeCapability.
 
@@ -212,13 +212,13 @@
              Kan juridisch verankerd zijn (convenant, bestuursakkoord, subsidie-
              voorwaarde) via nexus:groundedInNorm, maar dit is niet vereist —
              ook een vrijwillige samenwerkingsafspraak is een geldig
-             CollaborationCommitment."@nl ;
+             CollaborationCommitment."""@nl ;
         skos:example
-            "Het convenant 'Vroeg-erop-af' Rotterdam: gemeente, woningcorporaties
+            """Het convenant 'Vroeg-erop-af' Rotterdam: gemeente, woningcorporaties
              en schuldhulpverlening committeren zich wederzijds aan het delen van
              vroeg-signaleringsinformatie en het coördineren van interventies.
              Dit convenant IS het CollaborationCommitment dat het ecosysteem
-             'schuldenpreventie' als EcosystemAgent constitueert."@nl .
+             'schuldenpreventie' als EcosystemAgent constitueert."""@nl .
 
     nexus:hasParticipatingOrganisation
         a owl:ObjectProperty ;
@@ -228,9 +228,9 @@
         rdfs:domain nexus:CollaborationCommitment ;
         rdfs:range  ufoc:InstitutionalAgent ;
         rdfs:comment
-            "Een autonome organisatie die deelneemt aan dit
+            """Een autonome organisatie die deelneemt aan dit
              CollaborationCommitment. Minimaal twee deelnemers vereist
-             (SHACL-constraint NEX-2)."@nl .
+             (SHACL-constraint NEX-2)."""@nl .
 
     nexus:commitmentScope
         a owl:DatatypeProperty ;
@@ -238,9 +238,9 @@
         rdfs:domain nexus:CollaborationCommitment ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Beschrijving van het domein en de reikwijdte van de samenwerking.
+            """Beschrijving van het domein en de reikwijdte van de samenwerking.
              Vrij tekstveld — concretiseert wat de deelnemers van elkaar
-             verwachten."@nl .
+             verwachten."""@nl .
 
     nexus:commitmentDuration
         a owl:DatatypeProperty ;
@@ -248,11 +248,11 @@
         rdfs:domain nexus:CollaborationCommitment ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Looptijd of tijdshorizon van het commitment. Gecontroleerd
+            """Looptijd of tijdshorizon van het commitment. Gecontroleerd
              vocabulaire:
              'Permanent'    — structurele, doorlopende samenwerking;
              'ProjectBased' — gebonden aan een specifiek project of fase;
-             'Experimental' — pilot of experiment met evaluatiecriterium."@nl .
+             'Experimental' — pilot of experiment met evaluatiecriterium."""@nl .
 
     nexus:groundedInNorm
         a owl:ObjectProperty ;
@@ -261,9 +261,9 @@
         rdfs:domain nexus:CollaborationCommitment ;
         rdfs:range  ufol:Norm ;
         rdfs:comment
-            "De juridische of beleidsmatige norm die dit commitment verankert.
+            """De juridische of beleidsmatige norm die dit commitment verankert.
              Optioneel: een CollaborationCommitment kan ook puur vrijwillig zijn.
-             Verbindt NEXUS met LEXA (module 00d)."@nl .
+             Verbindt NEXUS met LEXA (module 00d)."""@nl .
 
     # ── addressesIssue — DD-091 ───────────────────────────────────────────────────
     # Canonieke definitie staat in module 00s-valor-core; hier herhaald als
@@ -277,12 +277,12 @@
             "addressesIssue"@en ,
             "adresseert vraagstuk"@nl ;
         rdfs:comment
-            "Legitimeringspijl van EcosystemAgent naar valor:Issue (DD-091).
+            """Legitimeringspijl van EcosystemAgent naar valor:Issue (DD-091).
              Formaliseert dat het ecosysteem zijn mandaat ontleent aan het Issue
              dat door een IssueCommunity als problematisch wordt erkend.
              Volledig gedocumenteerd in module 00s-valor-core.
              Detecteerbaar via SPARQL: een EcosystemAgent zonder addressesIssue
-             mist zijn democratische legitimering."@nl .
+             mist zijn democratische legitimering."""@nl .
 
 
     ###############################################################################
@@ -297,7 +297,7 @@
         rdfs:label "CollaborativeCapability"@en ,
                    "Samenwerkingscapability"@nl ;
         rdfs:comment
-            "Een capability (gufo:Disposition) die inhereert aan een
+            """Een capability (gufo:Disposition) die inhereert aan een
              EcosystemAgent en die emergeert uit de gecoördineerde transactionele
              samenwerking van de deelnemende organisaties.
 
@@ -317,16 +317,16 @@
 
              Grondslag: Osborne et al. (2022) — waardecreatie in publieke service
              ecosystemen als co-productief fenomeen; Bunge (1979) CESM-model;
-             Calhau et al. (2023) emergentie-taxonomie."@nl ;
+             Calhau et al. (2023) emergentie-taxonomie."""@nl ;
         skos:example
-            "De CollaborativeCapability 'Integrale schuldhulpverlening bieden':
+            """De CollaborativeCapability 'Integrale schuldhulpverlening bieden':
              vereist dat gemeente (toegang), kredietbank (schuldregeling),
              woningcorporatie (huisvestingsstabiliteit) en zorginstelling
              (psychosociale ondersteuning) hun dienstverlening afstemmen.
              De capabilities van de leden staan in Additional-relatie: alle
              vier zijn noodzakelijk; samen meer dan elk apart. Geen van hen
              kan het alleen. De CollaborationCondition IS de SystemSituation
-             waarin die relaties operationeel zijn."@nl .
+             waarin die relaties operationeel zijn."""@nl .
 
     nexus:requiresCollaborationCondition
         a owl:ObjectProperty ;
@@ -336,12 +336,12 @@
         rdfs:domain nexus:CollaborativeCapability ;
         rdfs:range  nexus:CollaborationCondition ;
         rdfs:comment
-            "De CollaborationCondition die aanwezig moet zijn voor deze
+            """De CollaborationCondition die aanwezig moet zijn voor deze
              CollaborativeCapability te kunnen manifesteren. Specialiseert
              capax:hasManifestationCondition voor het inter-organisationele
              niveau. De CollaborationCondition is de SystemSituation van het
              ecosysteem (DD-085): niet een externe trigger maar de ontologische
-             grond van de capability zelf."@nl .
+             grond van de capability zelf."""@nl .
 
     nexus:contributingCapability
         a owl:ObjectProperty ;
@@ -350,14 +350,14 @@
         rdfs:domain nexus:CollaborativeCapability ;
         rdfs:range  capax:Capability ;
         rdfs:comment
-            "Een organisatorische capability van een deelnemende organisatie
+            """Een organisatorische capability van een deelnemende organisatie
              die bijdraagt aan het emergeren van deze CollaborativeCapability.
 
              Gebruik nexus:hasDispositionRelation om de aard van de bijdrage
              te specificeren (Reciprocal / Additional / Enabling — Barton 2017,
              Calhau et al. 2023). Een losse contributingCapability zonder
              dispositionRelationType is onvoldoende voor de SHACL
-             NEX-20 GovernanceDevelopmentNeed-constraint."@nl .
+             NEX-20 GovernanceDevelopmentNeed-constraint."""@nl .
 
     nexus:hasDispositionRelation
         a owl:ObjectProperty ;
@@ -366,7 +366,7 @@
         rdfs:domain nexus:CollaborativeCapability ;
         rdfs:range  capax:DispositionRelation ;
         rdfs:comment
-            "De DispositionRelation(s) die de onderlinge afhankelijkheden
+            """De DispositionRelation(s) die de onderlinge afhankelijkheden
              tussen de bijdragende capabilities van de ecosysteemleden
              formaliseren. Vereist voor een volledige emergentie-analyse
              (DD-085).
@@ -381,7 +381,7 @@
 
              SHACL NEX-20: een GovernanceDevelopmentNeed bij een
              EcosystemCapabilityGap MOET verwijzen naar de betreffende
-             DispositionRelation die het governancevraagstuk definieert."@nl .
+             DispositionRelation die het governancevraagstuk definieert."""@nl .
 
     nexus:manifestsInService
         a owl:ObjectProperty ;
@@ -390,10 +390,10 @@
         rdfs:domain nexus:CollaborativeCapability ;
         rdfs:range  cover:ValueObject ;
         rdfs:comment
-            "De geïntegreerde dienst of het transactieresultaat (ValueObject
+            """De geïntegreerde dienst of het transactieresultaat (ValueObject
              in COVER) waarin deze CollaborativeCapability zich realiseert.
              Verbindt NEXUS met COVER: de ecosysteem-capability produceert
-             waarde voor een eindgebruiker (burger)."@nl .
+             waarde voor een eindgebruiker (burger)."""@nl .
 
 
     ###############################################################################
@@ -417,7 +417,7 @@
         rdfs:label "CollaborationCondition"@en ,
                    "Samenwerkingsconditie"@nl ;
         rdfs:comment
-            "De SystemSituation van het ecosysteem (Bunge 1979, Calhau et al.
+            """De SystemSituation van het ecosysteem (Bunge 1979, Calhau et al.
              2023): de configuratietoestand waarin de deelnemende organisaties
              de juiste bonding structure met elkaar hebben.
 
@@ -439,14 +439,14 @@
              Als gufo:Situation is de conditie citeerbaar als Tessera (to-be):
              'Deze configuratietoestand zal gelden wanneer ons ontwerp is
              geïmplementeerd.' Dit maakt haar toetsbaar en betwistbaar
-             in VALOR's deliberatieproces (DD-080, DD-085)."@nl ;
+             in VALOR's deliberatieproces (DD-080, DD-085)."""@nl ;
         skos:example
-            "CollaborationCondition 'integrale schuldhulpverlening actief':
+            """CollaborationCondition 'integrale schuldhulpverlening actief':
              (a) samenwerkingsovereenkomst gemeente-kredietbank-corporatie-zorg;
              (b) gedeeld cliëntvolgsysteem + gezamenlijk intakeprotocol;
              (c) Additional-relatie tussen de vier toegangscapabilities
                  én Enabling-relatie van de zorgcapability op stabilisatie-
-                 capability — alle drie vereist voor emergentie."@nl .
+                 capability — alle drie vereist voor emergentie."""@nl .
 
     nexus:conditionRequiresCommitment
         a owl:ObjectProperty ;
@@ -455,9 +455,9 @@
         rdfs:domain nexus:CollaborationCondition ;
         rdfs:range  nexus:CollaborationCommitment ;
         rdfs:comment
-            "Het CollaborationCommitment dat actief moet zijn voor deze
+            """Het CollaborationCommitment dat actief moet zijn voor deze
              conditie te gelden. De conditie is ontologisch afhankelijk
-             van het commitment: zonder commitment geen conditie."@nl .
+             van het commitment: zonder commitment geen conditie."""@nl .
 
     nexus:conditionRequiresArchitecture
         a owl:ObjectProperty ;
@@ -466,9 +466,9 @@
         rdfs:domain nexus:CollaborationCondition ;
         rdfs:range  nexus:CollaborationArchitecture ;
         rdfs:comment
-            "De CollaborationArchitecture die operationeel moet zijn voor
+            """De CollaborationArchitecture die operationeel moet zijn voor
              deze conditie te gelden. De architectuur implementeert het
-             commitment in concrete transacties en rollen."@nl .
+             commitment in concrete transacties en rollen."""@nl .
 
     nexus:conditionGroundedInDispositionRelations
         a owl:ObjectProperty ;
@@ -477,11 +477,11 @@
         rdfs:domain nexus:CollaborationCondition ;
         rdfs:range  capax:DispositionRelation ;
         rdfs:comment
-            "De DispositionRelation(s) die de bonding structure van het
+            """De DispositionRelation(s) die de bonding structure van het
              ecosysteem constitueren als onderdeel van deze
              CollaborationCondition (DD-085). Formaliseert welke capabilities
              van welke leden in welk type relatie moeten staan voor de
-             CollaborativeCapability te kunnen emergeren."@nl .
+             CollaborativeCapability te kunnen emergeren."""@nl .
 
     nexus:conditionScope
         a owl:DatatypeProperty ;
@@ -489,9 +489,9 @@
         rdfs:domain nexus:CollaborationCondition ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "De doelgroep of het domein waarvoor de samenwerking actief is.
+            """De doelgroep of het domein waarvoor de samenwerking actief is.
              Vrij tekstveld — beschrijft voor wie en voor welke situaties
-             de conditie geldt."@nl .
+             de conditie geldt."""@nl .
 
 
     ###############################################################################
@@ -509,7 +509,7 @@
         rdfs:label "CollaborationArchitecture"@en ,
                    "Samenwerkingsarchitectuur"@nl ;
         rdfs:comment
-            "Het ACTA-niveau ontwerpartefact dat een CollaborationCommitment
+            """Het ACTA-niveau ontwerpartefact dat een CollaborationCommitment
              operationaliseert als een concreet netwerk van transactietypes,
              actorrollen en informatiestromen.
 
@@ -520,13 +520,13 @@
              In VALOR's ontwerpproces: een CollaborationArchitecture wordt
              voorgesteld als Tessera (to-be) in het Acta-perspectief, gevalideerd
              tegen het CollaborationCommitment, en beoordeeld op zijn effect op
-             CollaborativeCapabilities via de FeasibilityAssessment (DD-082)."@nl ;
+             CollaborativeCapabilities via de FeasibilityAssessment (DD-082)."""@nl ;
         skos:example
-            "De transactienetwerk-architectuur van het Regionaal Team
+            """De transactienetwerk-architectuur van het Regionaal Team
              Schuldhulpverlening: (1) vroegsignalering-transactie (woningcorp →
              team), (2) intake-transactie (team ↔ burger), (3) plan-transactie
              (kredietbank + gemeente → burger), (4) monitoring-transactie (team
-             → burger). Dit netwerk IS de CollaborationArchitecture."@nl .
+             → burger). Dit netwerk IS de CollaborationArchitecture."""@nl .
 
     nexus:implementsCommitment
         a owl:ObjectProperty ;
@@ -535,9 +535,9 @@
         rdfs:domain nexus:CollaborationArchitecture ;
         rdfs:range  nexus:CollaborationCommitment ;
         rdfs:comment
-            "Het CollaborationCommitment dat deze architectuur implementeert.
+            """Het CollaborationCommitment dat deze architectuur implementeert.
              De architectuur geeft concrete transactionele vorm aan wat het
-             commitment belooft."@nl .
+             commitment belooft."""@nl .
 
     nexus:includesTransactionType
         a owl:ObjectProperty ;
@@ -546,9 +546,9 @@
         rdfs:domain nexus:CollaborationArchitecture ;
         rdfs:range  acta:TransactionType ;
         rdfs:comment
-            "Een transactietype dat deel uitmaakt van deze architectuur.
+            """Een transactietype dat deel uitmaakt van deze architectuur.
              De CollaborationArchitecture wordt gedefinieerd door het netwerk
-             van transactietypes dat de samenwerking operationaliseert."@nl .
+             van transactietypes dat de samenwerking operationaliseert."""@nl .
 
     nexus:assignsRole
         a owl:ObjectProperty ;
@@ -556,9 +556,9 @@
         rdfs:domain nexus:CollaborationArchitecture ;
         rdfs:range  acta:ActorRole ;
         rdfs:comment
-            "Een actorrol die door deze architectuur is toegewezen aan een
+            """Een actorrol die door deze architectuur is toegewezen aan een
              deelnemende organisatie. Rollen in de architectuur zijn rollen
-             van leden van het EcosystemAgent, niet van het ecosysteem zelf."@nl .
+             van leden van het EcosystemAgent, niet van het ecosysteem zelf."""@nl .
 
     nexus:architectureForAlternative
         a owl:ObjectProperty ;
@@ -567,8 +567,8 @@
         rdfs:domain nexus:CollaborationArchitecture ;
         rdfs:range  valor:DesignAlternative ;
         rdfs:comment
-            "Het ontwerpalternatief waarvoor deze CollaborationArchitecture
-             is gespecificeerd."@nl .
+            """Het ontwerpalternatief waarvoor deze CollaborationArchitecture
+             is gespecificeerd."""@nl .
 
 
     ###############################################################################
@@ -583,7 +583,7 @@
         rdfs:label "GovernanceArrangement"@en ,
                    "Governance-arrangement"@nl ;
         rdfs:comment
-            "Een sociaal object dat de spelregels, besluitvormingsprocedures
+            """Een sociaal object dat de spelregels, besluitvormingsprocedures
              en verantwoordingsmechanismen vastlegt waarmee het EcosystemAgent
              als collectief wordt bestuurd.
 
@@ -593,7 +593,7 @@
              wat, hoe, en met welke verantwoording?
 
              In VALOR's ontwerpproces een cruciaal ontwerpartefact in de
-             Lexa- en Socia-perspectieven."@nl .
+             Lexa- en Socia-perspectieven."""@nl .
 
     nexus:governanceType
         a owl:DatatypeProperty ;
@@ -601,12 +601,12 @@
         rdfs:domain nexus:GovernanceArrangement ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Type governance-structuur. Gecontroleerd vocabulaire:
+            """Type governance-structuur. Gecontroleerd vocabulaire:
              'Consensus'     — besluitvorming bij unanimiteit;
              'Majority'      — besluitvorming bij meerderheid;
              'LeadPartner'   — één lid heeft coördinerende regie;
              'RotatingChair' — roulerende voorzitter;
-             'ExternalBody'  — onafhankelijke derde partij als arbiter."@nl .
+             'ExternalBody'  — onafhankelijke derde partij als arbiter."""@nl .
 
 
     ###############################################################################
@@ -625,20 +625,20 @@
         rdfs:label "EcosystemCapabilityGap"@en ,
                    "Ecosysteem-capabiliteitstekort"@nl ;
         rdfs:comment
-            "Een CapabilityGap die betrekking heeft op een CollaborativeCapability
+            """Een CapabilityGap die betrekking heeft op een CollaborativeCapability
              van een EcosystemAgent. Onderscheiden van een reguliere CapabilityGap
              doordat:
              (a) de ontbrekende capability inhereert aan het ecosysteem als
                  geheel, niet aan een individuele organisatie;
              (b) het tekort niet door één organisatie alleen kan worden gedicht;
              (c) de respons altijd een GovernanceDevelopmentNeed is — een
-                 interventie in de samenwerkingsstructuur, geen HR-plan (DD-081)."@nl ;
+                 interventie in de samenwerkingsstructuur, geen HR-plan (DD-081)."""@nl ;
         skos:example
-            "Het ecosysteem 'schuldenpreventie Rotterdam' beschikt niet over
+            """Het ecosysteem 'schuldenpreventie Rotterdam' beschikt niet over
              de CollaborativeCapability 'vroeg-signalering activeren' omdat
              woningcorporaties en gemeente nog geen collectieve afspraken hebben
              over informatiedeling. Het tekort is een EcosystemCapabilityGap:
-             geen enkele organisatie kan het zelfstandig oplossen."@nl .
+             geen enkele organisatie kan het zelfstandig oplossen."""@nl .
 
     nexus:gapConcernsCollaborativeCapability
         a owl:ObjectProperty ;
@@ -648,9 +648,9 @@
         rdfs:domain nexus:EcosystemCapabilityGap ;
         rdfs:range  nexus:CollaborativeCapability ;
         rdfs:comment
-            "De CollaborativeCapability waarop dit ecosysteem-tekort betrekking
+            """De CollaborativeCapability waarop dit ecosysteem-tekort betrekking
              heeft. Specialiseert capax:gapConcernsRequirement voor het
-             inter-organisationele niveau."@nl .
+             inter-organisationele niveau."""@nl .
 
     nexus:missingConditionComponent
         a owl:ObjectProperty ;
@@ -659,13 +659,13 @@
         rdfs:domain nexus:EcosystemCapabilityGap ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Welk onderdeel van de CollaborationCondition ontbreekt.
+            """Welk onderdeel van de CollaborationCondition ontbreekt.
              Gecontroleerd vocabulaire:
              'Commitment'   — er is geen CollaborationCommitment (of het is
                               niet actief);
              'Architecture' — het commitment bestaat maar er is geen
                               operationele CollaborationArchitecture;
-             'BothMissing'  — zowel commitment als architectuur ontbreken."@nl .
+             'BothMissing'  — zowel commitment als architectuur ontbreken."""@nl .
 
 
     ###############################################################################
@@ -683,7 +683,7 @@
         rdfs:label "GovernanceDevelopmentNeed"@en ,
                    "Governance-ontwikkelingsbehoefte"@nl ;
         rdfs:comment
-            "Een sociaal object dat articuleert wat er moet veranderen in de
+            """Een sociaal object dat articuleert wat er moet veranderen in de
              governance- of samenwerkingsstructuur van het ecosysteem om een
              EcosystemCapabilityGap te dichten.
 
@@ -694,7 +694,7 @@
 
              De resolutie vereist een ontwerpbesluit in VALOR — een nieuw
              CollaborationCommitment, CollaborationArchitecture of
-             GovernanceArrangement — die allemaal als Tessera worden vastgelegd."@nl .
+             GovernanceArrangement — die allemaal als Tessera worden vastgelegd."""@nl .
 
     nexus:addressesEcosystemGap
         a owl:ObjectProperty ;
@@ -703,8 +703,8 @@
         rdfs:domain nexus:GovernanceDevelopmentNeed ;
         rdfs:range  nexus:EcosystemCapabilityGap ;
         rdfs:comment
-            "De EcosystemCapabilityGap die door deze
-             GovernanceDevelopmentNeed wordt geadresseerd."@nl .
+            """De EcosystemCapabilityGap die door deze
+             GovernanceDevelopmentNeed wordt geadresseerd."""@nl .
 
     nexus:governanceNeedType
         a owl:DatatypeProperty ;
@@ -713,12 +713,12 @@
         rdfs:domain nexus:GovernanceDevelopmentNeed ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Type governance-interventie vereist. Gecontroleerd vocabulaire:
+            """Type governance-interventie vereist. Gecontroleerd vocabulaire:
              'NewCommitment'     — een nieuw CollaborationCommitment afsluiten;
              'NewArchitecture'   — een CollaborationArchitecture ontwerpen;
              'NewGovernanceBody' — een governance-orgaan oprichten;
              'AmendExisting'     — een bestaand arrangement aanpassen;
-             'LegalGrounding'    — juridische verankering via norm of convenant."@nl .
+             'LegalGrounding'    — juridische verankering via norm of convenant."""@nl .
 
     nexus:targetResolutionHorizon
         a owl:DatatypeProperty ;
@@ -727,9 +727,9 @@
         rdfs:domain nexus:GovernanceDevelopmentNeed ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Tijdshorizon voor het dichten van de gap. Zelfde vocabulaire als
+            """Tijdshorizon voor het dichten van de gap. Zelfde vocabulaire als
              capax:developmentHorizon:
-             'BeforeImplementation' | 'WithinFirstYear' | 'LongTerm'."@nl .
+             'BeforeImplementation' | 'WithinFirstYear' | 'LongTerm'."""@nl .
 
 
     ###############################################################################

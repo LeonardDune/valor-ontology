@@ -49,9 +49,9 @@
         sh:targetClass sysont:System ;
         sh:name "SystemMinComponentsShape" ;
         sh:description
-            "SYS-1: Een System heeft ten minste 2 Components. Een enkel-
+            """SYS-1: Een System heeft ten minste 2 Components. Een enkel-
              componentig object is geen System maar een FunctionalComplex
-             zonder emergente eigenschappen (Calhau et al. 2023 §4, criterium i)." ;
+             zonder emergente eigenschappen (Calhau et al. 2023 §4, criterium i).""" ;
         sh:property [
             sh:path     [ sh:inversePath sysont:isComponentOf ] ;
             sh:minCount 2 ;
@@ -69,9 +69,9 @@
         sh:targetClass sysont:Component ;
         sh:name "ComponentBelongsToSystemShape" ;
         sh:description
-            "SYS-2: Een Component is altijd deel van ten minste één System.
+            """SYS-2: Een Component is altijd deel van ten minste één System.
              Een losstaand Component zonder System is ontologisch niet
-             gedefinieerd als Component (mereologische constraint)." ;
+             gedefinieerd als Component (mereologische constraint).""" ;
         sh:property [
             sh:path     sysont:isComponentOf ;
             sh:minCount 1 ;
@@ -89,8 +89,8 @@
         sh:targetClass sysont:BondingRelation ;
         sh:name "BondingRelationMediatorsShape" ;
         sh:description
-            "SYS-3: Een BondingRelation (als UFO-Relator) medieert ten minste
-             2 Objects. Een unaire bonding relation is geen relatie." ;
+            """SYS-3: Een BondingRelation (als UFO-Relator) medieert ten minste
+             2 Objects. Een unaire bonding relation is geen relatie.""" ;
         sh:property [
             sh:path     sysont:isConnectedWith ;
             sh:minCount 2 ;
@@ -108,9 +108,9 @@
         sh:targetClass sysont:NonBondingRelation ;
         sh:name "NonBondingRelationMembersShape" ;
         sh:description
-            "SYS-4: Een NonBondingRelation (als UFO ComparativeRelation)
+            """SYS-4: Een NonBondingRelation (als UFO ComparativeRelation)
              betrekt ten minste 2 Objects. Een unaire constraint is
-             een kwaliteit, geen vergelijkende relatie." ;
+             een kwaliteit, geen vergelijkende relatie.""" ;
         sh:property [
             sh:path     sysont:isContrastedWith ;
             sh:minCount 2 ;
@@ -128,10 +128,10 @@
         sh:targetClass sysont:FunctionalRole ;
         sh:name "FunctionalRoleCharacterizationShape" ;
         sh:description
-            "SYS-5: Een FunctionalRole moet worden gekarakteriseerd door ten
+            """SYS-5: Een FunctionalRole moet worden gekarakteriseerd door ten
              minste één MomentType. Een functionele rol zonder eigenschapseis
              is niet gedefinieerd — er is dan niets wat een Component onderscheidt
-             als invuller van die rol (Calhau et al. 2023 Fig. 3)." ;
+             als invuller van die rol (Calhau et al. 2023 Fig. 3).""" ;
         sh:property [
             sh:path     sysont:isCharacterizedBy ;
             sh:minCount 1 ;
@@ -149,10 +149,10 @@
         sh:targetClass sysont:EmergentSystemMoment ;
         sh:name "EmergentMomentSourceShape" ;
         sh:description
-            "SYS-6: Een EmergentSystemMoment moet aantoonbaar emergeren uit
+            """SYS-6: Een EmergentSystemMoment moet aantoonbaar emergeren uit
              ten minste één component-moment. Zonder grondslag in component-
              eigenschappen is het geen emergentie maar een onverklaard
-             postulaat (Calhau et al. 2023 Fig. 4 — historical dependence)." ;
+             postulaat (Calhau et al. 2023 Fig. 4 — historical dependence).""" ;
         sh:property [
             sh:path     sysont:emergesFrom ;
             sh:minCount 1 ;
@@ -170,10 +170,10 @@
         sh:targetClass sysont:EmergentSystemMoment ;
         sh:name "EmergentMomentSituationShape" ;
         sh:description
-            "SYS-7: Een EmergentSystemMoment emergeert in precies één
+            """SYS-7: Een EmergentSystemMoment emergeert in precies één
              SystemSituation. Emergentie is configuratie-afhankelijk:
              de SystemSituation IS de ontologische grond van de emergente
-             eigenschap (Bunge 1979; Calhau et al. 2023 Fig. 4)." ;
+             eigenschap (Bunge 1979; Calhau et al. 2023 Fig. 4).""" ;
         sh:property [
             sh:path     sysont:emergesIn ;
             sh:minCount 1 ;
@@ -192,10 +192,10 @@
         sh:targetClass sysont:ResultantSystemMoment ;
         sh:name "ResultantMomentNoSituationShape" ;
         sh:description
-            "SYS-8: Een ResultantSystemMoment is situatie-onafhankelijk en
+            """SYS-8: Een ResultantSystemMoment is situatie-onafhankelijk en
              MAG NIET emergesIn hebben. Resultante eigenschappen zijn
              mathematisch afleidbaar uit componenten — de bonding structure
-             is er irrelevant voor (Bunge 1977)." ;
+             is er irrelevant voor (Bunge 1977).""" ;
         sh:property [
             sh:path     sysont:emergesIn ;
             sh:maxCount 0 ;
@@ -212,9 +212,9 @@
         sh:targetClass sysont:SystemMoment ;
         sh:name "SystemMomentBearerShape" ;
         sh:description
-            "SYS-9: Een SystemMoment inhereert aan precies één System.
+            """SYS-9: Een SystemMoment inhereert aan precies één System.
              Als globale eigenschap van het geheel heeft het één en slechts
-             één bearer (UFO inheresIn-constraint; Calhau et al. 2023 §4)." ;
+             één bearer (UFO inheresIn-constraint; Calhau et al. 2023 §4).""" ;
         sh:property [
             sh:path     sysont:inheresInSystem ;
             sh:minCount 1 ;
@@ -233,10 +233,10 @@
         sh:targetClass sysont:EmergencePattern ;
         sh:name "EmergencePatternMinRolesShape" ;
         sh:description
-            "SYS-10: Een EmergencePattern vereist ten minste 2 FunctionalRoles.
+            """SYS-10: Een EmergencePattern vereist ten minste 2 FunctionalRoles.
              Emergentie is per definitie een meerdere-componenten-fenomeen;
              een patroon met één rol beschrijft geen emergentie maar een
-             enkelvoudige capability (DD-090)." ;
+             enkelvoudige capability (DD-090).""" ;
         sh:property [
             sh:path     sysont:patternRequiresFunctionalRole ;
             sh:minCount 2 ;
@@ -254,9 +254,9 @@
         sh:targetClass sysont:EmergencePattern ;
         sh:name "EmergencePatternOutcomeShape" ;
         sh:description
-            "SYS-11: Een EmergencePattern moet specificeren welk type
+            """SYS-11: Een EmergencePattern moet specificeren welk type
              EmergentSystemMoment het oplevert. Een patroon zonder uitkomst
-             is onvolledig en niet bruikbaar als ontwerpcriterium (DD-090)." ;
+             is onvolledig en niet bruikbaar als ontwerpcriterium (DD-090).""" ;
         sh:property [
             sh:path     sysont:patternYieldsSystemMoment ;
             sh:minCount 1 ;
@@ -274,9 +274,9 @@
         sh:targetClass sysont:Subsystem ;
         sh:name "SubsystemIsComponentShape" ;
         sh:description
-            "SYS-12: Een Subsystem is per definitie ook een Component van
+            """SYS-12: Een Subsystem is per definitie ook een Component van
              een hoger System. Een 'subsystem' dat van niets deel is, is
-             gewoon een System (niet een Subsystem)." ;
+             gewoon een System (niet een Subsystem).""" ;
         sh:property [
             sh:path     sysont:isComponentOf ;
             sh:minCount 1 ;
@@ -293,11 +293,11 @@
         sh:targetClass sysont:FunctionalRole ;
         sh:name "BondedRoleInstantiationShape" ;
         sh:description
-            "SYS-13: Als een FunctionalRole isBondedTo een andere FunctionalRole,
+            """SYS-13: Als een FunctionalRole isBondedTo een andere FunctionalRole,
              dan moeten beide rollen zijn geïnstantiëerd in het System voor een
              BondingRelation op instantie-niveau te kunnen bestaan. SPARQL-
              waarschuwing: detecteert rollen die wel isBondedTo hebben maar
-             geen instantiatesRole van een Component." ;
+             geen instantiatesRole van een Component.""" ;
         sh:sparql [
             sh:name    "SYS-13-bonded-role-instantiation" ;
             sh:message "SYS-13: FunctionalRole met isBondedTo heeft geen instantiëring via sysont:instantiatesRole — BondingRelation op instantie-niveau ontbreekt (DD-088)." ;
@@ -323,11 +323,11 @@
         sh:targetClass nexus:CollaborationCondition ;
         sh:name "CollaborationConditionBondingStructureShape" ;
         sh:description
-            "SYS-14 / NEX-20: Een nexus:CollaborationCondition als SystemSituation
+            """SYS-14 / NEX-20: Een nexus:CollaborationCondition als SystemSituation
              (DD-085) moet ten minste één DispositionRelation specificeren die
              de bonding structure van het ecosysteem constitueert. Zonder
              DispositionRelations is de CollaborationCondition een checklist
-             zonder ontologische grond voor emergentie (DD-085, DD-089)." ;
+             zonder ontologische grond voor emergentie (DD-085, DD-089).""" ;
         sh:property [
             sh:path     nexus:conditionGroundedInDispositionRelations ;
             sh:minCount 1 ;
@@ -346,10 +346,10 @@
         sh:targetClass capax:OrganizationalCapability ;
         sh:name "EmergentCapabilityDispositionRelationShape" ;
         sh:description
-            "SYS-15: Als een capax:OrganizationalCapability emergenceNature
+            """SYS-15: Als een capax:OrganizationalCapability emergenceNature
              'Emergent' heeft, dan MOET er ten minste één capax:DispositionRelation
              zijn die de emergentiestructuur beschrijft. Een emergente capability
-             zonder DispositionRelation-analyse is onvolledig gemodelleerd." ;
+             zonder DispositionRelation-analyse is onvolledig gemodelleerd.""" ;
         sh:sparql [
             sh:name    "SYS-15-emergent-needs-dispositionrelation" ;
             sh:message "SYS-15: OrganizationalCapability met emergenceNature 'Emergent' heeft geen bijbehorende capax:DispositionRelation — voeg DispositionRelation toe voor volledige emergentie-analyse (DD-084, DD-089)." ;
@@ -375,9 +375,9 @@
         sh:targetClass sysont:InternalConnection ;
         sh:name "InternalConnectionScopeShape" ;
         sh:description
-            "SYS-16: Een InternalConnection mag uitsluitend Components van
+            """SYS-16: Een InternalConnection mag uitsluitend Components van
              hetzelfde System verbinden. Een verbinding die buiten het System
-             gaat, is een ExternalConnection." ;
+             gaat, is een ExternalConnection.""" ;
         sh:sparql [
             sh:name    "SYS-16-internal-connection-scope" ;
             sh:message "SYS-16: InternalConnection verbindt Components die niet aan hetzelfde System toebehoort — gebruik sysont:ExternalConnection voor System-grens-overschrijdende verbindingen (DD-087)." ;
@@ -402,8 +402,8 @@
         sh:targetClass sysont:ExternalConnection ;
         sh:name "ExternalConnectionEntityShape" ;
         sh:description
-            "SYS-17: Een ExternalConnection verbindt een Component met ten
-             minste één ExternalEntity (entiteit buiten het System)." ;
+            """SYS-17: Een ExternalConnection verbindt een Component met ten
+             minste één ExternalEntity (entiteit buiten het System).""" ;
         sh:sparql [
             sh:name    "SYS-17-external-connection-entity" ;
             sh:message "SYS-17: ExternalConnection heeft geen ExternalEntity als relatum — een verbinding tussen uitsluitend Components is een InternalConnection (DD-087)." ;
@@ -429,10 +429,10 @@
         sh:targetClass sysont:SystemSituation ;
         sh:name "PatternSatisfactionCompletenessShape" ;
         sh:description
-            "SYS-18: Als een SystemSituation satisfiesPattern een EmergencePattern,
+            """SYS-18: Als een SystemSituation satisfiesPattern een EmergencePattern,
              dan moeten alle FunctionalRoles van dat patroon zijn geïnstantiëerd
              in het bijbehorende System. Een partieel geïnstantiëerd patroon
-             genereert geen emergentie (DD-090)." ;
+             genereert geen emergentie (DD-090).""" ;
         sh:sparql [
             sh:name    "SYS-18-pattern-satisfaction-completeness" ;
             sh:message "SYS-18: SystemSituation.satisfiesPattern — niet alle vereiste FunctionalRoles zijn geïnstantiëerd door Components van het bijbehorende System (DD-090)." ;
