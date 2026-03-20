@@ -86,8 +86,8 @@ vo:axia
 #  Tessera) een bepaalde ValueType ondersteunt of ondermijnt. Als valor:Tessera:
 #  epistemisch bevraagbaar, betwistbaar, met bewijs onderbouwbaar.
 #
-#  Voorbeeld: "Geautomatiseerde schuldsignalering ondersteunt Efficiëntie
-#  maar ondermijnt Privacy" → twee ValueClaims met verschillende polarity.
+#  Voorbeeld: """Geautomatiseerde schuldsignalering ondersteunt Efficiëntie
+#  maar ondermijnt Privacy""" → twee ValueClaims met verschillende polarity.
 ###############################################################################
 
 axia:ValueClaim
@@ -109,8 +109,8 @@ axia:ValueClaim
 #
 #  Een ValueTensionClaim is de bewering dat twee of meer ValueTypes
 #  structureel in spanning staan in de context van een Issue of een
-#  specifiek ontwerpelement. Als Tessera: kan worden betwist ("de spanning
-#  is niet onoplosbaar"), ondersteund met bewijs, of heroverwogen.
+#  specifiek ontwerpelement. Als Tessera: kan worden betwist ("""de spanning
+#  is niet onoplosbaar"""), ondersteund met bewijs, of heroverwogen.
 ###############################################################################
 
 axia:ValueTensionClaim

@@ -345,22 +345,22 @@ demos:DeclinedParticipation
     a demos:AbsenceReason ;
     rdfs:label "DeclinedParticipation"@en , "Deelname geweigerd"@nl ;
     rdfs:comment
-        "Groep is uitgenodigd maar heeft actief afgezien van deelname.
-         Documentatie van weigering verplicht (PartiallyAdequate of Adequate)."@nl .
+        """Groep is uitgenodigd maar heeft actief afgezien van deelname.
+         Documentatie van weigering verplicht (PartiallyAdequate of Adequate)."""@nl .
 
 demos:StructuralBarrier
     a demos:AbsenceReason ;
     rdfs:label "StructuralBarrier"@en , "Structurele drempel"@nl ;
     rdfs:comment
-        "Groep is niet bereikbaar vanwege een ParticipationBarrier.
-         Vereist AccessibilityMeasure als to-be Tessera."@nl .
+        """Groep is niet bereikbaar vanwege een ParticipationBarrier.
+         Vereist AccessibilityMeasure als to-be Tessera."""@nl .
 
 demos:UnknownReason
     a demos:AbsenceReason ;
     rdfs:label "Unknown"@en , "Onbekend"@nl ;
     rdfs:comment
-        "Reden van afwezigheid onbekend. Automatisch voorgesteld bij
-         gap-detectie; moet worden bijgewerkt."@nl .
+        """Reden van afwezigheid onbekend. Automatisch voorgesteld bij
+         gap-detectie; moet worden bijgewerkt."""@nl .
 
 [ a owl:AllDifferent ;
   owl:distinctMembers (

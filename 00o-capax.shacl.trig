@@ -52,8 +52,8 @@
         sh:targetClass capax:Capability ;
         sh:name "CapabilityAgentShape" ;
         sh:description
-            "CAP-1: Een Capability moet inhereren aan precies één Agent
-             via capax:inhereInAgent." ;
+            """CAP-1: Een Capability moet inhereren aan precies één Agent
+             via capax:inhereInAgent.""" ;
         sh:property [
             sh:path     capax:inhereInAgent ;
             sh:minCount 1 ;
@@ -72,8 +72,8 @@
         sh:targetClass capax:Capability ;
         sh:name "CapabilitySubtypeShape" ;
         sh:description
-            "CAP-2: Elke Capability moet een OrganizationalCapability of
-             IndividualCapability zijn." ;
+            """CAP-2: Elke Capability moet een OrganizationalCapability of
+             IndividualCapability zijn.""" ;
         sh:or (
             [ sh:class capax:OrganizationalCapability ]
             [ sh:class capax:IndividualCapability     ]
@@ -90,8 +90,8 @@
         sh:targetClass capax:CapabilityRequirement ;
         sh:name "CapReqTransactionShape" ;
         sh:description
-            "CAP-3: Een CapabilityRequirement moet gekoppeld zijn aan
-             precies één TransactionType via capax:requiredForTransactionType." ;
+            """CAP-3: Een CapabilityRequirement moet gekoppeld zijn aan
+             precies één TransactionType via capax:requiredForTransactionType.""" ;
         sh:property [
             sh:path     capax:requiredForTransactionType ;
             sh:minCount 1 ;
@@ -110,8 +110,8 @@
         sh:targetClass capax:CapabilityRequirement ;
         sh:name "CapReqTypeShape" ;
         sh:description
-            "CAP-4: Een CapabilityRequirement moet het vereiste type
-             capability specificeren via capax:requiresCapabilityType." ;
+            """CAP-4: Een CapabilityRequirement moet het vereiste type
+             capability specificeren via capax:requiresCapabilityType.""" ;
         sh:property [
             sh:path     capax:requiresCapabilityType ;
             sh:minCount 1 ;
@@ -129,8 +129,8 @@
         sh:targetClass capax:CapabilityGap ;
         sh:name "GapRequirementShape" ;
         sh:description
-            "GAP-1: Een CapabilityGap moet verwijzen naar de
-             CapabilityRequirement waaraan niet wordt voldaan." ;
+            """GAP-1: Een CapabilityGap moet verwijzen naar de
+             CapabilityRequirement waaraan niet wordt voldaan.""" ;
         sh:property [
             sh:path     capax:gapConcernsRequirement ;
             sh:minCount 1 ;
@@ -148,8 +148,8 @@
         sh:targetClass capax:CapabilityGap ;
         sh:name "GapAgentShape" ;
         sh:description
-            "GAP-2: Een CapabilityGap moet verwijzen naar de agent
-             bij wie de capability ontbreekt." ;
+            """GAP-2: Een CapabilityGap moet verwijzen naar de agent
+             bij wie de capability ontbreekt.""" ;
         sh:property [
             sh:path     capax:gapAffectsAgent ;
             sh:minCount 1 ;
@@ -167,8 +167,8 @@
         sh:targetClass capax:CapabilityGap ;
         sh:name "GapAlternativeShape" ;
         sh:description
-            "GAP-3: Een CapabilityGap moet gekoppeld zijn aan het
-             ontwerpalternatief waarbinnen het tekort is geconstateerd." ;
+            """GAP-3: Een CapabilityGap moet gekoppeld zijn aan het
+             ontwerpalternatief waarbinnen het tekort is geconstateerd.""" ;
         sh:property [
             sh:path     capax:gapOccursInAlternative ;
             sh:minCount 1 ;
@@ -186,8 +186,8 @@
         sh:targetClass capax:CapabilityGap ;
         sh:name "GapSeverityShape" ;
         sh:description
-            "GAP-4: gapSeverity moet een waarde zijn uit het
-             gecontroleerde vocabulaire: Critical, Significant, Minor." ;
+            """GAP-4: gapSeverity moet een waarde zijn uit het
+             gecontroleerde vocabulaire: Critical, Significant, Minor.""" ;
         sh:sparql [
             sh:name    "GAP-4-severity-vocab" ;
             sh:message "GAP-4: CapabilityGap.gapSeverity moet 'Critical', 'Significant', of 'Minor' zijn." ;
@@ -210,8 +210,8 @@
         sh:targetClass capax:CapabilityDevelopmentNeed ;
         sh:name "DevNeedGapShape" ;
         sh:description
-            "DEV-1: Een CapabilityDevelopmentNeed moet precies één
-             CapabilityGap adresseren." ;
+            """DEV-1: Een CapabilityDevelopmentNeed moet precies één
+             CapabilityGap adresseren.""" ;
         sh:property [
             sh:path     capax:addressesGap ;
             sh:minCount 1 ;
@@ -230,8 +230,8 @@
         sh:targetClass capax:CapabilityDevelopmentNeed ;
         sh:name "DevNeedHorizonShape" ;
         sh:description
-            "DEV-2: Een CapabilityDevelopmentNeed moet een
-             developmentHorizon specificeren." ;
+            """DEV-2: Een CapabilityDevelopmentNeed moet een
+             developmentHorizon specificeren.""" ;
         sh:property [
             sh:path     capax:developmentHorizon ;
             sh:minCount 1 ;
@@ -275,8 +275,8 @@
         sh:targetClass capax:FeasibilityAssessment ;
         sh:name "FeaAlternativeShape" ;
         sh:description
-            "FEA-1: Een FeasibilityAssessment moet precies één
-             DesignAlternative beoordelen." ;
+            """FEA-1: Een FeasibilityAssessment moet precies één
+             DesignAlternative beoordelen.""" ;
         sh:property [
             sh:path     capax:assessesAlternative ;
             sh:minCount 1 ;
@@ -320,9 +320,9 @@
         sh:targetClass capax:FeasibilityAssessment ;
         sh:name "FeaWithConditionsShape" ;
         sh:description
-            "FEA-3: Een FeasibilityAssessment met overallFeasibility
+            """FEA-3: Een FeasibilityAssessment met overallFeasibility
              'FeasibleWithConditions' moet ten minste één
-             CapabilityDevelopmentNeed omvatten." ;
+             CapabilityDevelopmentNeed omvatten.""" ;
         sh:sparql [
             sh:name    "FEA-3-conditions-need-devneed" ;
             sh:message "FEA-3: FeasibilityAssessment 'FeasibleWithConditions' vereist minimaal één capax:CapabilityDevelopmentNeed via capax:includesDevelopmentNeed." ;
@@ -347,9 +347,9 @@
         sh:targetClass capax:FeasibilityAssessment ;
         sh:name "FeaNotFeasibleShape" ;
         sh:description
-            "FEA-4: Een FeasibilityAssessment met overallFeasibility
+            """FEA-4: Een FeasibilityAssessment met overallFeasibility
              'NotFeasible' moet ten minste één CapabilityGap omvatten
-             met gapSeverity 'Critical' of 'Significant'." ;
+             met gapSeverity 'Critical' of 'Significant'.""" ;
         sh:sparql [
             sh:name    "FEA-4-notfeasible-needs-gap" ;
             sh:message "FEA-4: FeasibilityAssessment 'NotFeasible' vereist minimaal één gap met severity Critical of Significant." ;

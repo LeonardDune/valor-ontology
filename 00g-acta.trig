@@ -243,8 +243,8 @@
     #    deze SoI; vanuit de externe organisatie zijn het gewone TransactorRoles.
     #    Relationally dependent: de classificatie vereist een relationele context
     #    (de interne transacties van de SoI).
-    #    Conform DEMO SL §3.1: "the cut-off upper part is represented by a
-    #    composite transactor role" — expliciete representatiekeuze, niet absolute
+    #    Conform DEMO SL §3.1: """the cut-off upper part is represented by a
+    #    composite transactor role""" — expliciete representatiekeuze, niet absolute
     #    aggregatie.
     #
     #  TransactorNetwork (Collection) — de context-onafhankelijke aggregatie

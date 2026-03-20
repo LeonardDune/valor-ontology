@@ -52,9 +52,9 @@
         sh:targetClass nexus:EcosystemAgent ;
         sh:name "EcosystemAgentCommitmentShape" ;
         sh:description
-            "NEX-1: Een EcosystemAgent moet gegrond zijn in ten minste één
+            """NEX-1: Een EcosystemAgent moet gegrond zijn in ten minste één
              CollaborationCommitment. Zonder commitment bestaat het ecosysteem
-             niet als agent." ;
+             niet als agent.""" ;
         sh:property [
             sh:path     nexus:isGroundedInCommitment ;
             sh:minCount 1 ;
@@ -72,9 +72,9 @@
         sh:targetClass nexus:CollaborationCommitment ;
         sh:name "CollaborationCommitmentMinMembersShape" ;
         sh:description
-            "NEX-2: Een CollaborationCommitment vereist minimaal twee
+            """NEX-2: Een CollaborationCommitment vereist minimaal twee
              deelnemende organisaties — een unilateraal commitment is
-             geen samenwerking." ;
+             geen samenwerking.""" ;
         sh:property [
             sh:path     nexus:hasParticipatingOrganisation ;
             sh:minCount 2 ;
@@ -113,9 +113,9 @@
         sh:targetClass nexus:CollaborativeCapability ;
         sh:name "CollaborativeCapabilityBearerShape" ;
         sh:description
-            "NEX-4: Een CollaborativeCapability moet inheren aan precies
+            """NEX-4: Een CollaborativeCapability moet inheren aan precies
              één EcosystemAgent. Samenwerkingscapabilities zijn per definitie
-             eigenschappen van het ecosysteem, niet van individuele leden." ;
+             eigenschappen van het ecosysteem, niet van individuele leden.""" ;
         sh:property [
             sh:path     capax:inhereInAgent ;
             sh:minCount 1 ;
@@ -134,8 +134,8 @@
         sh:targetClass nexus:CollaborativeCapability ;
         sh:name "CollaborativeCapabilityConditionShape" ;
         sh:description
-            "NEX-5: Een CollaborativeCapability moet verwijzen naar ten minste
-             één CollaborationCondition via nexus:requiresCollaborationCondition." ;
+            """NEX-5: Een CollaborativeCapability moet verwijzen naar ten minste
+             één CollaborationCondition via nexus:requiresCollaborationCondition.""" ;
         sh:property [
             sh:path     nexus:requiresCollaborationCondition ;
             sh:minCount 1 ;
@@ -296,10 +296,10 @@
         sh:targetClass nexus:EcosystemCapabilityGap ;
         sh:name "EcoGapGovernanceNeedShape" ;
         sh:description
-            "NEX-14: Een EcosystemCapabilityGap moet worden geadresseerd door
+            """NEX-14: Een EcosystemCapabilityGap moet worden geadresseerd door
              ten minste één GovernanceDevelopmentNeed. Ecosysteem-gaps vereisen
              altijd een governance-interventie, nooit uitsluitend een HR-oplossing
-             (DD-081)." ;
+             (DD-081).""" ;
         sh:sparql [
             sh:name    "NEX-14-needs-governance-need" ;
             sh:message "NEX-14: EcosystemCapabilityGap vereist minimaal één nexus:GovernanceDevelopmentNeed die haar adresseert (DD-081)." ;

@@ -50,8 +50,8 @@
         sh:targetClass axia:ValueCriterion ;
         sh:name "ValueCriterionValueShape" ;
         sh:description
-            "VSD-1: Een ValueCriterion moet afgeleid zijn van ten minste
-             één cover:ValueType via axia:criterionFromValue." ;
+            """VSD-1: Een ValueCriterion moet afgeleid zijn van ten minste
+             één cover:ValueType via axia:criterionFromValue.""" ;
         sh:property [
             sh:path     axia:criterionFromValue ;
             sh:minCount 1 ;
@@ -69,8 +69,8 @@
         sh:targetClass axia:ValueCriterion ;
         sh:name "ValueCriterionScopeShape" ;
         sh:description
-            "VSD-2: criterionScope moet een waarde zijn uit het
-             gecontroleerde vocabulaire." ;
+            """VSD-2: criterionScope moet een waarde zijn uit het
+             gecontroleerde vocabulaire.""" ;
         sh:sparql [
             sh:name    "VSD-2-scope-vocab" ;
             sh:message "VSD-2: ValueCriterion.criterionScope moet 'Universal' of 'Contextual' zijn." ;
@@ -93,8 +93,8 @@
         sh:targetClass axia:ValueBasedDesignRequirement ;
         sh:name "ReqFromCriterionShape" ;
         sh:description
-            "VSD-3: Een ValueBasedDesignRequirement moet traceerbaar zijn
-             naar precies één ValueCriterion." ;
+            """VSD-3: Een ValueBasedDesignRequirement moet traceerbaar zijn
+             naar precies één ValueCriterion.""" ;
         sh:property [
             sh:path     axia:requirementFromCriterion ;
             sh:minCount 1 ;
@@ -113,8 +113,8 @@
         sh:targetClass axia:ValueBasedDesignRequirement ;
         sh:name "ReqAlternativeShape" ;
         sh:description
-            "VSD-4: Een ValueBasedDesignRequirement moet van toepassing zijn
-             op ten minste één DesignAlternative." ;
+            """VSD-4: Een ValueBasedDesignRequirement moet van toepassing zijn
+             op ten minste één DesignAlternative.""" ;
         sh:property [
             sh:path     axia:appliesToAlternative ;
             sh:minCount 1 ;
@@ -179,9 +179,9 @@
         sh:targetClass axia:ValueBasedDesignRequirement ;
         sh:name "ReqCapabilityBridgeShape" ;
         sh:description
-            "VSD-7: Een ValueBasedDesignRequirement met requirementType
+            """VSD-7: Een ValueBasedDesignRequirement met requirementType
              'Capability' moet ten minste één capax:CapabilityRequirement
-             genereren via axia:generatesCapabilityRequirement." ;
+             genereren via axia:generatesCapabilityRequirement.""" ;
         sh:sparql [
             sh:name    "VSD-7-capability-bridge" ;
             sh:message "VSD-7: ValueBasedDesignRequirement met requirementType 'Capability' vereist axia:generatesCapabilityRequirement → capax:CapabilityRequirement (DD-074)." ;
@@ -206,9 +206,9 @@
         sh:targetClass axia:ValueHierarchy ;
         sh:name "ValueHierarchyCompletenessShape" ;
         sh:description
-            "VSD-8 (waarschuwing): Een ValueHierarchy moet ten minste
+            """VSD-8 (waarschuwing): Een ValueHierarchy moet ten minste
              één waarde, één criterium én één eis omvatten om betekenisvol
-             te zijn." ;
+             te zijn.""" ;
         sh:severity sh:Warning ;
         sh:sparql [
             sh:name    "VSD-8-hierarchy-completeness" ;
@@ -235,9 +235,9 @@
         sh:targetClass axia:ValueCriterion ;
         sh:name "NoCyclicDerivationShape" ;
         sh:description
-            "VSD-9: Een ValueCriterion mag niet via een keten van
+            """VSD-9: Een ValueCriterion mag niet via een keten van
              requirementFromCriterion terug verwijzen naar zichzelf
-             (cyclische derivatie verboden)." ;
+             (cyclische derivatie verboden).""" ;
         sh:sparql [
             sh:name    "VSD-9-no-cycle" ;
             sh:message "VSD-9: Cyclische derivatie gedetecteerd: ValueCriterion verwijst indirect naar zichzelf." ;

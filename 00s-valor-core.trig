@@ -62,21 +62,21 @@
         dcterms:title
             "VALOR-O — Module 00s: VALOR-CORE — Toepassingsontologie kernlaag"@nl ;
         dcterms:description
-            "Formaliseert de VALOR-specifieke kernconcepten, met als centrale
+            """Formaliseert de VALOR-specifieke kernconcepten, met als centrale
              bijdrage de abstracte category CollectiveIntentionalCommunity
              en haar twee specialisaties IssueCommunity (cognitieve modus)
              en EcosystemAgent (conatieve modus), alsmede de relatie
              addressesIssue die de legitimeringsbasis van het ecosysteem
-             ten opzichte van de bredere Issue-gemeenschap vastlegt."@nl ;
+             ten opzichte van de bredere Issue-gemeenschap vastlegt."""@nl ;
         owl:versionInfo "0.2" ;
         owl:priorVersion "0.1" ;
         dcterms:created "2026-03-12" ;
         dcterms:modified "2026-03-12" ;
         dcterms:source
-            "Searle (1995) The Construction of Social Reality;
+            """Searle (1995) The Construction of Social Reality;
              Guizzardi et al. (2013) UFO-C;
              Osborne et al. (2022) Public Service Ecosystem;
-             VALOR-O reflectie DD-091 (2026-03-12)." .
+             VALOR-O reflectie DD-091 (2026-03-12).""" .
 
 
     ###############################################################################
@@ -91,7 +91,7 @@
             "CollectiveIntentionalCommunity"@en ,
             "Collectieve intentionele gemeenschap"@nl ;
         rdfs:comment
-            "Een abstracte category voor groeperingen van agents die als collectief
+            """Een abstracte category voor groeperingen van agents die als collectief
              worden geconstitueerd door een gedeelde intentionele toestand met
              betrekking tot een externe situatie in de wereld.
 
@@ -112,13 +112,13 @@
              ontologische patroon instantiëren (Searle 1995: collective
              intentionality als constitutief mechanisme voor sociale realiteit),
              terwijl het onderscheid in constitutieve modus — Concern vs.
-             Commitment — de categorisch verschillende aard vastlegt."@nl ;
+             Commitment — de categorisch verschillende aard vastlegt."""@nl ;
         skos:example
-            "De IssueCommunity rondom schuldenproblematiek (burgers, uitvoerders,
+            """De IssueCommunity rondom schuldenproblematiek (burgers, uitvoerders,
              beleidsmakers) en het EcosystemAgent dat schuldhulpverlening uitvoert
              zijn beide CollectiveIntentionalCommunities met betrekking tot
              hetzelfde Issue — de eerste bestaat door gedeelde zorg, de tweede
-             door wederzijds commitment."@nl .
+             door wederzijds commitment."""@nl .
 
 
     ###############################################################################
@@ -133,7 +133,7 @@
             "IssueCommunity"@en ,
             "Issue-gemeenschap"@nl ;
         rdfs:comment
-            "Een CollectiveIntentionalCommunity in de COGNITIEVE MODUS:
+            """Een CollectiveIntentionalCommunity in de COGNITIEVE MODUS:
              geconstitueerd door gedeeld ufoc:Concern met betrekking tot een
              onderliggende gufo:Situation die als problematisch wordt ervaren.
 
@@ -143,11 +143,11 @@
                  wederzijds erkennen — hoeft niets te doen.
              (3) BREEDTE: typisch breder dan het EcosystemAgent.
              (4) LEGITIMERINGSFUNCTIE: de normatieve grond waarop het
-                 EcosystemAgent zijn mandaat baseert."@nl ;
+                 EcosystemAgent zijn mandaat baseert."""@nl ;
         skos:example
-            "De IssueCommunity rondom schuldenproblematiek in gemeente X:
+            """De IssueCommunity rondom schuldenproblematiek in gemeente X:
              omvat burgers met schulden, schuldhulpverleners, ambtenaren,
-             raadsleden, woningcorporaties, lokale media."@nl .
+             raadsleden, woningcorporaties, lokale media."""@nl .
 
 
     ###############################################################################
@@ -162,7 +162,7 @@
             "Issue"@en ,
             "Maatschappelijk vraagstuk"@nl ;
         rdfs:comment
-            "Een ufoc:SocialObject dat bestaat doordat een IssueCommunity
+            """Een ufoc:SocialObject dat bestaat doordat een IssueCommunity
              een gedeeld ufoc:Concern heeft over een onderliggende gufo:Situation
              (de toestand van de wereld die als problematisch wordt ervaren).
 
@@ -172,12 +172,12 @@
              (b) het Issue als SocialObject — de gedeelde probleemdefinitie
                  (geconstitueerd door de IssueCommunity via gedeeld Concern)
 
-             Het Issue is het object van het Design Space in VALOR."@nl ;
+             Het Issue is het object van het Design Space in VALOR."""@nl ;
         skos:example
-            "schuldenproblematiek in gemeente X (Issue) ←
+            """schuldenproblematiek in gemeente X (Issue) ←
              geconstitueerd door IssueCommunity ←
              gegrond in: stijgend percentage huishoudens met problematische
-             schulden in gemeente X (gufo:Situation)"@nl .
+             schulden in gemeente X (gufo:Situation)"""@nl .
 
 
     ###############################################################################
@@ -194,9 +194,9 @@
             "hasConcernAbout"@en ,
             "heeft zorg over"@nl ;
         rdfs:comment
-            "Verbindt een IssueCommunity met het Issue dat door haar gedeeld
+            """Verbindt een IssueCommunity met het Issue dat door haar gedeeld
              Concern wordt geconstitueerd. Constitutieve relatie: de
-             IssueCommunity constitueert het Issue via deze relatie."@nl .
+             IssueCommunity constitueert het Issue via deze relatie."""@nl .
 
     # ── Issue → onderliggende Situation ──────────────────────────────────────────
 
@@ -208,8 +208,8 @@
             "concernedWithSituation"@en ,
             "betreft situatie"@nl ;
         rdfs:comment
-            "Verbindt een Issue met de onderliggende gufo:Situation in de wereld
-             die de objectieve grond vormt voor het gedeelde Concern."@nl .
+            """Verbindt een Issue met de onderliggende gufo:Situation in de wereld
+             die de objectieve grond vormt voor het gedeelde Concern."""@nl .
 
     # ── EcosystemAgent → Issue ────────────────────────────────────────────────────
     #  N.B.: nexus:EcosystemAgent is gedefinieerd in module 00q-nexus.
@@ -224,7 +224,7 @@
             "addressesIssue"@en ,
             "adresseert vraagstuk"@nl ;
         rdfs:comment
-            "Verbindt een EcosystemAgent met het Issue dat zijn legitimeringsbasis
+            """Verbindt een EcosystemAgent met het Issue dat zijn legitimeringsbasis
              vormt. Formaliseert de normatieve grondslag van het ecosysteem: een
              EcosystemAgent bestaat om een Issue aan te pakken dat door een
              IssueCommunity als problematisch wordt erkend.
@@ -235,10 +235,10 @@
              (1) Een EcosystemAgent zonder addressesIssue mist zijn democratische
                  legitimering — detecteerbaar via SPARQL.
              (2) De overlap tussen IssueCommunity-leden en EcosystemAgent-leden
-                 is een proxy voor de inclusiviteitsgraad van het ecosysteem."@nl ;
+                 is een proxy voor de inclusiviteitsgraad van het ecosysteem."""@nl ;
         skos:example
-            "nexus:SchuldhulpEcosysteemGemeenteX
-                 nexus:addressesIssue valor:SchuldenproblematiekGemeenteX ."@nl .
+            """nexus:SchuldhulpEcosysteemGemeenteX
+                 nexus:addressesIssue valor:SchuldenproblematiekGemeenteX ."""@nl .
 
     # ── IssueCommunity → EcosystemAgent ──────────────────────────────────────────
 
@@ -250,10 +250,10 @@
             "hasRespondingEcosystem"@en ,
             "heeft reagerend ecosysteem"@nl ;
         rdfs:comment
-            "Verbindt een IssueCommunity met de EcosystemAgent(s) die haar Issue
+            """Verbindt een IssueCommunity met de EcosystemAgent(s) die haar Issue
              aanpakken. De relatie loopt via het Issue als SocialObject: de
              IssueCommunity geeft haar mandaat aan een Issue, de EcosystemAgent
-             neemt dat op via addressesIssue."@nl .
+             neemt dat op via addressesIssue."""@nl .
 
     # ── Issue → Design Space ──────────────────────────────────────────────────────
 
@@ -265,8 +265,8 @@
             "isAddressedInDesignSpace"@en ,
             "wordt geadresseerd in Design Space"@nl ;
         rdfs:comment
-            "Verbindt een Issue met de DesignSpace(s) waarin het wordt geanalyseerd
-             en ontworpen. Een DesignSpace adresseert altijd precies één Issue."@nl .
+            """Verbindt een Issue met de DesignSpace(s) waarin het wordt geanalyseerd
+             en ontworpen. Een DesignSpace adresseert altijd precies één Issue."""@nl .
 
 
     ###############################################################################
@@ -313,22 +313,22 @@
         a owl:AnnotationProperty ;
         rdfs:label "primary observables"@en , "primaire observabelen"@nl ;
         rdfs:comment
-            "Floridi LoA: de fenomenen/entiteiten die dit perspectief primair
-             observeert en modelleert."@nl .
+            """Floridi LoA: de fenomenen/entiteiten die dit perspectief primair
+             observeert en modelleert."""@nl .
 
     valor:excludedCategories
         a owl:AnnotationProperty ;
         rdfs:label "excluded categories"@en , "bewust uitgesloten categorieën"@nl ;
         rdfs:comment
-            "Floridi LoA: categorieën die bewust buiten dit perspectief zijn
-             gelaten en waarom."@nl .
+            """Floridi LoA: categorieën die bewust buiten dit perspectief zijn
+             gelaten en waarom."""@nl .
 
     valor:resultingBlindspots
         a owl:AnnotationProperty ;
         rdfs:label "resulting blindspots"@en , "resulterende blindespots"@nl ;
         rdfs:comment
-            "Floridi LoA: bekende blindespots die voortvloeien uit de bewuste
-             uitsluitingen van dit perspectief."@nl .
+            """Floridi LoA: bekende blindespots die voortvloeien uit de bewuste
+             uitsluitingen van dit perspectief."""@nl .
 
 
     ###############################################################################

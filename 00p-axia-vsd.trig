@@ -55,15 +55,15 @@
         dcterms:title
             "VALOR-O — Module 00p: AXIA-VSD — Value Sensitive Design Values Hierarchy"@nl ;
         dcterms:description
-            "Formaliseert de VSD Values Hierarchy (Friedman & Hendry 2019) als
+            """Formaliseert de VSD Values Hierarchy (Friedman & Hendry 2019) als
              een derivatieketen van waarden naar concrete ontwerpeisen. Sluit aan
-             op COVER (waardebeleving) en CAPAX (haalbaarheid)."@nl ;
+             op COVER (waardebeleving) en CAPAX (haalbaarheid)."""@nl ;
         owl:versionInfo "0.1" ;
         dcterms:created "2026-03-10" ;
         dcterms:source
-            "Friedman & Hendry (2019) Value Sensitive Design;
+            """Friedman & Hendry (2019) Value Sensitive Design;
              COVER (Guizzardi et al. 2022); UFO-L (Guizzardi et al. 2015);
-             UFO-C (Guizzardi et al. 2013)." .
+             UFO-C (Guizzardi et al. 2013).""" .
 
 
     ###############################################################################
@@ -81,7 +81,7 @@
         rdfs:subClassOf ufoc:SocialObject ;
         rdfs:label "ValueCriterion"@en , "Waardecriterium"@nl ;
         rdfs:comment
-            "Een normatief sociaal object dat uitdrukt aan welke conditie
+            """Een normatief sociaal object dat uitdrukt aan welke conditie
              een ontwerp moet voldoen om een bepaalde waarde (ValueType)
              te respecteren.
 
@@ -90,11 +90,11 @@
              alternatieven en Design Spaces heen.
 
              Kan ook juridisch verankerd zijn via axia:groundedInNorm
-             (DD-072). VSD Level 2: ValueCriterion (Friedman & Hendry 2019)."@nl ;
+             (DD-072). VSD Level 2: ValueCriterion (Friedman & Hendry 2019)."""@nl ;
         skos:example
-            "Waardecriterium voor Privacy: 'Persoonsgegevens worden niet
+            """Waardecriterium voor Privacy: 'Persoonsgegevens worden niet
              meer verwerkt dan strikt noodzakelijk en niet gedeeld zonder
-             expliciete toestemming van de betrokkene.'"@nl .
+             expliciete toestemming van de betrokkene.'"""@nl .
 
     axia:criterionFromValue
         a owl:ObjectProperty ;
@@ -112,9 +112,9 @@
         rdfs:domain axia:ValueCriterion ;
         rdfs:range  ufol:Norm ;
         rdfs:comment
-            "De juridische of beleidsmatige norm die dit waardecriterium
+            """De juridische of beleidsmatige norm die dit waardecriterium
              verankert. Optioneel — een criterium kan op waarden, op normen,
-             of op beide gegrond zijn."@nl .
+             of op beide gegrond zijn."""@nl .
 
     axia:criterionScope
         a owl:DatatypeProperty ;
@@ -151,7 +151,7 @@
         rdfs:label "ValueBasedDesignRequirement"@en ,
                    "Waardegedreven ontwerpeis"@nl ;
         rdfs:comment
-            "De concrete operationalisering van een ValueCriterion voor een
+            """De concrete operationalisering van een ValueCriterion voor een
              specifiek ontwerpalternatief.
 
              Architecturale rol in VALOR:
@@ -160,12 +160,12 @@
              (2) Brug AXIA→ACTA: beperkt de structuur van een transactie.
              (3) Citeerbaar als Tessera (to-be claim in ontwerpfase).
 
-             VSD Level 3: Design Requirements (Friedman & Hendry 2019)."@nl ;
+             VSD Level 3: Design Requirements (Friedman & Hendry 2019)."""@nl ;
         skos:example
-            "'Alternatief A mag geen BSN koppelen aan externe incassopartijen
+            """'Alternatief A mag geen BSN koppelen aan externe incassopartijen
              zonder expliciete toestemming (afgeleid van Privacycriterium PC-01).'
              → genereert capax:CapabilityRequirement voor AVG-gecertificeerde
-             gegevensverwerking."@nl .
+             gegevensverwerking."""@nl .
 
     axia:requirementFromCriterion
         a owl:ObjectProperty ;
@@ -174,8 +174,8 @@
         rdfs:domain axia:ValueBasedDesignRequirement ;
         rdfs:range  axia:ValueCriterion ;
         rdfs:comment
-            "Het ValueCriterion waarvan deze ontwerpeis is afgeleid (Level 2→3).
-             Verplicht: elke ValueBasedDesignRequirement moet traceerbaar zijn."@nl .
+            """Het ValueCriterion waarvan deze ontwerpeis is afgeleid (Level 2→3).
+             Verplicht: elke ValueBasedDesignRequirement moet traceerbaar zijn."""@nl .
 
     axia:appliesToAlternative
         a owl:ObjectProperty ;
@@ -202,8 +202,8 @@
         rdfs:domain axia:ValueBasedDesignRequirement ;
         rdfs:range  capax:CapabilityRequirement ;
         rdfs:comment
-            "De capabiliteitseis (CAPAX) die door deze waardegedreven
-             ontwerpeis wordt gegenereerd. AXIA→CAPAX-brug (DD-074)."@nl .
+            """De capabiliteitseis (CAPAX) die door deze waardegedreven
+             ontwerpeis wordt gegenereerd. AXIA→CAPAX-brug (DD-074)."""@nl .
 
     axia:requirementType
         a owl:DatatypeProperty ;
@@ -211,8 +211,8 @@
         rdfs:domain axia:ValueBasedDesignRequirement ;
         rdfs:range  xsd:string ;
         rdfs:comment
-            "Gecontroleerd vocabulaire:
-             'Prohibition', 'Obligation', 'Permission', 'Capability'."@nl .
+            """Gecontroleerd vocabulaire:
+             'Prohibition', 'Obligation', 'Permission', 'Capability'."""@nl .
 
     axia:requirementPriority
         a owl:DatatypeProperty ;
@@ -238,9 +238,9 @@
         rdfs:subClassOf gufo:Collection ;
         rdfs:label "ValueHierarchy"@en , "Waardehiërarchie"@nl ;
         rdfs:comment
-            "Een benoemde verzameling die de volledige VSD-derivatiestructuur
+            """Een benoemde verzameling die de volledige VSD-derivatiestructuur
              representeert voor een Design Space of thematisch domein.
-             Gemodelleerd als gufo:Collection (DD-075)."@nl .
+             Gemodelleerd als gufo:Collection (DD-075)."""@nl .
 
     axia:hierarchyIncludesValue
         a owl:ObjectProperty ;

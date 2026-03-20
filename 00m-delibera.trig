@@ -132,8 +132,8 @@ delib:TopicNetwork
 #  voldoende onderbouwd? is er voldoende tijd genomen?
 #
 #  De Delibera-agent (Socratische AI) stelt typisch ProcessClaims als
-#  valor:AgentTessera: "Drie deelnemers hebben deze claim betwist maar
-#  nog geen tegenargument ingediend. Willen jullie die ruimte geven?"
+#  valor:AgentTessera: """Drie deelnemers hebben deze claim betwist maar
+#  nog geen tegenargument ingediend. Willen jullie die ruimte geven?"""
 #
 #  Twee subtypen:
 #    FairnessProcessClaim  — bewering over eerlijkheid/inclusiviteit

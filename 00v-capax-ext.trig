@@ -153,15 +153,15 @@ capax:Dispositional
     a capax:CapabilityNature ;
     rdfs:label "Dispositional"@en , "Dispositioneel"@nl ;
     rdfs:comment
-        "De capability is juridisch verankerd en objectief toetsbaar via
-         ufol:CompetenceRelator / ufol:CompetenceNorm."@nl .
+        """De capability is juridisch verankerd en objectief toetsbaar via
+         ufol:CompetenceRelator / ufol:CompetenceNorm."""@nl .
 
 capax:Intentional
     a capax:CapabilityNature ;
     rdfs:label "Intentional"@en , "Intentioneel"@nl ;
     rdfs:comment
-        "De capability is afhankelijk van bestuurlijke wil en daarmee
-         volatiel. Bijbehorende gaps hebben uncertaintyLevel ≥ Scenario."@nl .
+        """De capability is afhankelijk van bestuurlijke wil en daarmee
+         volatiel. Bijbehorende gaps hebben uncertaintyLevel ≥ Scenario."""@nl .
 
 [ a owl:AllDifferent ;
   owl:distinctMembers ( capax:Dispositional capax:Intentional ) ] .
