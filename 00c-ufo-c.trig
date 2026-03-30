@@ -13,9 +13,24 @@
     
     ###############################################################################
     # VALOR-O — Module 00c: UFO-C  (Social Entities)
-    # Versie 0.3 — Agent-taxonomie gecorrigeerd (DD-083)
+    # Versie 0.4 — Ontologie-correcties (DD-AI.2)
     #
-    # Wijzigingen t.o.v. v0.2:
+    # Wijzigingen t.o.v. v0.3 (DD-AI.2):
+    #   [C-006] ufoc:Agent gecorrigeerd van gufo:Kind naar gufo:Category (DD-AI.2)
+    #           Agent is rigid maar non-sortal: geen eigen identiteitscriterium.
+    #           Identiteitscriterium zit bij PhysicalAgent / InstitutionalAgent (Kinds).
+    #           Bron: gUFO-spec §4.2: 'Agent may be a gufo:Category that classifies
+    #           both people and organizations.'
+    #   [C-007] ufoc:Norm gecorrigeerd van gufo:SubKind naar mode (DD-AI.2)
+    #           Norm is een IntrinsicMode die inhereert in NormativeDescription.
+    #           Conform DD-029: modes krijgen geen rdf:type in Taxonomy of Types.
+    #   [C-008] ufoc:NormativeDescription TOEGEVOEGD (DD-AI.2)
+    #           SubKind van SocialObject: container voor Norm-instanties.
+    #           Modellering conform objectontology.tonto (LKIF-Core-geïnspireerd).
+    #   [C-009] ufoc:Permission, ufoc:Obligation, ufoc:Prohibition, ufoc:NormException
+    #           TOEGEVOEGD als Norm-modus subklassen (DD-AI.2)
+    #
+    # Wijzigingen t.o.v. v0.2 (DD-083, behouden):
     #   [C-003] ufoc:SocialAgent toegevoegd als tussenklasse (DD-083)
     #           Agent → {PhysicalAgent, SocialAgent}
     #           SocialAgent → {InstitutionalAgent, CollectiveSocialAgent}
@@ -45,23 +60,33 @@
         dcterms:description
             """Ontologie van sociale entiteiten: agents, intentionele toestanden,
              sociale objecten, commitments en delegatie."""@nl ;
-        owl:versionInfo "0.3" .
+        owl:versionInfo "0.4" .
 
 
     ###############################################################################
     # ── 1. AGENT ──────────────────────────────────────────────────────────────────
+    #
+    # [C-006] ufoc:Agent gecorrigeerd naar gufo:Category (DD-AI.2).
+    # Agent is rigid (essentieel voor alle instanties) maar non-sortal: het levert
+    # geen eigen identiteitscriterium. Personen en organisaties hebben verschillende
+    # identiteitscriteria (resp. PhysicalAgent en InstitutionalAgent als Kinds).
+    # Dit is de definitie van gufo:Category per gUFO-spec §4.2.
     ###############################################################################
     
     ufoc:Agent
         a owl:Class ;
-        rdf:type gufo:Kind ;
-        valor:ontoumlStereotype "kind" ;
+        rdf:type gufo:Category ;
+        valor:ontoumlStereotype "category" ;
         rdfs:subClassOf gufo:FunctionalComplex ;
         rdfs:label "Agent"@en , "Agent"@nl ;
         rdfs:comment
             """Een FunctionalComplex met intentionele toestanden (BDI). Agents
-             handelen op grond van doelen, overtuigingen en intenties. Agents
-             kunnen fysiek (personen) of institutioneel (organisaties) zijn."""@nl .
+             handelen op grond van doelen, overtuigingen en intenties.
+
+             [C-006] gufo:Category (niet Kind): Agent is rigid maar non-sortal.
+             Het groepeert PhysicalAgent en InstitutionalAgent die elk hun eigen
+             identiteitscriterium dragen. Agent zelf levert geen identiteitscriterium.
+             Bron: gUFO-spec §4.2; DD-AI.2."""@nl .
     
     ufoc:PhysicalAgent
         a owl:Class ;
@@ -69,7 +94,9 @@
         valor:ontoumlStereotype "subkind" ;
         rdfs:subClassOf ufoc:Agent ;
         rdfs:label "PhysicalAgent"@en , "Fysieke agent"@nl ;
-        rdfs:comment "Een agent die een fysiek lichaam heeft (persoon)."@nl .
+        rdfs:comment
+            """Een agent die een fysiek lichaam heeft (persoon).
+             Identiteitscriterium: fysieke continuïteit. gufo:Kind."""@nl .
 
     # ── SocialAgent (toegevoegd in v0.3 — DD-083) ─────────────────────────────
 
@@ -375,19 +402,111 @@
             """Een intrinsieke modus van een collectieve agent (gemeenschap)
              die als sociaal werkelijk geldt zolang de gemeenschap het
              accepteert. Normen, regels, taal, geld."""@nl .
-    
-    ufoc:Norm
+
+
+    # ── NormativeDescription (toegevoegd in v0.4 — DD-AI.2) ─────────────────────
+    #
+    # [C-008] Een NormativeDescription is een SubKind van SocialObject die een
+    # stelsel normen bevat. Individuele Norms (mode) inheren in hun NormativeDescription.
+    # Modellering conform objectontology.tonto (LKIF-Core-geïnspireerd).
+    # ─────────────────────────────────────────────────────────────────────────────
+
+    ufoc:NormativeDescription
         a owl:Class ;
         rdf:type gufo:SubKind ;
         valor:ontoumlStereotype "subkind" ;
         rdfs:subClassOf ufoc:SocialObject ;
+        rdfs:label "NormativeDescription"@en , "Normatieve beschrijving"@nl ;
+        rdfs:comment
+            """Een SocialObject dat een stelsel normen, regels of richtlijnen
+             vertegenwoordigt die het gedrag van individuen of groepen binnen
+             een sociale context regelen.
+
+             NormativeDescription is de container voor Norm-instanties:
+             elke individuele Norm inhereert in precies één NormativeDescription.
+             Voorbeelden: wetten, regelgeving, beleidsregels, gedragscodes,
+             contracten, internationale verdragen.
+             Bron: objectontology.tonto; LKIF-Core §norm. (DD-AI.2)"""@nl .
+
+    ufoc:containsNorm
+        a owl:ObjectProperty ;
+        rdfs:label "contains norm"@en , "bevat norm"@nl ;
+        rdfs:domain ufoc:NormativeDescription ;
+        rdfs:range  ufoc:Norm ;
+        rdfs:comment
+            """Relateert een NormativeDescription aan de individuele Norms
+             die zij bevat. Minimaal 1 Norm per NormativeDescription
+             (SHACL ND1). (DD-AI.2)"""@nl .
+
+
+    # ── Norm + subklassen (gecorrigeerd in v0.4 — DD-AI.2) ──────────────────────
+    #
+    # [C-007] Norm gecorrigeerd van gufo:SubKind naar mode (DD-AI.2, DD-029).
+    # Norm is een IntrinsicMode (individuele regel/voorschrift) die inhereert in
+    # een NormativeDescription. Conform DD-029: modes krijgen geen rdf:type
+    # in de Taxonomy of Types.
+    # ─────────────────────────────────────────────────────────────────────────────
+
+    ufoc:Norm
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:SocialObject ;
         rdfs:label "Norm"@en , "Norm"@nl ;
         rdfs:comment
-            """Een sociaal object dat schrijft voor of verbiedt dat agents
-             bepaalde handelingen verrichten of bepaalde toestanden
-             bewerkstelligen. Normen kunnen juridisch (UFO-L), organisatorisch
-             of moreel zijn."""@nl .
-    
+            """Een individuele regel of voorschrift dat handelingen/toestanden
+             kwalificeert als toegestaan, verboden of verplicht.
+
+             [C-007] Gecorrigeerd naar mode (IntrinsicMode): Norm inhereert in
+             een NormativeDescription. Een NormativeDescription bevat één of meer
+             Norms via ufoc:containsNorm. Conform DD-029: geen rdf:type in de
+             Taxonomy of Types voor modes.
+
+             Norms kunnen juridisch (UFO-L/LEXA), organisatorisch of moreel zijn.
+             Subtypen: Permission, Obligation, Prohibition, NormException. (DD-AI.2)"""@nl .
+
+    # ── Norm-modus subklassen (toegevoegd in v0.4 — DD-AI.2 / C-009) ─────────────
+
+    ufoc:Permission
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Norm ;
+        rdfs:label "Permission"@en , "Toestemming"@nl ;
+        rdfs:comment
+            """Een norm die een handeling of toestand kwalificeert als toegestaan.
+             Geeft aanleiding tot SocialClaims (rechten) in agents.
+             Bron: objectontology.tonto; Hohfeld's privilege-concept. (DD-AI.2)"""@nl .
+
+    ufoc:Obligation
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Norm ;
+        rdfs:label "Obligation"@en , "Verplichting"@nl ;
+        rdfs:comment
+            """Een norm die een handeling of toestand kwalificeert als verplicht.
+             Geeft aanleiding tot SocialCommitments (plichten) in agents.
+             Bron: objectontology.tonto; Hohfeld's duty-concept. (DD-AI.2)"""@nl .
+
+    ufoc:Prohibition
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Norm ;
+        rdfs:label "Prohibition"@en , "Verbod"@nl ;
+        rdfs:comment
+            """Een norm die een handeling of toestand kwalificeert als verboden.
+             Geeft aanleiding tot SocialCommitments van onthouding in agents.
+             Bron: objectontology.tonto; Hohfeld's no-right-concept. (DD-AI.2)"""@nl .
+
+    ufoc:NormException
+        a owl:Class ;
+        valor:ontoumlStereotype "mode" ;
+        rdfs:subClassOf ufoc:Norm ;
+        rdfs:label "NormException"@en , "Normuitzondering"@nl ;
+        rdfs:comment
+            """Een norm die een uitzondering vormt op andere normen.
+             Wijzigt de toepasselijkheid van Permissions, Obligations of
+             Prohibitions. Bron: objectontology.tonto. (DD-AI.2)"""@nl .
+
+
     ufoc:NormativeSituation
         a owl:Class ;
         rdf:type gufo:SituationType ;
@@ -649,10 +768,11 @@
             C2: SocialCommitment.commitmentInheresIn = SocialRelator.hasCommittedAgent.
             C3: SocialClaim.claimInheresIn = SocialRelator.hasClaimantAgent.
             C4: SocialRole must participate in ≥1 SocialRelator.
-            C5: IntentionalMode.hasPropositionalContent → Situation.""" .
+            C5: IntentionalMode.hasPropositionalContent → Situation.
+            ND1: NormativeDescription containsNorm ≥1 Norm.""" .
     
     
     ###############################################################################
-    # END OF MODULE 00c — UFO-C Social Entities  (v0.2)
+    # END OF MODULE 00c — UFO-C Social Entities  (v0.4)
     ###############################################################################
 }
