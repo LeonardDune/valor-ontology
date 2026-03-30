@@ -14,10 +14,17 @@
 #  VALOR-O — Module 00i: SOCIA Actor Analysis Ontologie (i*-framework)
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/socia#  (prefix socia:)
-#  Versie     : 0.2  (maart 2026)
+#  Versie     : 0.3  (maart 2026)
 #  Imports    : 00a-gufo-core, 00c-ufo-c, 00j-tessera, 00k-application
 #
-#  Wijzigingen t.o.v. v0.1:
+#  Wijzigingen t.o.v. v0.2 (DD-AI.2):
+#   [S-004] Zes StakeholderRole NamedIndividuals TOEGEVOEGD (DD-AI.2)
+#           Gecontroleerd vocabulaire voor socia:playsRole:
+#           Applicant, PolicyMaker, Implementer, Supervisor, ChainPartner,
+#           AffectedParty. Gebaseerd op PAMS-stakeholderanalyse en i*-rollen
+#           in de Nederlandse publieke dienstverlening.
+#
+#  Wijzigingen t.o.v. v0.1 (behouden):
 #   [S-001] owl:imports causa VERVANGEN door tessera + application (DD-062)
 #           valor:Issue staat nu in 00k-application. CAUSA-import niet meer nodig.
 #   [S-002] socia:StakeholderClaim TOEGEVOEGD als valor:Tessera subklasse (DD-061)
@@ -39,7 +46,7 @@
 #
 #  Structuur:
 #    §A  Stakeholder
-#    §B  StakeholderRole
+#    §B  StakeholderRole (+ NamedIndividuals v0.3)
 #    §C  StakeholderClaim (valor:Tessera subklasse) — NIEUW v0.2
 #    §D  IntentionalDependency
 #    §E  DependencyType
@@ -56,12 +63,13 @@ vo:socia
     owl:imports <https://valor-ecosystem.nl/ontology/ufo-c> ;
     owl:imports <https://valor-ecosystem.nl/ontology/tessera> ;
     owl:imports <https://valor-ecosystem.nl/ontology/application> ;
-    owl:versionInfo "0.2" ;
-    owl:priorVersion "0.1" ;
+    owl:versionInfo "0.3" ;
+    owl:priorVersion "0.2" ;
     rdfs:comment
-        """Formaliseert het i*-framework in UFO. v0.2: import causa vervangen
-         door tessera + application; StakeholderClaim toegevoegd als
-         valor:Tessera subklasse. (DD-061, DD-062)"""@nl ;
+        """Formaliseert het i*-framework in UFO. v0.3: zes StakeholderRole
+         NamedIndividuals als gecontroleerd vocabulaire (DD-AI.2).
+         v0.2: import causa vervangen door tessera + application;
+         StakeholderClaim toegevoegd als valor:Tessera subklasse. (DD-061, DD-062)"""@nl ;
     valor:primaryObservables
         """Stakeholders en hun rollen (Stakeholder, StakeholderRole), belangen
          (StakeholderInterestProfile), afhankelijkheden, macht/urgentie/
@@ -114,6 +122,10 @@ socia:OrganisationalActor
 
 ###############################################################################
 #  §B — StakeholderRole + InterestProfile
+#
+#  [S-004] v0.3: Zes NamedIndividuals als gecontroleerd vocabulaire (DD-AI.2)
+#  Gebaseerd op PAMS-stakeholderanalyse voor Nederlandse publieke dienstverlening.
+#  Gebruik: socia:playsRole socia:Implementer (etc.)
 ###############################################################################
 
 socia:StakeholderRole
@@ -125,7 +137,65 @@ socia:StakeholderRole
     rdfs:comment
         """De functionele positie van een Stakeholder t.o.v. een Issue.
          Voorbeelden: aanvrager, uitvoerder, toezichthouder, ketenpartner.
-         (DD-062)"""@nl .
+         v0.3: zes gecontroleerde vocabulaire-instanties toegevoegd. (DD-062, DD-AI.2)"""@nl .
+
+# ── StakeholderRole NamedIndividuals (gecontroleerd vocabulaire) ─────────────
+
+socia:Applicant
+    a socia:StakeholderRole ;
+    rdfs:label "Applicant"@en , "Aanvrager"@nl ;
+    rdfs:comment
+        """De stakeholder die een dienst, voorziening of vergunning aanvraagt.
+         Initiator van een hulpvraag of procedure. In PAMS: klant/burger die
+         een beroep doet op een publieke dienst. (DD-AI.2)"""@nl .
+
+socia:PolicyMaker
+    a socia:StakeholderRole ;
+    rdfs:label "PolicyMaker"@en , "Beleidsmaker"@nl ;
+    rdfs:comment
+        """De stakeholder die beleid vaststelt, doelstellingen formuleert en
+         kaders stelt waarbinnen andere actoren opereren. Draagt politieke
+         of bestuurlijke verantwoordelijkheid. (DD-AI.2)"""@nl .
+
+socia:Implementer
+    a socia:StakeholderRole ;
+    rdfs:label "Implementer"@en , "Uitvoerder"@nl ;
+    rdfs:comment
+        """De stakeholder die beleid, regelgeving of dienstverlening uitvoert
+         in de praktijk. Verantwoordelijk voor de concrete realisatie van
+         TransactionResults. (DD-AI.2)"""@nl .
+
+socia:Supervisor
+    a socia:StakeholderRole ;
+    rdfs:label "Supervisor"@en , "Toezichthouder"@nl ;
+    rdfs:comment
+        """De stakeholder die toezicht houdt op de naleving van regelgeving,
+         beleid of kwaliteitsnormen. Heeft handhavingsbevoegdheid en rapporteert
+         aan politieke of bestuurlijke opdrachtgevers. (DD-AI.2)"""@nl .
+
+socia:ChainPartner
+    a socia:StakeholderRole ;
+    rdfs:label "ChainPartner"@en , "Ketenpartner"@nl ;
+    rdfs:comment
+        """Een stakeholder die samenwerkt in een uitvoeringsketen: afhankelijk
+         van andere actoren voor informatie, mandaat of middelen. Heeft een
+         IntentionalDependency met minimaal één andere partij. (DD-AI.2)"""@nl .
+
+socia:AffectedParty
+    a socia:StakeholderRole ;
+    rdfs:label "AffectedParty"@en , "Getroffene partij"@nl ;
+    rdfs:comment
+        """Een stakeholder die de gevolgen van beleid of interventies ondervindt
+         zonder er noodzakelijk invloed op te hebben. Passieve of indirect
+         betrokken partij; inclusiviteitsanalyse (DEMOS) richt zich
+         specifiek op deze rol. (DD-AI.2)"""@nl .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers (
+      socia:Applicant socia:PolicyMaker socia:Implementer
+      socia:Supervisor socia:ChainPartner socia:AffectedParty
+  ) ] .
+
 
 socia:StakeholderInterestProfile
     a owl:Class ;
@@ -369,7 +439,11 @@ socia:playsRole
     rdfs:label "plays role"@en , "speelt rol"@nl ;
     rdfs:domain socia:Stakeholder ;
     rdfs:range  socia:StakeholderRole ;
-    rdfs:comment "De StakeholderRole van deze Stakeholder. (DD-062)"@nl .
+    rdfs:comment
+        """De StakeholderRole van deze Stakeholder. v0.3: gecontroleerd
+         vocabulaire beschikbaar (socia:Applicant, socia:PolicyMaker,
+         socia:Implementer, socia:Supervisor, socia:ChainPartner,
+         socia:AffectedParty). (DD-062, DD-AI.2)"""@nl .
 
 socia:hasInterestProfile
     a owl:ObjectProperty ;
@@ -502,6 +576,6 @@ socia:dependencyInstantiatedAs
          die de afhankelijkheid transactioneel uitwerkt. (DD-061)"""@nl .
 
 ###############################################################################
-#  Einde module 00i-socia.trig (v0.2)
+#  Einde module 00i-socia.trig (v0.3)
 ###############################################################################
 }
