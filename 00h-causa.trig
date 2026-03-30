@@ -18,11 +18,26 @@
 #  VALOR-O — Module 00h: CAUSA Causal Loop Diagram Ontologie
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/causa#  (prefix causa:)
-#  Versie     : 0.3  (maart 2026)
+#  Versie     : 0.4  (maart 2026)
 #  Imports    : 00a-gufo-core, 00b-ufo-b, 00c-ufo-c, 00j-tessera,
 #               00k-application, 00g-acta, 00r-sysont
 #
-#  Wijzigingen t.o.v. v0.2 (DD-092, DD-093):
+#  Wijzigingen t.o.v. v0.3 (DD-AI.2):
+#
+#   [C-010] causa:CausalVariable: rdf:type gufo:Kind TOEGEVOEGD (DD-AI.2)
+#           CausalVariable is een meetbare eigenschap van de werkelijkheid
+#           (gufo:Quality) met een eigen identiteitscriterium: het gemeten
+#           construct. Conform gUFO-spec §4.4: Kinds van Aspects zijn mogelijk.
+#           Behoud van rdf:type gufo:QualitativeIntrinsicAspect (Taxonomy-positie).
+#
+#   [C-011] causa:Intervention gecorrigeerd van gufo:SituationType naar
+#           gufo:EventType (DD-AI.2)
+#           Reden: een Intervention is een type handeling (ingreep), niet een
+#           resulterende toestand. SituationType beschrijft toestanden;
+#           EventType beschrijft wat er gebeurt. rdfs:subClassOf gufo:Action
+#           (was: gufo:Situation). Bron: gUFO-spec §EventType vs SituationType.
+#
+#  Wijzigingen t.o.v. v0.2 (DD-092, DD-093, behouden):
 #
 #   [C-006] causa:hasManifestationCondition TOEGEVOEGD (DD-092)
 #           Domain: causa:CausalClaim; Range: sysont:SystemSituation
@@ -43,7 +58,7 @@
 #           Tweede gate-Tessera bij faseovergang (naast capax:FeasibilityAssessment).
 #           Aggregeert capax:ConditionCoverage-oordelen per CausalClaim.
 #
-#  Wijzigingen t.o.v. v0.1 (DD-061, DD-062, DD-064, DD-065):
+#  Wijzigingen t.o.v. v0.1 (DD-061, DD-062, DD-064, DD-065, behouden):
 #
 #   [C-001] valor:Issue VERWIJDERD uit deze module (DD-062)
 #           Verplaatst naar 00k-application als top-level toepassingsconcept
@@ -94,13 +109,15 @@ vo:causa
     owl:imports <https://valor-ecosystem.nl/ontology/application> ;
     owl:imports <https://valor-ecosystem.nl/ontology/acta> ;
     owl:imports <https://valor-ecosystem.nl/ontology/sysont> ;
-    owl:versionInfo "0.3" ;
-    owl:priorVersion "0.2" ;
+    owl:versionInfo "0.4" ;
+    owl:priorVersion "0.3" ;
     rdfs:comment
-        """Formaliseert Causal Loop Diagrams in UFO. v0.3: drie-laags causale
+        """Formaliseert Causal Loop Diagrams in UFO. v0.4: CausalVariable +Kind,
+         Intervention EventType-correctie (DD-AI.2). v0.3: drie-laags causale
          architectuur (DD-092, DD-093): hasManifestationCondition, realisedBy,
          ClaimCoverageAssessment. v0.2: Issue naar 00k-application, CausalClaim
-         subclasseert valor:Tessera. (DD-052, DD-061, DD-062, DD-092, DD-093)"""@nl ;
+         subclasseert valor:Tessera. (DD-052, DD-061, DD-062, DD-092, DD-093,
+         DD-AI.2)"""@nl ;
     valor:primaryObservables
         """Causale relaties tussen variabelen (CausalVariable, CausalSituation,
          CausalClaim), interventies (Intervention, SolutionModel), feedback-
@@ -119,17 +136,28 @@ vo:causa
 
 ###############################################################################
 #  §B — CausalVariable
+#
+#  [C-010] rdf:type gufo:Kind TOEGEVOEGD (DD-AI.2)
+#  CausalVariable is een meetbare eigenschap van de werkelijkheid met een eigen
+#  identiteitscriterium: het gemeten construct (bijv. 'recidivecijfer', 'wachttijd').
+#  Conform gUFO-spec §4.4: Kinds van Aspects zijn mogelijk naast Kinds van Objects.
 ###############################################################################
 
 causa:CausalVariable
     a owl:Class ;
     rdf:type gufo:QualitativeIntrinsicAspect ;
+    rdf:type gufo:Kind ;
     valor:ontoumlStereotype "quality" ;
     rdfs:subClassOf gufo:Quality ;
     rdfs:label "CausalVariable"@en , "Causale variabele"@nl ;
     rdfs:comment
         """Een meetbare eigenschap van een gufo:Situation die als variabele
-         in een Causal Loop Diagram fungeert. (DD-055)"""@nl .
+         in een Causal Loop Diagram fungeert.
+
+         [C-010] rdf:type gufo:Kind TOEGEVOEGD (DD-AI.2): CausalVariable heeft
+         een eigen identiteitscriterium — het gemeten construct. Een variabele
+         'recidivecijfer' is altijd die variabele, ongeacht model, waarde of
+         context. Conform gUFO-spec §4.4 (Kinds van Aspects). (DD-055, DD-AI.2)"""@nl .
 
 causa:inheresInSituation
     a owl:ObjectProperty ;
@@ -296,18 +324,35 @@ causa:SolutionModel
     rdfs:label "SolutionModel"@en , "Oplossingsmodel"@nl ;
     rdfs:comment "Interventiegerichte CausalClaims (Ontwerpfase). (DD-053)"@nl .
 
+# ── Intervention (gecorrigeerd in v0.4 — DD-AI.2 / C-011) ─────────────────────
+#
+# [C-011] causa:Intervention gecorrigeerd van gufo:SituationType naar gufo:EventType
+#         en rdfs:subClassOf van gufo:Situation naar gufo:Action.
+#
+# Reden: een Intervention is een TYPE HANDELING (ingreep in de werkelijkheid),
+# niet een resulterende toestand. In gUFO beschrijft gufo:SituationType
+# toestanden/configuraties; gufo:EventType beschrijft wat er GEBEURT.
+# Een beleidsinterventie is een handeling die CausalVariables beïnvloedt —
+# dit is een gufo:Action, subtype van gufo:Event.
+# ──────────────────────────────────────────────────────────────────────────────
+
 causa:Intervention
     a owl:Class ;
-    rdf:type gufo:SituationType ;
-    valor:ontoumlStereotype "situation" ;
-    rdfs:subClassOf gufo:Situation ;
+    rdf:type gufo:EventType ;
+    valor:ontoumlStereotype "event" ;
+    rdfs:subClassOf gufo:Action ;
     rdfs:label "Intervention"@en , "Interventie"@nl ;
     rdfs:comment
-        """Een type interventie-event dat een of meer CausalVariables beïnvloedt
-         in de context van een SolutionModel. Eerste-klas concept (DD-092):
-         verbonden aan acta:TransactionType via causa:realisedBy (DD-093).
-         Ontbreekt een realisatie dan verliest de Intervention haar
-         realisatiebasis — detecteerbaar als SHACL CA-02 Warning."""@nl .
+        """Een type beleidshandeling (ingreep) dat een of meer CausalVariables
+         beïnvloedt in de context van een SolutionModel.
+
+         [C-011] Gecorrigeerd van gufo:SituationType naar gufo:EventType (DD-AI.2):
+         een Intervention is een handeling, niet een toestand. rdfs:subClassOf
+         gufo:Action (was: gufo:Situation).
+
+         Eerste-klas concept (DD-092): verbonden aan acta:TransactionType via
+         causa:realisedBy (DD-093). Ontbreekt een realisatie dan verliest de
+         Intervention haar realisatiebasis — detecteerbaar als SHACL CA-02 Warning."""@nl .
 
 
 ###############################################################################
@@ -581,6 +626,6 @@ causa:evidenceSource
     rdfs:comment "DEPRECATED v0.2. Gebruik valor:evidenceSource."@nl .
 
 ###############################################################################
-#  Einde module 00h-causa.trig (v0.3)
+#  Einde module 00h-causa.trig (v0.4)
 ###############################################################################
 }
