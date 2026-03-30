@@ -19,8 +19,26 @@
 #  VALOR-O — Module 00u: LEXA+ (Legislative Gap & Normative Feasibility)
 #
 #  Namespace  : https://valor-ecosystem.nl/ontology/lexa#  (prefix lexa:)
-#  Versie     : 0.1  (maart 2026)
+#  Versie     : 0.2  (maart 2026)
 #  Imports    : 00d-ufo-l, 00c-ufo-c, 00o-capax, 00v-capax-ext
+#
+#  Wijzigingen t.o.v. v0.1 (DD-AI.2):
+#
+#   [L-005] §A NormativeDescription-taxonomie TOEGEVOEGD (DD-AI.2)
+#           LKIF-core-geïnspireerde LegalDocument-hiërarchie als SubKinds van
+#           ufoc:NormativeDescription (gedefinieerd in 00c-ufo-c v0.4):
+#           - lexa:LegalDocument → Law → Code / Statute
+#           - lexa:LegalDocument → Regulation / Decree / Contract
+#           - Precedent / InternationalAgreement → Treaty
+#           - SoftLaw
+#           - LegalSection → Book → Title → Chapter → Division → Article
+#             → Paragraph → Subparagraph
+#
+#   [L-006] §B Norm-modus subklassen TOEGEVOEGD (DD-AI.2)
+#           LEXA-specifieke Norm-specialisaties als modes van ufoc:Norm
+#           (gedefinieerd in 00c-ufo-c v0.4):
+#           - lexa:LegalNormInstance (juridische Norm, gekoppeld aan LegalDocument)
+#           - lexa:PolicyNorm (organisatorische/beleidsmatige Norm)
 #
 #  Doel:
 #    Formaliseert de normatieve haalbaarheidslaag van VALOR: de situaties
@@ -43,14 +61,16 @@
 #      Ontbreekt één van beide → capax:MandateCapabilityGap resp.
 #      capax:PoliticalWillCapabilityGap (DD-106).
 #
-#  Design decisions: DD-103, DD-104
+#  Design decisions: DD-103, DD-104, DD-AI.2
 #  Structuur:
-#    §A  LegislativeGap
-#    §B  LegislativeRequirement (+ subtypes)
-#    §C  LegislativeDevelopmentNeed
-#    §D  NormativeFeasibilityAssessment (gate-Tessera)
-#    §E  Gecontroleerde vocabulaires
-#    §F  Properties
+#    §A  NormativeDescription-taxonomie (LegalDocument-hiërarchie) — NIEUW v0.2
+#    §B  Norm-modus subklassen (LEXA-specifiek) — NIEUW v0.2
+#    §C  LegislativeGap
+#    §D  LegislativeRequirement (+ subtypes)
+#    §E  LegislativeDevelopmentNeed
+#    §F  NormativeFeasibilityAssessment (gate-Tessera)
+#    §G  Gecontroleerde vocabulaires
+#    §H  Properties
 ###############################################################################
 
 
@@ -67,16 +87,383 @@ vo:lexa-ext
     dcterms:title "VALOR-O — Module 00u: LEXA+ — Legislative Gap & Normative Feasibility"@nl ;
     dcterms:description
         """Formaliseert normatieve haalbaarheid als vierde gate-dimensie in VALOR.
-         Biedt de ontologische basis voor detectie van wetgevingstekorten,
+         v0.2: NormativeDescription-taxonomie (LegalDocument-hiërarchie) en
+         LEXA-specifieke Norm-modus subklassen toegevoegd (DD-AI.2).
+         v0.1: biedt de ontologische basis voor detectie van wetgevingstekorten,
          normatieve eisen op ontwerpalternatieven, en de aggregerende
          NormativeFeasibilityAssessment als gate-Tessera bij faseovergangen.
-         (DD-103, DD-104)"""@nl ;
-    owl:versionInfo "0.1" ;
+         (DD-103, DD-104, DD-AI.2)"""@nl ;
+    owl:versionInfo "0.2" ;
+    owl:priorVersion "0.1" ;
     dcterms:created "2026-03-16" .
 
 
 ###############################################################################
-#  §A — LegislativeGap  (DD-103)
+#  §A — NormativeDescription-taxonomie (LegalDocument-hiërarchie)  (DD-AI.2)
+#
+#  LKIF-core-geïnspireerde taxonomie van juridische bronnen als SubKinds van
+#  ufoc:NormativeDescription (gedefinieerd in 00c-ufo-c v0.4).
+#  Bron: RinkeHoekstra/lkif-core; objectontology.tonto; lawontology.tonto.
+#
+#  Hiërarchie:
+#    ufoc:NormativeDescription (00c-ufo-c)
+#      └── lexa:LegalDocument  (geschreven juridische bron)
+#            ├── lexa:Law
+#            │     ├── lexa:Code
+#            │     └── lexa:Statute
+#            ├── lexa:Regulation
+#            ├── lexa:Decree
+#            └── lexa:Contract
+#      └── lexa:Precedent       (geschreven of ongeschreven)
+#      └── lexa:InternationalAgreement
+#            └── lexa:Treaty
+#      └── lexa:SoftLaw
+#      └── lexa:LegalSection    (structureel onderdeel van een wet)
+#            ├── lexa:Book → lexa:Title → lexa:Chapter → lexa:Division
+#            │     → lexa:Article → lexa:Paragraph → lexa:Subparagraph
+###############################################################################
+
+# ── LegalDocument ─────────────────────────────────────────────────────────────
+
+lexa:LegalDocument
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:NormativeDescription ;
+    rdfs:label "LegalDocument"@en , "Juridisch document"@nl ;
+    rdfs:comment
+        """Een geschreven juridische bron die juridische normen draagt.
+         SubKind van ufoc:NormativeDescription: de identiteit is bepaald
+         door de formele juridische status als geschreven bron.
+         Bron: LKIF-Core §norm; objectontology.tonto. (DD-AI.2)"""@nl .
+
+lexa:Law
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalDocument ;
+    rdfs:label "Law"@en , "Wet"@nl ;
+    rdfs:comment
+        """Een formele, publiekrechtelijke normatieve beschrijving met juridische
+         binding (wet in formele zin). Vastgesteld door het wetgevend orgaan.
+         Bron: LKIF-Core; lawontology.tonto. (DD-AI.2)"""@nl .
+
+lexa:Code
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:Law ;
+    rdfs:label "Code"@en , "Wetboek"@nl ;
+    rdfs:comment
+        """Een systematische verzameling van wetten over een bepaald onderwerp.
+         Voorbeeld: Burgerlijk Wetboek, Wetboek van Strafrecht.
+         Bron: LKIF-Core §Code. (DD-AI.2)"""@nl .
+
+lexa:Statute
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:Law ;
+    rdfs:label "Statute"@en , "Statuut"@nl ;
+    rdfs:comment
+        """Een formele schriftelijke uitvaardiging van een wetgevende instantie.
+         Bron: LKIF-Core §Statute. (DD-AI.2)"""@nl .
+
+lexa:Regulation
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalDocument ;
+    rdfs:label "Regulation"@en , "Regeling"@nl ;
+    rdfs:comment
+        """Een algemene juridische regel uitgevaardigd door de uitvoerende macht.
+         Voorbeeld: ministeriele regelingen, AMvB's.
+         Bron: LKIF-Core §Regulation. (DD-AI.2)"""@nl .
+
+lexa:Decree
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalDocument ;
+    rdfs:label "Decree"@en , "Besluit"@nl ;
+    rdfs:comment
+        """Een officieel besluit of opdracht van de uitvoerende macht.
+         Voorbeeld: Algemene Maatregel van Bestuur (AMvB).
+         Bron: LKIF-Core §Decree. (DD-AI.2)"""@nl .
+
+lexa:Contract
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalDocument ;
+    rdfs:label "Contract"@en , "Contract"@nl ;
+    rdfs:comment
+        """Een overeenkomst tussen partijen die juridische verplichtingen creëert.
+         Bron: LKIF-Core §Contract; objectontology.tonto. (DD-AI.2)"""@nl .
+
+lexa:Precedent
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:NormativeDescription ;
+    rdfs:label "Precedent"@en , "Precedent"@nl ;
+    rdfs:comment
+        """Een rechterlijke beslissing die een juridisch beginsel vaststelt.
+         Kan geschreven of ongeschreven zijn — specialiseert NormativeDescription
+         direct (niet LegalDocument). Bron: LKIF-Core §Precedent. (DD-AI.2)"""@nl .
+
+lexa:InternationalAgreement
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:NormativeDescription ;
+    rdfs:label "InternationalAgreement"@en , "Internationaal akkoord"@nl ;
+    rdfs:comment
+        """Een overeenkomst tussen staten of internationale organisaties.
+         Bron: LKIF-Core §International_Agreement. (DD-AI.2)"""@nl .
+
+lexa:Treaty
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:InternationalAgreement ;
+    rdfs:label "Treaty"@en , "Verdrag"@nl ;
+    rdfs:comment
+        """Een bindende internationale overeenkomst.
+         Bron: LKIF-Core §Treaty. (DD-AI.2)"""@nl .
+
+lexa:SoftLaw
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:NormativeDescription ;
+    rdfs:label "SoftLaw"@en , "Soft law"@nl ;
+    rdfs:comment
+        """Niet-bindende juridische instrumenten met persuasieve autoriteit.
+         Voorbeeld: aanbevelingen, gedragscodes, richtsnoeren.
+         Bron: LKIF-Core §Soft_Law. (DD-AI.2)"""@nl .
+
+[ a owl:AllDisjointClasses ;
+  owl:members (
+      lexa:Law lexa:Regulation lexa:Decree lexa:Contract
+  ) ] .
+
+[ a owl:AllDisjointClasses ;
+  owl:members (
+      lexa:LegalDocument lexa:Precedent lexa:InternationalAgreement lexa:SoftLaw
+  ) ] .
+
+# ── LegalSection-hiërarchie ────────────────────────────────────────────────────
+#
+# LegalSection en subklassen modelleren de interne structuur van een Law.
+# Bron: lawontology.tonto; Nederlandse wetgevingssystematiek (Awb, BW, WvSr).
+
+lexa:LegalSection
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf ufoc:NormativeDescription ;
+    rdfs:label "LegalSection"@en , "Juridisch onderdeel"@nl ;
+    rdfs:comment
+        """Algemene klasse voor elk structureel onderdeel binnen een wet:
+         boek, titel, hoofdstuk, afdeling, artikel, lid, subonderdeel.
+         LegalSections zijn exclusieve delen van hun wet (componentOf).
+         Een LegalSection kan niet bestaan buiten zijn Law, maar heeft
+         een eigen identiteit binnen de hiërarchie via zijn nummer.
+         (DD-AI.2, US-9.9)"""@nl .
+
+lexa:Book
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Book"@en , "Boek"@nl ;
+    rdfs:comment
+        "Optionele hoofddeling binnen een wet, groepering van titels of hoofdstukken."@nl .
+
+lexa:Title
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Title"@en , "Titel"@nl ;
+    rdfs:comment
+        "Onderverdeling binnen een boek of wet, groepeert gerelateerde hoofdstukken."@nl .
+
+lexa:Chapter
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Chapter"@en , "Hoofdstuk"@nl ;
+    rdfs:comment
+        "Hoofddeling binnen een titel, groepeert afdelingen of artikelen."@nl .
+
+lexa:Division
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Division"@en , "Afdeling"@nl ;
+    rdfs:comment
+        "Onderverdeling binnen een titel of hoofdstuk, groepeert artikelen thematisch."@nl .
+
+lexa:Article
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Article"@en , "Artikel"@nl ;
+    rdfs:comment
+        """De primaire eenheid van juridische inhoud. Bevat een specifieke
+         bepaling of regel. Voorbeeld: Art. 7:198 BW; Art. 1 Grondwet."""@nl .
+
+lexa:Paragraph
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Paragraph"@en , "Lid"@nl ;
+    rdfs:comment
+        "Onderverdeling binnen een artikel (lid), biedt fijnere granulariteit."@nl .
+
+lexa:Subparagraph
+    a owl:Class ;
+    rdf:type gufo:SubKind ;
+    valor:ontoumlStereotype "subkind" ;
+    rdfs:subClassOf lexa:LegalSection ;
+    rdfs:label "Subparagraph"@en , "Subonderdeel"@nl ;
+    rdfs:comment
+        "Meest gedetailleerde eenheid binnen een lid (onderdeel a, b, c, enz.)."@nl .
+
+# ── LegalSection properties ───────────────────────────────────────────────────
+
+lexa:sectionNumber
+    a owl:DatatypeProperty ;
+    rdfs:label "section number"@en , "onderdeel nummer"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  xsd:string ;
+    rdfs:comment "Het officiële nummer van dit onderdeel (bijv. '7', '198', 'a')."@nl .
+
+lexa:sectionTitle
+    a owl:DatatypeProperty ;
+    rdfs:label "section title"@en , "onderdeel opschrift"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  xsd:string ;
+    rdfs:comment "Het opschrift of de titel van dit onderdeel (optioneel)."@nl .
+
+lexa:sectionText
+    a owl:DatatypeProperty ;
+    rdfs:label "section text"@en , "onderdeel tekst"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  xsd:string ;
+    rdfs:comment "De juridische tekst van dit onderdeel."@nl .
+
+lexa:partOfLaw
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:isProperPartOf ;
+    rdfs:label "part of law"@en , "onderdeel van wet"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  lexa:Law ;
+    rdfs:comment
+        """Koppelt een LegalSection aan zijn wet. Exclusieve parthood:
+         een Section kan niet bestaan buiten zijn Law. (DD-AI.2)"""@nl .
+
+lexa:hasSection
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "componentOf" ;
+    rdfs:subPropertyOf gufo:hasProperPart ;
+    rdfs:label "has section"@en , "bevat onderdeel"@nl ;
+    rdfs:domain lexa:Law ;
+    rdfs:range  lexa:LegalSection ;
+    rdfs:comment "De LegalSections van deze wet (direct of indirect). (DD-AI.2)"@nl .
+
+lexa:refersToSection
+    a owl:ObjectProperty ;
+    rdfs:label "refers to section"@en , "verwijst naar onderdeel"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  lexa:LegalSection ;
+    rdfs:comment "Kruisverwijzing tussen juridische onderdelen. (DD-AI.2)"@nl .
+
+lexa:validFrom
+    a owl:DatatypeProperty ;
+    rdfs:label "valid from"@en , "geldig vanaf"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  xsd:date ;
+    rdfs:comment "Ingangsdatum van dit juridische onderdeel."@nl .
+
+lexa:validTo
+    a owl:DatatypeProperty ;
+    rdfs:label "valid to"@en , "geldig tot"@nl ;
+    rdfs:domain lexa:LegalSection ;
+    rdfs:range  xsd:date ;
+    rdfs:comment "Vervaldatum van dit juridische onderdeel (leeg = nog geldig)."@nl .
+
+
+###############################################################################
+#  §B — Norm-modus subklassen (LEXA-specifiek)  (DD-AI.2)
+#
+#  ufoc:Norm is gedefinieerd in 00c-ufo-c v0.4 als mode met subtypen:
+#    ufoc:Permission, ufoc:Obligation, ufoc:Prohibition, ufoc:NormException.
+#
+#  LEXA voegt twee juridisch-specifieke subklassen toe die een Norm koppelen
+#  aan zijn juridische bron (LegalDocument) en juridische werking specificeren.
+###############################################################################
+
+lexa:LegalNormInstance
+    a owl:Class ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Norm ;
+    rdfs:label "LegalNormInstance"@en , "Juridische norm-instantie"@nl ;
+    rdfs:comment
+        """Een ufoc:Norm die rechtstreeks voortvloeit uit een juridische bron
+         (lexa:LegalDocument of lexa:LegalSection). Bindt haar drager juridisch:
+         naleving is afdwingbaar via publiekrechtelijk of privaatrechtelijk
+         handhavingsmechanisme.
+
+         Verbinding met LegalDocument via lexa:groundedInDocument.
+         Verbinding met LegalSection via lexa:groundedInSection. (DD-AI.2)"""@nl .
+
+lexa:PolicyNorm
+    a owl:Class ;
+    valor:ontoumlStereotype "mode" ;
+    rdfs:subClassOf ufoc:Norm ;
+    rdfs:label "PolicyNorm"@en , "Beleidsnorm"@nl ;
+    rdfs:comment
+        """Een ufoc:Norm die voortvloeit uit beleid, beleidsregels of interne
+         richtlijnen van een organisatie. Niet rechtstreeks afdwingbaar via
+         wetgeving, maar normatief bindend binnen de organisatiegrenzen.
+
+         Voorbeeld: gemeentelijke beleidsregel schuldhulpverlening,
+         interne werkinstructie. (DD-AI.2)"""@nl .
+
+# ── LegalNormInstance properties ──────────────────────────────────────────────
+
+lexa:groundedInDocument
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "grounded in document"@en , "gegrond in document"@nl ;
+    rdfs:domain lexa:LegalNormInstance ;
+    rdfs:range  lexa:LegalDocument ;
+    rdfs:comment
+        """Het juridische document waaruit deze norm-instantie rechtstreeks
+         voortvloeit. (DD-AI.2)"""@nl .
+
+lexa:groundedInSection
+    a owl:ObjectProperty ;
+    valor:ontoumlStereotype "mediation" ;
+    rdfs:label "grounded in section"@en , "gegrond in onderdeel"@nl ;
+    rdfs:domain lexa:LegalNormInstance ;
+    rdfs:range  lexa:LegalSection ;
+    rdfs:comment
+        """Het specifieke juridische onderdeel (artikel, lid) waaruit deze
+         norm-instantie voortvloeit. Preciezer dan groundedInDocument:
+         maakt verwijzing naar Art. 1:1 BW lid 2 mogelijk. (DD-AI.2, US-9.9)"""@nl .
+
+
+###############################################################################
+#  §C — LegislativeGap  (DD-103)
 ###############################################################################
 
 lexa:LegislativeGap
@@ -105,7 +492,7 @@ lexa:LegislativeGap
 
 
 ###############################################################################
-#  §B — LegislativeRequirement (+ subtypes)  (DD-103)
+#  §D — LegislativeRequirement (+ subtypes)  (DD-103)
 ###############################################################################
 
 lexa:LegislativeRequirement
@@ -150,7 +537,7 @@ lexa:NormRevisionRequirement
 
 
 ###############################################################################
-#  §C — LegislativeDevelopmentNeed  (DD-103)
+#  §E — LegislativeDevelopmentNeed  (DD-103)
 ###############################################################################
 
 lexa:LegislativeDevelopmentNeed
@@ -181,7 +568,7 @@ lexa:LegislativeDevelopmentNeed
 
 
 ###############################################################################
-#  §D — NormativeFeasibilityAssessment (gate-Tessera)  (DD-104)
+#  §F — NormativeFeasibilityAssessment (gate-Tessera)  (DD-104)
 ###############################################################################
 
 lexa:NormativeFeasibilityAssessment
@@ -208,7 +595,7 @@ lexa:NormativeFeasibilityAssessment
 
 
 ###############################################################################
-#  §E — Gecontroleerde vocabulaires
+#  §G — Gecontroleerde vocabulaires
 ###############################################################################
 
 # ── lexa:LegislativeGapType ───────────────────────────────────────────────────
@@ -323,7 +710,7 @@ lexa:NormativelyNotFeasible
 
 
 ###############################################################################
-#  §F — Properties
+#  §H — Properties
 ###############################################################################
 
 # ── lexa:LegislativeGap ───────────────────────────────────────────────────────
@@ -511,7 +898,7 @@ lexa:assessmentDate
 
 
 ###############################################################################
-#  Einde module 00u-lexa-ext.trig (v0.1)
+#  Einde module 00u-lexa-ext.trig (v0.2)
 ###############################################################################
 
 }
